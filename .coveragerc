@@ -1,0 +1,3 @@
+[run]
+omit = pypel/export_file_into_elastic.py
+    pypel/import_kibana_data.py
