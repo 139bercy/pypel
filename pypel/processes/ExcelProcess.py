@@ -25,7 +25,7 @@ class ExcelProcess(Process):
                 sheet = wb[sheet_name]
             else:
                 sheet = wb[wb.sheetnames[0]]
-            excel_rows = sheet.nrows
+            excel_rows = sheet.max_row
             try:
                 file_name = re.findall(r"(?<=/)[.\s\w_-]+$", file_path)[0]
             except IndexError:
