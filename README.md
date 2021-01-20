@@ -21,7 +21,8 @@ unidecode
  - Lancer le service `kibana` :
  ```sudo systemctl start kibana.service```
  - Obtenir les données des périmètres à visualiser
- - Dupliquer le fichier `scripts_python/conf/template_config.json` dans `scripts_python/conf/config.json`
+ - Dupliquer le fichier `/Doc/config_template.json` dans `./conf/config.json`
+ - Dupliquer le fichier `/Doc/parameters_template.json` dans `./conf/config.json`
  - Dans votre navigateur, accéder à Kibana via `http://localhost:5601/app/kibana`
 
 ## UTILISATION
