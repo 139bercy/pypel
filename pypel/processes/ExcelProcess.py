@@ -1,12 +1,9 @@
 # -*- coding: UTF-8 -*-
-import os
-import json
 import pandas as pd
-import xlrd
+import openpyxl
 from pypel.processes.Process import Process
 import logging.handlers
 import re
-from datetime import datetime
 
 
 logger = logging.getLogger(__name__)
@@ -23,11 +20,11 @@ class ExcelProcess(Process):
         if file_path.endswith(".csv"):
             return super().init_dataframe(file_path)
         else:
-            wb = xlrd.open_workbook(file_path)
+            wb = openpyxl.load_workbook(filename=file_path)
             if sheet_name != 0:
-                sheet = wb.sheet_by_name(sheet_name)
+                sheet = wb[sheet_name]
             else:
-                sheet = wb.sheet_by_index(0)
+                sheet = wb[wb.sheetnames[0]]
             excel_rows = sheet.nrows
             try:
                 file_name = re.findall(r"(?<=/)[.\s\w_-]+$", file_path)[0]
