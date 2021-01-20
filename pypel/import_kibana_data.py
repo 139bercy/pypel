@@ -8,15 +8,6 @@ import logging
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
-ch = logging.StreamHandler()
-ch.setLevel(logging.WARNING)
-fh = logging.FileHandler("./logging/import.log")
-fh.setLevel(logging.DEBUG)
-formatter = logging.Formatter("%(asctime)s - %(name)-45s - %(levelname)-8s - %(message)s")
-ch.setFormatter(formatter)
-fh.setFormatter(formatter)
-logger.addHandler(ch)
-logger.addHandler(fh)
 
 
 def import_kibana_data(path_to_exports, kibana_host_and_port):

@@ -6,9 +6,8 @@ Created on Mon Aug  3 09:35:55 2020
 @author: qdimarellis-adc
 """
 import os
-import elasticsearch
+import elasticsearch.helpers
 import argparse
-from elasticsearch import helpers
 import pypel.processes as processes
 import pypel.init_indice as init_indice
 import pypel.clean_indice as clean_indice
