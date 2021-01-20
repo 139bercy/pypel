@@ -6,19 +6,19 @@
 elasticsearch v7.0.0+
 kibana v7.0.0+
 python3
-```  
+```
 ### Python modules
 ```
 openpyxl
-elasticsearch  
-pandas  
+elasticsearch
+pandas
 numpy
 unidecode
 ```
 ## MISE EN PLACE
- - Lancer le service `elasticsearch` :  
+ - Lancer le service `elasticsearch`:
  ```sudo systemctl start elasticsearch.service```
- - Lancer le service `kibana` :  
+ - Lancer le service `kibana` :
  ```sudo systemctl start kibana.service```
  - Obtenir les données des périmètres à visualiser
  - Dupliquer le fichier `scripts_python/conf/template_config.json` dans `scripts_python/conf/config.json`
@@ -39,3 +39,4 @@ unidecode
      3. le troisième contenant le mapping des indices elasticsearch
 ## TESTS
    - move to the project's root directory `db-planr` then run `pytest --cov=. tests/`
+
