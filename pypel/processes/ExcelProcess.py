@@ -13,6 +13,15 @@ logger.setLevel(logging.DEBUG)
 class ExcelProcess(Process):
 
     def init_dataframe(self, file_path: str, sheet_name: str = 0, skiprows=None):
+        """
+        Read the passed file and return it as a dataframe.
+        Uses pandas.read_excel's `converters`, `parse_dates`, `sheet_name` and `skiprows` parameters.
+
+        :param file_path: absolute path to the file
+        :param sheet_name: the excel sheet name to load
+        :param skiprows: the number of lines to skip at the top of the file
+        :return: a pandas.Dataframe object
+        """
         if skiprows is None:
             skiprows = skiprows
         else:
@@ -35,9 +44,10 @@ class ExcelProcess(Process):
             return pd.read_excel(io=file_path,
                                  skiprows=skiprows,
                                  sheet_name=sheet_name,
-                                 converters=self.types,
+                                 converters=self.converters,
                                  parse_dates=self.dates)
 
     @staticmethod
     def arrayer(integer: int):
+        """Return a list of integers from 0 to `integer`, inclusive"""
         return [x for x in range(integer + 1)]
