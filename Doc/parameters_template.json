@@ -1,11 +1,11 @@
 {
   "Processes": {
-    "ExcelProcessAUTO": {
+    "MyExcelProcess": {
       "path": "DIR",
       "indice": "my-elastic-index",
       "sheet_name": "SHEET1"
     },
-    "ExcelProcessSC": {
+    "MyBaseProcess": {
       "path": "DIR2",
       "indice": "another-indice"
     }
