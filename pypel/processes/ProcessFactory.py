@@ -1,13 +1,13 @@
-import pypel.processes.Process as BaseProcess
-import pypel.processes.ExcelProcess as ExcelProcess
+from pypel.processes.Process import Process as BaseProcess
+from pypel.processes.ExcelProcess import ExcelProcess
 
 
 class ProcessFactory:
 
     def __init__(self):
         self._processes = {
-            "DummyProcess": BaseProcess.Process,
-            "DummyExcelProcess": ExcelProcess.ExcelProcess
+            "DummyProcess": BaseProcess,
+            "DummyExcelProcess": ExcelProcess
         }
 
     def create_process(self, process_name, elastic_indice):
