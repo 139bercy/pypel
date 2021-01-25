@@ -58,9 +58,6 @@ class Process(abc.ABC):
         """Wrapper that calls all transform functions and returns an action (in the Elasticsearch python API sense)."""
         sheet_name = process_params.get("sheet_name")
         skiprows = process_params.get("skiprows")
-        if isinstance(self, Process) and (sheet_name is not None or skiprows is not None):
-            raise TypeError("ERROR: sheet_name/skiprows parameters are not supported by pypel.BaseProcess, please use"
-                            "pypel.ExcelProcess instead !\n")
         self.df = self.init_dataframe(file_path, sheet_name=sheet_name, skiprows=skiprows) # noqa
         self.format_dataframe()
         self.wrap_process_specific_transform(process_params, global_params)
