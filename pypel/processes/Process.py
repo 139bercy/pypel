@@ -13,7 +13,12 @@ logger.setLevel(logging.DEBUG)
 
 class Process(abc.ABC):
 
-    def __init__(self, index_pattern, types=None, dates=False, strip: list = None, dates_format='%Y-%m-%d',
+    def __init__(self,
+                 index_pattern,
+                 types=None,
+                 dates=False,
+                 strip: list = None,
+                 dates_format='%Y-%m-%d',
                  backup=True):
         self.index_pattern = index_pattern
         self.column_replace = {'é': 'e',

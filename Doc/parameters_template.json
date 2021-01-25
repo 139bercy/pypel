@@ -1,39 +1,13 @@
 {
   "Processes": {
     "ExcelProcessAUTO": {
-      "path": "AUTO",
-      "indice": "planr-auto",
-      "sheet_name": "Données",
-      "volet_relance": "Verdissement",
-      "mesure": "AAP Soutien aux investissements de modernisation de la filière automobile"
+      "path": "DIR",
+      "indice": "my-elastic-index",
+      "sheet_name": "SHEET1"
     },
     "ExcelProcessSC": {
-      "path": "SC",
-      "indice": "planr-sc",
-      "sheet_name": "Données",
-      "volet_relance": "Indépendance / Compétitivité",
-      "mesure": "AAP Relocalisation - Soutien aux projets dans les secteurs critiques"
-    },
-    "ExcelProcessAERO": {
-      "path": "AERO",
-      "indice": "planr-aero",
-      "sheet_name": "Données",
-      "volet_relance": "Verdissement",
-      "mesure": "AAP Soutien aux investissements de modernisation de la filière aéronautique"
-    },
-    "ExcelProcessSTv2": {
-      "path": "ST",
-      "indice": "planr-st",
-      "sheet_name": "Compilé",
-      "volet_relance": "Indépendance / Compétitivité",
-      "mesure": "AAP Relocalisation - Soutien aux projets industriels dans les territoires"
+      "path": "DIR2",
+      "indice": "another-indice"
     }
-  },
-  "geodata_file_name": "laposte_hexasmal.csv",
-  "dpt_geo_file_name": "map_gps_dpt.csv",
-  "region_file_name": "depts2018_region.csv",
-  "reg_geo_file_name": "region_coordonnes.csv",
-  "ref_type_entreprise_file_name": "StockUniteLegale_utf8.csv",
-  "ref_StockEtablissement": "StockEtablissement_utf8.csv",
-  "ref_naf": "ref_naf.csv"
+  }
 }
