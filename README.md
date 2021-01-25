@@ -11,7 +11,7 @@ unidecode
 ```
 ## UTILISATION
    - Importer le module : `import pypel`
-   - la fonction principale, `pypel.process_into_elastic` attend 3 dictionnaires :
+   - Pour charger des données, utiliser la fonction principale, `pypel.process_into_elastic`, qui attend 3 dictionnaires :
      1. un premier dictionnaire qui contient la configuration :
         - Dans la variable `path_to_data`, mettre le chemin du dossier contenant les données
         - Dans la variable `path_to_kibana_exports`, mettre le chemin du dossier contenant les exports
@@ -23,6 +23,9 @@ unidecode
            - "sheetname": le nom de la feuille du excel à charger (ne pas inclure le cas échéant)
         - paramètres éventuels utilisés par des sous-classes maison
      3. le troisième contenant le mapping des indices elasticsearch concernés
+   - Pour importer des visualisations dans kibana, utiliser la fonction import_into_kibana, qui prends 2 paramètres :
+        - le chemin vers le dossier contenant les exports à traiter (ils doivent être au format .ndjson et leur nom doit contenir "export")
+        - la configuration ip de kibana au format : `ulr:port`
    
    Cette Fonction va ouvrir tous les fichiers présents dans `path_to_data/path` pour tous les `path` présents dans
    `Processes` du second dictionnaire, les traiter, puis les charger dans elasticsearch.
