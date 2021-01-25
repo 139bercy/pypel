@@ -64,7 +64,7 @@ def test_integration_excel(ep, params, monkeypatch):
                 "CODE_COMMUNE_ETABLISSEMENT": ['75112'],
                 "STATUT": ["decidé"]
                 }
-    ep.get_es_actions("file", params["Processes"]["ExcelProcessAUTO"], params)  # file is a placeholder
+    ep.get_es_actions("file", params["Processes"]["DummyExcelProcess"], params)  # file is a placeholder
     expected_df = pd.DataFrame(expected)
     assert_frame_equal(expected_df, ep.df, check_names=True)
 

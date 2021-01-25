@@ -56,6 +56,6 @@ def test_integration(ep_strip_dpt, params, monkeypatch):
                 "CODE_COMMUNE_ETABLISSEMENT": ['75112'],
                 "STATUT": ["decidé"]
                 }
-    ep_strip_dpt.get_es_actions("file", params["Processes"]["ExcelProcessAUTO"], params)  # file is a placeholder
+    ep_strip_dpt.get_es_actions("file", params["Processes"]["DummyProcess"], params)  # file is a placeholder
     expected_df = pd.DataFrame(expected)
     assert_frame_equal(expected_df, ep_strip_dpt.df, check_names=True)
