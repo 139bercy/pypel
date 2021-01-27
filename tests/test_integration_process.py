@@ -7,7 +7,7 @@ import os
 
 @pytest.fixture
 def ep_strip_dpt():
-    return pypel.BaseProcess("default", strip=["DEPARTEMENT", "NON-EXISTING-COLUMN"])
+    return pypel.BaseProcess("default")
 
 
 def mockreturn_initdf(self, file_path: str, sheet_name: str = 0, skiprows=None):
