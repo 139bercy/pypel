@@ -43,9 +43,3 @@ def create_indice(mappings, key, es_indice_client):
     body = {"mappings": mappings[key]["mappings"]}
     es_indice_client.create(key, body)
     logger.info(f"Indice {key} successfully created !")
-
-
-def create_agg_indices(agg_mappings, agg_indice, es_indice_client, base_agg_indice_name):
-    body = {"mappings": agg_mappings[base_agg_indice_name]["mappings"]}
-    es_indice_client.create(agg_indice, body)
-    logger.info(f"Indice {agg_indice} successfully created !")
