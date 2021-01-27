@@ -83,7 +83,6 @@ def test_init_dataframe_excel(ep, params, monkeypatch):
     prep_test_init_dataframe(monkeypatch)
     obtained_default = ep.get_es_actions(path)
     assert_frame_equal(expected_default, obtained_default)
-    del obtained_default, expected_default
 
 
 def test_init_dataframe_excel_skiprows(ep, params, monkeypatch):
@@ -94,7 +93,6 @@ def test_init_dataframe_excel_skiprows(ep, params, monkeypatch):
                                          [9, 9, 9, 9, 9]], columns=[6, "6.1", "6.2", "6.3", "6.4"])
     obtained_skip_5 = ep.get_es_actions(path, skiprows=5)
     assert_frame_equal(expected_skip_5, obtained_skip_5)
-    del expected_skip_5, obtained_skip_5
 
 
 def test_init_dataframe_excel_sheetname(ep, params, monkeypatch):
