@@ -1,10 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Mon Aug  3 09:35:55 2020
-
-@author: qdimarellis-adc
-"""
 import os
 import elasticsearch.helpers
 import argparse
