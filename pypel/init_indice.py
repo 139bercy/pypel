@@ -32,28 +32,6 @@ def init_indice(mappings, es_indice_client, indices: str = "all"):
                 create_indice(mappings, indices, es_indice_client)
 
 
-def init_aggregated_indices(agg_mappings, mappings, es_indice_client, indices: str = "all"):
-    if indices == "all":
-        for base_agg_indice_name in agg_mappings.keys():
-            agg_indices = [base_agg_indice_name + "_" + str(indice)
-                           for indice in mappings.keys()]
-            for agg_indice in agg_indices:
-                if es_indice_client.exists([agg_indice]):
-                    logger.warning(f"Indice already exists ! " + agg_indice)
-                else:
-                    create_agg_indices(agg_mappings, agg_indice, es_indice_client, base_agg_indice_name)
-    elif indices == "none":
-        return
-    else:
-        if indices in mappings.keys():
-            for base_agg_indice_name in agg_mappings.keys():
-                agg_indice = base_agg_indice_name + "_" + str(indices)
-                if es_indice_client.exists([agg_indice]):
-                    logger.warning(f"Indice already exists ! " + agg_indice)
-                else:
-                    create_agg_indices(agg_mappings, agg_indice, es_indice_client, base_agg_indice_name)
-
-
 def get_indice_range():
     parser = argparse.ArgumentParser()
     parser.add_argument("-i", "--indice-name", default="all", type=str, help="get the name of the indice")
