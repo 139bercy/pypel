@@ -49,16 +49,3 @@ def create_agg_indices(agg_mappings, agg_indice, es_indice_client, base_agg_indi
     body = {"mappings": agg_mappings[base_agg_indice_name]["mappings"]}
     es_indice_client.create(agg_indice, body)
     logger.info(f"Indice {agg_indice} successfully created !")
-
-
-if __name__ == "__main__":
-    with open("./mappings/mappings.json") as f:
-        MAPPINGS = json.load(f)
-    with open("./mappings/mappings_aggs.json") as f:
-        AGG_MAPPINGS = json.load(f)
-    with open("./conf/config.json") as f:
-        ip_conf = json.load(f)
-    ES = elasticsearch.Elasticsearch(hosts=ip_conf["elastic_ip"])
-    ES_INDICES_CLIENT = elasticsearch.client.IndicesClient(ES)
-
-    init_indice(MAPPINGS, ES_INDICES_CLIENT, get_indice_range())
