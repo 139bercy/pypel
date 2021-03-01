@@ -17,14 +17,6 @@ def factory():
 
 
 def test_factory_valid_processor(factory):
-    expected = proc.BaseProcess("fake_indice")
-    obtained = factory.create_process("DummyProcess", "fake_indice")
+    expected = proc.Process()
+    obtained = factory.create_process()
     assert isinstance(obtained, type(expected))
-    expected_props = [getattr(expected, prop) for prop in dir(expected) if "_" not in prop]
-    obtained_props = [getattr(obtained, prop) for prop in dir(obtained) if "_" not in prop]
-    assert expected_props == obtained_props
-
-
-def test_factory_bad_processor(factory):
-    with pytest.raises(ValueError):
-        factory.create_process("ThisProcessDoesNotExist", "fake_indice")

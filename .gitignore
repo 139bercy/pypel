@@ -136,3 +136,4 @@ vueapp/node_modules/
 package-lock.json
 
 tests/fake_data/exported_data*/**
+tests/reports

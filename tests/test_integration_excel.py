@@ -2,51 +2,40 @@
 import pytest
 import pandas as pd
 from pandas.testing import assert_frame_equal
-import pypel
+import pypel.processes as proc
 import os
+import datetime as dt
 
 
 @pytest.fixture
 def ep():
-    return pypel.ExcelProcess("default", backup=False)
+    return proc.Process()
 
 
-def mockreturn_initdf(self, file_path: str, sheet_name: str = 0, skiprows=None):
-    test = {"Projet": ["nom du projet"],
-            "ENtReprISE": ["MINISTERE DE L'ECONOMIE DES FINANCES ET DE LA RELANCE"],
-            "TYPE eNTReprISE": ["PME"],
-            "SIreN": [110020013],
-            "SIREt": [11002001300097],
-            "Département": ["75"],
-            "Ville": ["Paris"],
-            "MonTANT INVESTISSEMENT": [10000],
-            "DESCRIPTION pROJET": ["belle description de ce projet"],
-            "RETOMBEES PROJET": ["belle retombées du projet"],
-            "DATE DEPOT PROJET": ["2019/05/12"],
-            "DATE DEBUT INSTRUCTION": ["2019/05/12"],
-            "MONTANT PARTICIPATION éTAT": [5000],
-            "DATE DECISION": ["2019/05/12"],
-            "CODE_COMMUNE_ETABLISSEMENT": ['75112'],
-            "Statut": ["decidé"]
-            }
-    test_df = pd.DataFrame(test)
-    return test_df
-
-
-def mockreturn_test_init_df(self, file_path, **kwargs):
-    return self.init_dataframe(file_path, **kwargs)
-
-
-def prep_tests(m):
-    m.setattr(pypel.ExcelProcess, "init_dataframe", mockreturn_initdf)
-
-
-def prep_test_init_dataframe(m):
-    m.setattr(pypel.ExcelProcess, "get_es_actions", mockreturn_test_init_df)
+def mockreturn_extract(self):
+    d = {"PRoJET": ["nom du projet"],
+                "ENTREPrISE": ["MINISTERE DE L'ECONOMIE DES FINANCES ET DE LA RELANCE"],
+                "TYPE ENTREPRISE": ["PME"],
+                "SIRéN": [110020013],
+                "SIRéT": [11002001300097],
+                "DéPARTEMENT": ["75"],
+                "VILlE": ["Paris"],
+                "MONTANT INVESTISSEMENT": [10000],
+                "DESCRIPTION_PROJET": ["belle description de ce projet"],
+                "RETOMBéES PROJET": ["belle retombées du projet"],
+                "DATE_DEPOT_PROJET": [dt.datetime.strptime("2019/05/12", "%Y/%m/%d")],
+                "DATE_DEBUT_INSTRUCTION": [dt.datetime.strptime("2019/05/12", "%Y/%m/%d")],
+                "MONTANT_PARTICIPATION_ETAT": [5000],
+                "DATE_DECISION": [dt.datetime.strptime("2019/05/12", "%Y/%m/%d")],
+                "CODE_COMMUNE_ETABLISSEMENT": ['75112'],
+                "STATUT": ["decidé"]
+                }
+    df = pd.DataFrame(d)
+    return df
 
 
 def test_integration_excel(ep, params, monkeypatch):
-    prep_tests(monkeypatch)
+    monkeypatch.setattr(proc.Process, "extract", mockreturn_extract)
     expected = {"PROJET": ["nom du projet"],
                 "ENTREPRISE": ["MINISTERE DE L'ECONOMIE DES FINANCES ET DE LA RELANCE"],
                 "TYPE_ENTREPRISE": ["PME"],
@@ -64,9 +53,13 @@ def test_integration_excel(ep, params, monkeypatch):
                 "CODE_COMMUNE_ETABLISSEMENT": ['75112'],
                 "STATUT": ["decidé"]
                 }
-    ep.get_es_actions("file", params["Processes"]["DummyExcelProcess"], params)  # file is a placeholder
+    df = ep.extract()
+    obtained = ep.transform(df,
+                            column_replace={"é": "e", " ": "_"},
+                            date_format="%Y-%m-%d",
+                            date_columns=["DATE_DEPOT_PROJET", "DATE_DEBUT_INSTRUCTION", "DATE_DECISION"])
     expected_df = pd.DataFrame(expected)
-    assert_frame_equal(expected_df, ep.df, check_names=True)
+    assert_frame_equal(expected_df, obtained, check_names=True)
 
 
 def test_init_dataframe_excel(ep, params, monkeypatch):
@@ -79,27 +72,30 @@ def test_init_dataframe_excel(ep, params, monkeypatch):
                                           [6, 6, 6, 6, 6],
                                           [7, 7, 7, 7, 7],
                                           [8, 8, 8, 8, 8],
-                                          [9, 9, 9, 9, 9]], columns=["a", "b", "c", "d", "e"])
-    prep_test_init_dataframe(monkeypatch)
-    obtained_default = ep.get_es_actions(path)
+                                          [9, 9, 9, 9, 9]], columns=["A", "B", "C", "D", "E"])
+    df = ep.extract(path)
+    obtained_default = ep.transform(df)
     assert_frame_equal(expected_default, obtained_default)
 
 
 def test_init_dataframe_excel_skiprows(ep, params, monkeypatch):
     path = os.path.join(os.getcwd(), "tests", "fake_data", "test_init_df.xlsx")
-    prep_test_init_dataframe(monkeypatch)
-    expected_skip_5 = pd.DataFrame(data=[[7, 7, 7, 7, 7],
+    expected_skip_5 = pd.DataFrame(data=[[6, 6, 6, 6, 6],
+                                         [7, 7, 7, 7, 7],
                                          [8, 8, 8, 8, 8],
-                                         [9, 9, 9, 9, 9]], columns=[6, "6.1", "6.2", "6.3", "6.4"])
-    obtained_skip_5 = ep.get_es_actions(path, skiprows=5)
+                                         [9, 9, 9, 9, 9]],
+                                   columns=["0", "1", "2", "3", "4"])
+
+    df = ep.extract(path, skiprows=5, header=None)
+    obtained_skip_5 = ep.transform(df)
     assert_frame_equal(expected_skip_5, obtained_skip_5)
 
 
 def test_init_dataframe_excel_sheetname(ep, params, monkeypatch):
     path = os.path.join(os.getcwd(), "tests", "fake_data", "test_init_df.xlsx")
-    prep_test_init_dataframe(monkeypatch)
-    expected_sheetname = pd.DataFrame(data=[[9]], columns=["a"])
-    obtained_sheetname = ep.get_es_actions(path, sheet_name="TEST")
+    expected_sheetname = pd.DataFrame(data=[[9]], columns=["A"])
+    df = ep.extract(path, sheet_name="TEST")
+    obtained_sheetname = ep.transform(df)
     assert_frame_equal(expected_sheetname, obtained_sheetname)
 
 
@@ -113,15 +109,14 @@ def test_init_dataframe_excel_csv(ep, params, monkeypatch):
                                           [6, 6, 6, 6, 6],
                                           [7, 7, 7, 7, 7],
                                           [8, 8, 8, 8, 8],
-                                          [9, 9, 9, 9, 9]], columns=["a", "b", "c", "d", "e"])
-    prep_test_init_dataframe(monkeypatch)
-    obtained_csv = ep.get_es_actions(path_csv)
+                                          [9, 9, 9, 9, 9]], columns=["A", "B", "C", "D", "E"])
+    df = ep.extract(path_csv)
+    obtained_csv = ep.transform(df)
     assert_frame_equal(expected_csv, obtained_csv)
 
 
 def test_init_bad_filename(ep, params, monkeypatch):
     path = os.path.join(os.getcwd(), "tests", "fake_data", "test_bad_filename$.csv")
-    prep_test_init_dataframe(monkeypatch)
     expected_badfilename = pd.DataFrame(data=[[1, 1, 1, 1, 1],
                                           [2, 2, 2, 2, 2],
                                           [3, 3, 3, 3, 3],
@@ -130,14 +125,14 @@ def test_init_bad_filename(ep, params, monkeypatch):
                                           [6, 6, 6, 6, 6],
                                           [7, 7, 7, 7, 7],
                                           [8, 8, 8, 8, 8],
-                                          [9, 9, 9, 9, 9]], columns=["a", "b", "c", "d", "e"])
-    obtained_bad_filename = ep.get_es_actions(path)
+                                          [9, 9, 9, 9, 9]], columns=["A", "B", "C", "D", "E"])
+    df = ep.extract(path)
+    obtained_bad_filename = ep.transform(df)
     assert_frame_equal(expected_badfilename, obtained_bad_filename)
 
 
 def test_init_bad_filename_excel(ep, params, monkeypatch):
     path = os.path.join(os.getcwd(), "tests", "fake_data", "test_bad_filename$.xlsx")
-    prep_test_init_dataframe(monkeypatch)
     expected_badfilename = pd.DataFrame(data=[[1, 1, 1, 1, 1],
                                           [2, 2, 2, 2, 2],
                                           [3, 3, 3, 3, 3],
@@ -146,6 +141,7 @@ def test_init_bad_filename_excel(ep, params, monkeypatch):
                                           [6, 6, 6, 6, 6],
                                           [7, 7, 7, 7, 7],
                                           [8, 8, 8, 8, 8],
-                                          [9, 9, 9, 9, 9]], columns=["a", "b", "c", "d", "e"])
-    obtained_bad_filename = ep.get_es_actions(path)
+                                          [9, 9, 9, 9, 9]], columns=["A", "B", "C", "D", "E"])
+    df = ep.extract(path)
+    obtained_bad_filename = ep.transform(df)
     assert_frame_equal(expected_badfilename, obtained_bad_filename)

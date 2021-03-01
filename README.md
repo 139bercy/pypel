@@ -31,3 +31,4 @@ unidecode
    `Processes` du second dictionnaire, les traiter, puis les charger dans elasticsearch.
 ## TESTS
    - move to the project's root directory `pypel` then run `pytest --cov=. tests/`
+   - to generate an html report for easier reading, run `pytest --html=tests/reports/report.html`
