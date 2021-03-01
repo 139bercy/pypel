@@ -49,12 +49,12 @@ class Transformer:
         self.df = self.df.where(pd.notnull(self.df), None)
 
     def format_dates(self, date_format: str = None, date_columns: list = None):
-        df = date_format if date_format else self.date_format
+        date_format = date_format if date_format else self.date_format
         cols = date_columns if date_columns else self.date_columns
-        if cols is not None and df is not None:
-            for col in cols:
-                self.df = self.df[col].dt.strftime(df)
-        elif df is None:
+        if cols is not None and date_format is not None:
+                for col in cols:
+                    self.df[col] = self.df[col].dt.strftime(date_format)
+        elif date_format is None:
             logger.error("Incorrect usage : date_format not specified as argument nor in Transformer's constructor")
         elif cols is None:
             logger.error("Incorrect usage : date_columns not specified as argument nor in Transformer's constructor")
