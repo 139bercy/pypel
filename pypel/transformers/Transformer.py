@@ -32,7 +32,7 @@ class Transformer:
         returns df_ with no accents in column names, column names all UPPERCASE and _ separated
         also drops column with all na values
         """
-        self.df.columns = self.df.columns.str.strip()
+        self.df.columns = self.df.columns.astype(str).str.strip()
         self.df.replace(self.df_replace, regex=True, inplace=True)
         self.df.columns = self.df.columns.to_series().replace(self.column_replace, regex=True).apply(str.upper)
         for column in self.columns_to_strip:
@@ -57,10 +57,7 @@ class Transformer:
                 self.df = self.df[col].dt.strftime(df)
         elif df is None:
             logger.error("Incorrect usage : date_format not specified as argument nor in Transformer's constructor")
-            return
         elif cols is None:
             logger.error("Incorrect usage : date_columns not specified as argument nor in Transformer's constructor")
-            return
         else:
             logger.debug("No date columns and no date format, assuming there is nothing to do.")
-            return
