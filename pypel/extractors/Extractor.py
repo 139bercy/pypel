@@ -14,12 +14,13 @@ logger.setLevel(logging.DEBUG)
 
 
 class Extractor:
-    def __init__(self, converters=None, dates=False, dates_format='%Y-%m-%d', sheet_name=0, skiprows=None):
+    def __init__(self, converters=None, dates=False, dates_format='%Y-%m-%d', sheet_name=0, skiprows=None, **kwargs):
         self.converters = converters
         self.dates = dates
         self.dates_format = dates_format
         self.sheet_name = sheet_name
         self.skiprows = skiprows
+        self.additional_pands_args = kwargs
 
     def init_dataframe(self, file_path: str):
         """
@@ -57,7 +58,8 @@ class Extractor:
             return pd.read_excel(io=file_path,
                                  skiprows=skiprows,
                                  sheet_name=self.sheet_name,
-                                 converters=self.converters)
+                                 converters=self.converters,
+                                 **self.additional_pands_args)
         else:
             raise ValueError("File has unsupported file extension")
 
