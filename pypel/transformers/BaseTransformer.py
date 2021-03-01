@@ -16,7 +16,7 @@ class BaseTransformer:
                  date_columns: list = None):
         self.column_replace = {} if not column_replace else column_replace
         self.df_replace = {} if not df_replace else df_replace
-        self.columns_to_strip = {} if not strip else strip
+        self.columns_to_strip = [] if not strip else strip
         self.df = df.copy()
         self.date_format = date_format
         self.date_columns = date_columns
@@ -25,6 +25,7 @@ class BaseTransformer:
         self.format_dataframe()
         self.reformat_dates()
         self.fill_all_na()
+        return self.df
 
     def format_dataframe(self):
         """
@@ -49,11 +50,16 @@ class BaseTransformer:
 
     def reformat_dates(self, date_format: str = None, date_columns: list = None):
         df = date_format if date_format else self.date_format
-        if df is None:
+
+        cols = date_columns if date_columns else self.date_columns
+        if cols is None and df is None:
+            logger.debug("No date columns and no date format, assuming there is nothing to do.")
+            return
+        elif df is None:
             logger.error("Incorrect usage : date_format not specified as argument nor in Transformer's constructor")
             return
-        cols = date_columns if date_columns else self.date_columns
-        if cols is None:
+        elif cols is None:
             logger.error("Incorrect usage : date_columns not specified as argument nor in Transformer's constructor")
-        for col in date_columns:
+            return
+        for col in cols:
             self.df = self.df[col].dt.strftime(df)
