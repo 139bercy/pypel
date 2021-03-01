@@ -17,6 +17,6 @@ def factory():
 
 
 def test_factory_valid_processor(factory):
-    expected = proc.BaseProcess()
+    expected = proc.Process()
     obtained = factory.create_process()
     assert isinstance(obtained, type(expected))

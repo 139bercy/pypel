@@ -7,7 +7,7 @@ import os
 
 @pytest.fixture
 def ep_strip_dpt():
-    return pypel.BaseProcess("default")
+    return pypel.Process()
 
 
 def mockreturn_initdf(self):
@@ -34,7 +34,7 @@ def mockreturn_path_to_data():
 
 
 def test_integration_no_date(ep_strip_dpt, params, monkeypatch):
-    monkeypatch.setattr(pypel.BaseProcess, "extract", mockreturn_initdf)
+    monkeypatch.setattr(pypel.Process, "extract", mockreturn_initdf)
     expected = {"PROJET": ["nom du projet"],
                 "ENTREPRISE": ["MINISTERE DE L'ECONOMIE DES FINANCES ET DE LA RELANCE"],
                 "TYPE_ENTREPRISE": ["PME"],
