@@ -1,0 +1,13 @@
+{
+  "Processes": {
+    "DummyProcess": {
+      "path": "DIR",
+      "indice": "my-elastic-index",
+      "sheet_name": "SHEET1"
+    },
+    "DummyExcelProcess": {
+      "path": "DIR2",
+      "indice": "another-indice"
+    }
+  }
+}
