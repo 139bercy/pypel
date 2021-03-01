@@ -50,7 +50,6 @@ class Transformer:
 
     def format_dates(self, date_format: str = None, date_columns: list = None):
         df = date_format if date_format else self.date_format
-
         cols = date_columns if date_columns else self.date_columns
         if cols is not None and df is not None:
             for col in cols:
