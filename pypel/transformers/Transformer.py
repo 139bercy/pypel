@@ -22,12 +22,12 @@ class Transformer:
         self.date_columns = date_columns
 
     def transform(self):
-        self.format_dataframe_columns()
+        self.format_str_columns()
         self.format_dates()
         self.format_na()
         return self.df
 
-    def format_dataframe_columns(self):
+    def format_str_columns(self):
         """
         returns df_ with no accents in column names, column names all UPPERCASE and _ separated
         also drops column with all na values
