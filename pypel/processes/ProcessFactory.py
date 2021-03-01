@@ -1,6 +1,6 @@
-from pypel.processes.Process import Process as BaseProcess
+from pypel.processes.Process import Process
 
 
 class ProcessFactory:
     def create_process(self, *args, **kwargs):
-        return BaseProcess(*args, **kwargs)
+        return Process(*args, **kwargs)

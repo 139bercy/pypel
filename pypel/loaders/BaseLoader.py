@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 
-class BaseLoader:
+class Loader:
     def __init__(self,
                  indice,
                  df: pd.DataFrame,

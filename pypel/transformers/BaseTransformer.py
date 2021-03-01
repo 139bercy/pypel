@@ -6,7 +6,7 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 
-class BaseTransformer:
+class Transformer:
     def __init__(self,
                  df: pd.DataFrame,
                  strip: list = None,
@@ -22,12 +22,12 @@ class BaseTransformer:
         self.date_columns = date_columns
 
     def transform(self):
-        self.format_dataframe()
-        self.reformat_dates()
-        self.fill_all_na()
+        self.format_dataframe_columns()
+        self.format_dates()
+        self.format_na()
         return self.df
 
-    def format_dataframe(self):
+    def format_dataframe_columns(self):
         """
         returns df_ with no accents in column names, column names all UPPERCASE and _ separated
         also drops column with all na values
@@ -41,14 +41,14 @@ class BaseTransformer:
             except KeyError:
                 logger.warning(f"NO SUCH COLUMN {column} IN DATAFRAME PASSED")
 
-    def fill_all_na(self):
+    def format_na(self):
         """
         fills missing values of self.df with None
         """
         self.df = self.df.applymap(lambda x: None if x == "NaT" or x == "nan" else x)
         self.df = self.df.where(pd.notnull(self.df), None)
 
-    def reformat_dates(self, date_format: str = None, date_columns: list = None):
+    def format_dates(self, date_format: str = None, date_columns: list = None):
         df = date_format if date_format else self.date_format
 
         cols = date_columns if date_columns else self.date_columns
