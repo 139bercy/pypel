@@ -20,7 +20,3 @@ def test_factory_valid_processor(factory):
     expected = proc.BaseProcess()
     obtained = factory.create_process()
     assert isinstance(obtained, type(expected))
-    expected_props = [getattr(expected, prop) for prop in dir(expected) if "_" not in prop]
-    obtained_props = [getattr(obtained, prop) for prop in dir(obtained) if "_" not in prop]
-    assert expected_props == obtained_props
-
