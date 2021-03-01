@@ -1,3 +1,3 @@
-from pypel.processes.Process import Process as BaseProcess
+from pypel.processes.Process import Process
 from pypel.processes.ProcessFactory import ProcessFactory
-__all__ = ["BaseProcess", "ProcessFactory"]
+__all__ = ["Process", "ProcessFactory"]

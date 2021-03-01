@@ -1,8 +1,8 @@
 import abc
 import logging.handlers
-from pypel.extractors.BaseExtractor import BaseExtractor
-from pypel.transformers.BaseTransformer import BaseTransformer
-from pypel.loaders.BaseLoader import BaseLoader
+from pypel.extractors.BaseExtractor import Extractor
+from pypel.transformers.BaseTransformer import Transformer
+from pypel.loaders.BaseLoader import Loader
 
 
 logger = logging.getLogger(__name__)
@@ -21,9 +21,9 @@ class Process(abc.ABC):
                  extractor=None,
                  transformer=None,
                  loader=None):
-        self.extractor = extractor if extractor else BaseExtractor
-        self.transformer = transformer if transformer else BaseTransformer
-        self.loader = loader if loader else BaseLoader
+        self.extractor = extractor if extractor else Extractor
+        self.transformer = transformer if transformer else Transformer
+        self.loader = loader if loader else Loader
 
     def extract(self, file_path, *args, **kwargs):
         return self.extractor(*args, **kwargs).init_dataframe(file_path)
