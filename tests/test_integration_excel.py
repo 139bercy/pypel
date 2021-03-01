@@ -54,8 +54,6 @@ def test_integration_excel(ep, params, monkeypatch):
                 "STATUT": ["decidé"]
                 }
     df = ep.extract()
-    pd.set_option('display.max_colwidth', None)
-    pd.set_option('display.max_columns', None)
     obtained = ep.transform(df,
                             column_replace={"é": "e", " ": "_"},
                             date_format="%Y-%m-%d",
