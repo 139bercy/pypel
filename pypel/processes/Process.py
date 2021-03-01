@@ -1,8 +1,8 @@
 import abc
 import logging.handlers
-from pypel.extractors.BaseExtractor import Extractor
-from pypel.transformers.BaseTransformer import Transformer
-from pypel.loaders.BaseLoader import Loader
+from pypel.extractors.Extractor import Extractor
+from pypel.transformers.Transformer import Transformer
+from pypel.loaders.Loader import Loader
 
 
 logger = logging.getLogger(__name__)
