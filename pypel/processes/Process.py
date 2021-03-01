@@ -29,7 +29,7 @@ class Process(abc.ABC):
         return self.extractor(*args, **kwargs).init_dataframe(file_path)
 
     def transform(self, dataframe, *args, **kwargs):
-        return self.transformer(dataframe, *args, **kwargs)
+        return self.transformer(dataframe, *args, **kwargs).transform()
 
     def load(self, *args, **kwargs):
         self.loader(*args, **kwargs)
