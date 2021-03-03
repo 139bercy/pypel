@@ -59,7 +59,7 @@ class Extractor:
                                  skiprows=skiprows,
                                  sheet_name=self.sheet_name,
                                  converters=self.converters,
-                                 **self.additional_pands_args)
+                                 **self.additional_pandas_args)
         else:
             raise ValueError("File has unsupported file extension")
 
