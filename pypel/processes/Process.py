@@ -32,4 +32,4 @@ class Process:
         return self.transformer(*args, **kwargs).transform(dataframe)
 
     def load(self, *args, **kwargs):
-        self.loader(*args, **kwargs)
+        self.loader(*args, **kwargs).load()
