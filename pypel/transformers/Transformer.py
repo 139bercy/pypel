@@ -56,9 +56,9 @@ class Transformer:
         if cols is not None and date_format is not None:
             for col in cols:
                 df[col] = df[col].dt.strftime(date_format)
-        elif date_format is None:
+        elif date_format is None and cols is not None:
             logger.error("Incorrect usage : date_format not specified as argument nor in Transformer's constructor")
-        elif cols is None:
+        elif cols is None and date_format is not None:
             logger.error("Incorrect usage : date_columns not specified as argument nor in Transformer's constructor")
         else:
             logger.debug("No date columns and no date format, assuming there is nothing to do.")
