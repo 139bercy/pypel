@@ -20,7 +20,7 @@ class Extractor:
         self.dates_format = dates_format
         self.sheet_name = sheet_name
         self.skiprows = skiprows
-        self.additional_pands_args = kwargs
+        self.additional_pandas_args = kwargs
 
     def init_dataframe(self, file_path: str):
         """
