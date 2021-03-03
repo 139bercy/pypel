@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 
-class Process(abc.ABC):
+class Process:
     """
     Default process that only manages .csv and performs minimal modifications :
     - parse dates in columns `dates` according to format `dates_format`
@@ -29,7 +29,7 @@ class Process(abc.ABC):
         return self.extractor(*args, **kwargs).init_dataframe(file_path)
 
     def transform(self, dataframe, *args, **kwargs):
-        return self.transformer(dataframe, *args, **kwargs).transform()
+        return self.transformer(*args, **kwargs).transform(dataframe)
 
     def load(self, *args, **kwargs):
         self.loader(*args, **kwargs)
