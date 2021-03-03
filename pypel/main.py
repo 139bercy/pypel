@@ -7,14 +7,10 @@ import pypel.clean_indice as clean_indice
 import copy
 import logging.handlers
 
-
+# TODO: rewrite logging calls with warnings.warn as recommended in library code
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
-ch = logging.StreamHandler()
-ch.setLevel(logging.WARNING)
-formatter = logging.Formatter("%(asctime)s - %(name)-20s - %(levelname)-8s - %(message)s")
-ch.setFormatter(formatter)
-logger.addHandler(ch)
+logger.addHandler(logging.NullHandler())
 
 
 def process_into_elastic(conf: dict, params: dict, mappings: dict, process: str = None):
