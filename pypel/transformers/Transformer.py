@@ -23,6 +23,7 @@ class Transformer:
                   dataframe: pd.DataFrame):
         df = dataframe.copy()
         self.format_str_columns(df)
+        self.format_contents(df)
         self.format_dates(df)
         self.format_na(df)
         return df
@@ -33,13 +34,16 @@ class Transformer:
         also drops column with all na values
         """
         df.columns = df.columns.astype(str).str.strip()
-        df.replace(self.df_replace, regex=True, inplace=True)
         df.columns = df.columns.to_series().replace(self.column_replace, regex=True).apply(str.upper)
         for column in self.columns_to_strip:
             try:
                 df[column] = df[column].str.strip()
             except KeyError:
                 logger.warning(f"NO SUCH COLUMN {column} IN DATAFRAME PASSED")
+        return df
+
+    def format_contents(self, df: pd.DataFrame):
+        df.replace(self.df_replace, regex=True, inplace=True)
         return df
 
     def format_na(self, df: pd.DataFrame):
