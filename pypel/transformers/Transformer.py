@@ -1,9 +1,5 @@
 import pandas as pd
-import logging
-
-
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+import warnings
 
 
 class Transformer:
@@ -39,7 +35,7 @@ class Transformer:
             try:
                 df[column] = df[column].str.strip()
             except KeyError:
-                logger.warning(f"NO SUCH COLUMN {column} IN DATAFRAME PASSED")
+                warnings.warn(f"NO SUCH COLUMN {column} IN DATAFRAME PASSED")
         return df
 
     def format_contents(self, df: pd.DataFrame):
@@ -61,9 +57,9 @@ class Transformer:
             for col in cols:
                 df[col] = df[col].dt.strftime(date_format)
         elif date_format is None and cols is not None:
-            logger.error("Incorrect usage : date_format not specified as argument nor in Transformer's constructor")
+            warnings.warn("Incorrect usage : date_format not specified as argument nor in Transformer's constructor")
         elif cols is None and date_format is not None:
-            logger.error("Incorrect usage : date_columns not specified as argument nor in Transformer's constructor")
+            warnings.warn("Incorrect usage : date_columns not specified as argument nor in Transformer's constructor")
         else:
-            logger.debug("No date columns and no date format, assuming there is nothing to do.")
+            warnings.warn("No date columns and no date format, assuming there is nothing to do.")
         return df

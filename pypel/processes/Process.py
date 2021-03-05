@@ -1,12 +1,6 @@
-import abc
-import logging.handlers
 from pypel.extractors.Extractor import Extractor
 from pypel.transformers.Transformer import Transformer
 from pypel.loaders.Loader import Loader
-
-
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
 
 
 class Process:
