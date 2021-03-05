@@ -12,7 +12,7 @@ def ep():
     return proc.Process()
 
 
-def mockreturn_extract(self):
+def mockreturn_extract(self, dummy):
     d = {"PRoJET": ["nom du projet"],
                 "ENTREPrISE": ["MINISTERE DE L'ECONOMIE DES FINANCES ET DE LA RELANCE"],
                 "TYPE ENTREPRISE": ["PME"],
@@ -53,7 +53,7 @@ def test_integration_excel(ep, params, monkeypatch):
                 "CODE_COMMUNE_ETABLISSEMENT": ['75112'],
                 "STATUT": ["decidé"]
                 }
-    df = ep.extract()
+    df = ep.extract("")
     obtained = ep.transform(df,
                             column_replace={"é": "e", " ": "_"},
                             date_format="%Y-%m-%d",
