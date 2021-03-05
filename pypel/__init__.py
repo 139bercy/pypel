@@ -9,4 +9,4 @@ __all__ = ["Process", "ProcessFactory", "process_into_elastic", "init_indice", "
 import logging
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.WARNING)
+logger.addHandler(logging.NullHandler())
