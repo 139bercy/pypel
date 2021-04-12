@@ -45,6 +45,8 @@ For options, more detailed usage and/or functionalities please refer to the docu
 
 ## RUN WITH DOCKER
 
+### BUILD
+
 La commande suivante permet de construire l'image docker:
 
 ```
@@ -52,3 +54,13 @@ docker build -f docker/Dockerfile -t pypel:dev .
 ```
 
 Une image `pypel:dev` est ensuite disponible pour traiter dans un environement indépendant les données qui doivent être envoyées à Elasticsearch.
+
+### USAGE
+
+L'image docker va lire tous les fichiers montés dans /data, et les lire. Chaque fichier doit être composé des 3 parties mentionnées dans la partie UTILISATION au dessus.
+
+Par exemple, la commande ci-dessous monte le fichier `process.json` dans le dossier local, et éxécute son contenu:
+
+```
+docker run -v "$(pwd)/process.json:/data/process.json" pypel:dev
+```
