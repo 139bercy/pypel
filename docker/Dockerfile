@@ -11,4 +11,4 @@ COPY pypel ./pypel
 # Copy our main function as well
 COPY docker/main.py .
 
-CMD [ "python3", "main.py" , "/data/*"]
+CMD [ "python3", "main.py", "/data/*"]
