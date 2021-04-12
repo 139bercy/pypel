@@ -1,26 +1,14 @@
-import argparse
 import json
-
 from glob import glob
+
 from pypel import process_into_elastic
 
 
 def main():
 
-    parser = argparse.ArgumentParser(description="Process files with pypel")
-    parser.add_argument(
-        "paths",
-        metavar="path",
-        type=str,
-        nargs="+",
-        help="a path (or glob) of file(s) to process",
-    )
-
-    args = parser.parse_args()
-
     # Process all the given paths, we support wildcard expansion through glob
     # https://docs.python.org/3/library/glob.html
-    for path in [glob(p) for p in args.paths]:
+    for path in [filename for filename in glob("/data/*.json")]:
 
         print(f"Processing {path}")
 
