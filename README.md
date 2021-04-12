@@ -41,4 +41,14 @@ For options, more detailed usage and/or functionalities please refer to the docu
 
 ## TESTS
    - move to the project's root directory `pypel` then run `pytest --cov=. tests/`
-   - to generate a html report for easier reading, run `pytest --html=tests/reports/report.html`
+   - to generate an html report for easier reading, run `pytest --html=tests/reports/report.html`
+
+## RUN WITH DOCKER
+
+La commande suivante permet de construire l'image docker:
+
+```
+docker build -f docker/Dockerfile -t pypel:dev .
+```
+
+Une image `pypel:dev` est ensuite disponible pour traiter dans un environement indépendant les données qui doivent être envoyées à Elasticsearch.
