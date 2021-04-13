@@ -3,7 +3,11 @@ import re
 import openpyxl
 from pypel.utils.utils import arrayer
 import warnings
+import logging
 
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
 class Extractor:
     def __init__(self, converters=None, dates=False, dates_format='%Y-%m-%d', sheet_name=0, skiprows=None, **kwargs):
@@ -46,7 +50,7 @@ class Extractor:
                 warnings.warn(f"Could not get file name from file path :"
                               f"{file_path}")
                 file_name = "ERROR"
-            warnings.warn(f"{excel_rows} rows in the excel sheet \'{self.sheet}\'   from file \'{file_name}\'")
+            logger.info(f"{excel_rows} rows in the excel sheet \'{self.sheet}\'   from file \'{file_name}\'")
             if self.skiprows is None:
                 skiprows = self.skiprows
             else:
@@ -58,4 +62,5 @@ class Extractor:
                                  **self.additional_pandas_args)
         else:
             raise ValueError("File has unsupported file extension")
+
 
