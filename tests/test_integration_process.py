@@ -56,9 +56,3 @@ def test_integration_no_date(ep_strip_dpt, params, monkeypatch):
     expected_df = pd.DataFrame(expected)
     assert_frame_equal(expected_df, obtained, check_names=True)
 
-    df_intermediaire = pd.DataFrame()
-    df_group = pd.DataFrame(df_intermediaire.groupby(["objetMarche",
-                                                      "dateNotification",
-                                                      "montantOriginal",
-                                                      "dureeMois"])
-                            ["siretEtablissement"].unique())
