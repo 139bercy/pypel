@@ -9,6 +9,7 @@ import logging
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
+
 class Extractor:
     def __init__(self, converters=None, dates=False, dates_format='%Y-%m-%d', sheet_name=0, skiprows=None, **kwargs):
         self.converters = converters
@@ -30,8 +31,8 @@ class Extractor:
             with open(file_path) as file:
                 row_count = sum(1 for row in file)
             file_name = re.findall(r"(?<=/)[^/]*$", file_path)[0]
-            warnings.warn(f"{row_count} rows (including header)"
-                          f"detected in the csv {file_name}")
+            logger.debug(f"{row_count} rows (including header)"
+                         f"detected in the csv {file_name}")
             return pd.read_csv(file_path,
                                converters=self.converters,
                                parse_dates=self.dates)
