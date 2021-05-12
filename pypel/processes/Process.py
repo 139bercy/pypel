@@ -16,8 +16,14 @@ class Process:
                  transformer=None,
                  loader=None):
         self.extractor = extractor if extractor else Extractor
+        assert isinstance(self.extractor, Extractor)
         self.transformer = transformer if transformer else Transformer
+        assert isinstance(self.transformer, Transformer)
         self.loader = loader if loader else Loader
+        assert isinstance(self.loader, Loader)
+
+    def process(self, file_path):
+        self.load(self.transform(self.extract(file_path)))
 
     def extract(self, file_path, *args, **kwargs):
         return self.extractor(*args, **kwargs).init_dataframe(file_path)
