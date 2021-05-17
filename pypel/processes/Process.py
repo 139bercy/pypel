@@ -19,19 +19,19 @@ class Process:
         self.transformer = transformer if transformer else Transformer
         self.loader = loader if loader else Loader
         try:
-            assert isinstance(self.extractor, Extractor)
-            self.__extractor_is_instancied = True
-        except TypeError:
             assert isinstance(self.extractor(), Extractor)
             self.__extractor_is_instancied = False
+        except TypeError:
+            assert isinstance(self.extractor, Extractor)
+            self.__extractor_is_instancied = True
         except AssertionError as e:
             raise ValueError("Bad extractor") from e
         try:
-            assert isinstance(self.transformer, Transformer)
-            self.__transformer_is_instancied = True
-        except TypeError:
             assert isinstance(self.transformer(), Transformer)
             self.__transformer_is_instancied = False
+        except TypeError:
+            assert isinstance(self.transformer, Transformer)
+            self.__transformer_is_instancied = True
         except AssertionError as e:
             raise ValueError("Bad transformer") from e
         try:
