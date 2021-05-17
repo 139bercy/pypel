@@ -41,8 +41,8 @@ class Process:
         except AssertionError as e:
             raise ValueError("Bad loader") from e
 
-    def process(self, file_path):
-        self.load(self.transform(self.extract(file_path)))
+    def process(self, file_path, es_instance, es_indice):
+        self.load(self.transform(self.extract(file_path)), es_indice, es_instance)
 
     def extract(self, file_path, *args, **kwargs):
         if self.__extractor_is_instancied:
