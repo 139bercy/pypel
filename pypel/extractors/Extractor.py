@@ -3,6 +3,11 @@ import re
 import openpyxl
 from pypel.utils.utils import arrayer
 import warnings
+import logging
+
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
 
 class Extractor:
@@ -26,8 +31,8 @@ class Extractor:
             with open(file_path) as file:
                 row_count = sum(1 for row in file)
             file_name = re.findall(r"(?<=/)[^/]*$", file_path)[0]
-            warnings.warn(f"{row_count} rows (including header)"
-                          f"detected in the csv {file_name}")
+            logger.debug(f"{row_count} rows (including header)"
+                         f"detected in the csv {file_name}")
             return pd.read_csv(file_path,
                                converters=self.converters,
                                parse_dates=self.dates)
@@ -46,7 +51,7 @@ class Extractor:
                 warnings.warn(f"Could not get file name from file path :"
                               f"{file_path}")
                 file_name = "ERROR"
-            warnings.warn(f"{excel_rows} rows in the excel sheet \'{self.sheet}\'   from file \'{file_name}\'")
+            logger.info(f"{excel_rows} rows in the excel sheet \'{self.sheet}\'   from file \'{file_name}\'")
             if self.skiprows is None:
                 skiprows = self.skiprows
             else:
@@ -56,6 +61,18 @@ class Extractor:
                                  sheet_name=self.sheet_name,
                                  converters=self.converters,
                                  **self.additional_pandas_args)
+        elif file_path.endswith(".xls"):
+            if self.skiprows is None:
+                skiprows = self.skiprows
+            else:
+                skiprows = arrayer(self.skiprows)
+            return pd.read_excel(io=file_path,
+                                 skiprows=skiprows,
+                                 sheet_name=self.sheet_name,
+                                 converters=self.converters,
+                                 **self.additional_pandas_args,
+                                 engine="xlrd")
         else:
             raise ValueError("File has unsupported file extension")
+
 

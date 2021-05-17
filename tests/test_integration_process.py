@@ -1,3 +1,4 @@
+import numpy
 import pytest
 import pandas as pd
 from pandas.testing import assert_frame_equal
@@ -23,7 +24,8 @@ def mockreturn_extract(self):
             "RETOMBEES PROJET": ["belle retombées du projet"],
             "MONTANT PARTICIPATION éTAT": [5000],
             "CODE_COMMUNE_ETABLISSEMENT": ['75112'],
-            "Statut": ["decidé"]
+            "Statut": ["decidé"],
+            "ShouldBeNone": numpy.NaN
             }
     test_df = pd.DataFrame(test)
     return test_df
@@ -47,7 +49,8 @@ def test_integration_no_date(ep_strip_dpt, params, monkeypatch):
                 "RETOMBEES_PROJET": ["belle retombées du projet"],
                 "MONTANT_PARTICIPATION_ETAT": [5000],
                 "CODE_COMMUNE_ETABLISSEMENT": ['75112'],
-                "STATUT": ["decidé"]
+                "STATUT": ["decidé"],
+                "SHOULDBENONE": None
                 }
     df = ep_strip_dpt.extract()
     obtained = ep_strip_dpt.transform(df,
@@ -55,3 +58,4 @@ def test_integration_no_date(ep_strip_dpt, params, monkeypatch):
                                       strip=["DEPARTEMENT"])
     expected_df = pd.DataFrame(expected)
     assert_frame_equal(expected_df, obtained, check_names=True)
+
