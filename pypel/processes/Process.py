@@ -1,7 +1,6 @@
 from pypel.extractors.Extractor import Extractor
 from pypel.transformers.Transformer import Transformer
 from pypel.loaders.Loader import Loader
-import warnings
 
 
 class Process:
@@ -26,8 +25,7 @@ class Process:
             assert isinstance(self.extractor(), Extractor)
             self.__extractor_is_instancied = False
         except AssertionError as e:
-            warnings.warn("Invalid extractor !")
-            raise ValueError(e)
+            raise ValueError("Bad extractor") from e
         try:
             assert isinstance(self.transformer, Transformer)
             self.__transformer_is_instancied = True
@@ -35,15 +33,13 @@ class Process:
             assert isinstance(self.transformer(), Transformer)
             self.__transformer_is_instancied = False
         except AssertionError as e:
-            warnings.warn("Invalid transformer !")
-            raise ValueError(e)
+            raise ValueError("Bad transformer") from e
         try:
             # TODO: add support for instanced loaders
             assert isinstance(self.loader("", ""), Loader)
             self.__loader_is_instancied = False
         except AssertionError as e:
-            warnings.warn("Invalid loader !")
-            raise ValueError(e)
+            raise ValueError("Bad loader") from e
 
     def process(self, file_path):
         self.load(self.transform(self.extract(file_path)))
