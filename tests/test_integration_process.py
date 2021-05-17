@@ -55,3 +55,4 @@ def test_integration_no_date(ep_strip_dpt, params, monkeypatch):
                                       strip=["DEPARTEMENT"])
     expected_df = pd.DataFrame(expected)
     assert_frame_equal(expected_df, obtained, check_names=True)
+

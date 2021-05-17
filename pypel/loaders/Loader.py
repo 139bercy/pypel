@@ -1,6 +1,7 @@
 import elasticsearch.helpers
 import pandas as pd
 import logging
+import warnings
 import datetime as dt
 import os
 
@@ -18,7 +19,7 @@ class Loader:
                  name_export=None,
                  dont_append_date=False):
         if not path_to_export_folder and backup:
-            logger.error("No path for export but backup set to true !")
+            warnings.warn("No path for export but backup set to true !")
             return
         self.indice = indice
         self.backup_uploaded_data = backup
@@ -42,9 +43,9 @@ class Loader:
                 failed += 1
             else:
                 success += 1
-        logger.info(f"{success} successfully inserted into {self.indice}")
+        logging.info(f"{success} successfully inserted into {self.indice}")
         if errors:
-            logger.warning(f"{failed} errors detected\nError details : {errors}")
+            warnings.warn(f"{failed} errors detected\nError details : {errors}")
 
     def wrap_df_in_actions(self, df: pd.DataFrame):
         """
