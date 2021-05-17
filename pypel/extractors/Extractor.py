@@ -61,6 +61,17 @@ class Extractor:
                                  sheet_name=self.sheet_name,
                                  converters=self.converters,
                                  **self.additional_pandas_args)
+        elif file_path.endswith(".xls"):
+            if self.skiprows is None:
+                skiprows = self.skiprows
+            else:
+                skiprows = arrayer(self.skiprows)
+            return pd.read_excel(io=file_path,
+                                 skiprows=skiprows,
+                                 sheet_name=self.sheet_name,
+                                 converters=self.converters,
+                                 **self.additional_pandas_args,
+                                 engine="xlrd")
         else:
             raise ValueError("File has unsupported file extension")
 
