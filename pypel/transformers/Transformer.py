@@ -21,7 +21,7 @@ class Transformer:
         self.format_str_columns(df)
         self.format_contents(df)
         self.format_dates(df)
-        self.format_na(df)
+        df = self.format_na(df)
         return df
 
     def format_str_columns(self, df: pd.DataFrame):
