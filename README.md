@@ -1,6 +1,6 @@
 # PYPEL 
 ##### _A python pipeline into elasticsearch_
-## REQUIREMENTS
+## Requirements
 ### Python modules
 ```
 openpyxl
@@ -8,44 +8,38 @@ elasticsearch
 pandas
 numpy
 unidecode
+xlrd (only for .xls)
 ```
-## UTILISATION
-   - Importer le module : `import pypel`
-   - Pour charger des données, utiliser la fonction principale, `pypel.process_into_elastic`, qui attend 3 dictionnaires :
-     1. un premier dictionnaire qui contient la configuration :
-        - Dans la variable `path_to_data`, mettre le chemin du dossier contenant les données
-        - Dans la variable `path_to_kibana_exports`, mettre le chemin du dossier contenant les exports
-        - Dans la variable `kibana_info`, mettre l'url et le port de kibana au format : `url:port` (`localhost:5601` par défaut)
-     2. un second dictionnaire qui contient la configuration des process :
-        - "Processes" : un dictionnaire qui associe à chaque process ses paramètres propress :
-           - "path" : le nom du sous-dossier vers les données propres au process
-           - "indice" : le nom de l'indice elastic dans lequel charger
-           - "sheetname" : le nom de la feuille du excel à charger (ne pas inclure le cas échéant)
-        - paramètres éventuels utilisés par des sous-classes maison
-     3. le troisième contenant le mapping des indices elasticsearch concernés
-   - Pour importer des visualisations dans kibana, utiliser la fonction import_into_kibana, qui prends 2 paramètres :
-        - le chemin vers le dossier contenant les exports à traiter (ils doivent être au format .ndjson et leur nom doit contenir "export")
-        - la configuration ip de kibana au format : `ulr:port`
-   
-   Cette Fonction va ouvrir tous les fichiers présents dans `path_to_data/path` pour tous les `path` présents dans
-   `Processes` du second dictionnaire, les traiter, puis les charger dans elasticsearch.
-### API DESCRIPTION
+## Installation
+ - Clone or fork the github repo, then install via setup.py : `python setup.py`
+
+### PYPEL in a nutshell
+ - What does it do ?
+PYPEL (PYthon Pipeline into ELasticsearch) is a customizable ETL (Extract / Transform / Load) in python. It natively extracts csv, xls & xlsx files and uploads them into elasticsearch.
+ - What if my usecase slightly differs from that ?
+The Extract/Transform/Load parts are separated, and you can modify each one independantly to fit your usecase.
+
+### API descrption
 All functionalities are available through the pypel.Process class:
 
  - instantiate your Process : `process = pypel.Process()`
  - extract data : `df = process.extract(file_path)`
  - transform data : `df = process.transform(df)`
- - load data : `process.load(df)`
+ - load data : `process.load(df, es_indice, es_instance)`
+     es_indice is the elasticsearch indice you wanna load into, es_instance is an elasticsearch connection : `es = elasticserach.Elasticsearch(ip, ...)`
+ - for conveniance, a wrap-up function exists that bundles all 3 operations in one : `process.process(file_path, es_indice, es_instance)`
 
-For options, more detailed usage and/or functionalities please refer to the documentation
+The Process constructor takes optional Extractor, Transformer & Loader arguments. These must derive from their pypel-class.
 
-## TESTS
+For options, detailed usage and/or functionalities please refer to the documentation
+
+## Tests
    - move to the project's root directory `pypel` then run `pytest --cov=. tests/`
-   - to generate an html report for easier reading, run `pytest --html=tests/reports/report.html`
+   - to generate a html report for easier reading, run `pytest --html=tests/reports/report.html`
 
-## RUN WITH DOCKER
+## Run with docker
 
-### BUILD
+### Build
 
 La commande suivante permet de construire l'image docker:
 
@@ -55,7 +49,7 @@ docker build -f docker/Dockerfile -t pypel:dev .
 
 Une image `pypel:dev` est ensuite disponible pour traiter dans un environement indépendant les données qui doivent être envoyées à Elasticsearch.
 
-### USAGE
+### Usage
 
 L'image docker va lire tous les fichiers montés dans /data, et les lire. Chaque fichier doit être composé des 3 parties mentionnées dans la partie UTILISATION au dessus.
 
