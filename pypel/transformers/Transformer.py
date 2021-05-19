@@ -1,3 +1,6 @@
+import os
+
+from pypel.extractors.Extractor import Extractor
 import pandas as pd
 import warnings
 
@@ -25,7 +28,8 @@ class Transformer:
                  column_replace: dict = None,
                  df_replace: dict = None,
                  date_format: str = None,
-                 date_columns: list = None):
+                 date_columns: list = None,
+                 referential=None):
         self.column_replace = {} if not column_replace else column_replace
         self.df_replace = {} if not df_replace else df_replace
         self.columns_to_strip = [] if not strip else strip
@@ -107,3 +111,20 @@ class Transformer:
         else:
             warnings.warn("No date columns and no date format, assuming there is nothing to do.")
         return df
+
+    def merge_referential(self,
+                          df,
+                          mergekey: str or list,
+                          referential: str or os.PathLike or pd.DataFrame,
+                          how="inner",
+                          converters=None,
+                          dates=False,
+                          dates_format='%Y-%m-%d',
+                          sheet_name=0,
+                          skiprows=None):
+        if isinstance(referential, pd.DataFrame):
+            df.merge(referential, how=how, on=mergekey)
+        else:
+            return df.merge(Extractor(converters, dates, dates_format, sheet_name, skiprows).init_dataframe(referential),
+                            how=how,
+                            on=mergekey)
