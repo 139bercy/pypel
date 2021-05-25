@@ -11,6 +11,21 @@ logger.setLevel(logging.DEBUG)
 
 
 class Extractor:
+    """
+    Encapsulates all the extracting, getting data logic. Most parameters are pandas.read_csv or .read_excel parameters
+
+    :param converters:
+        cf [pandas' doc](https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.read_excel.html)
+    :param dates:
+        cf [pandas' doc](https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.read_excel.html)
+    :param dates_format:
+        cf [pandas' doc](https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.read_excel.html)
+    :param sheet_name:
+        cf [pandas' doc](https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.read_excel.html)
+    :param skiprows:
+        cf [pandas' doc](https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.read_excel.html)
+    :param kwargs:
+    """
     def __init__(self, converters=None, dates=False, dates_format='%Y-%m-%d', sheet_name=0, skiprows=None, **kwargs):
         self.converters = converters
         self.dates = dates
@@ -22,7 +37,7 @@ class Extractor:
     def init_dataframe(self, file_path: str):
         """
         Read the passed file and return it as a dataframe.
-        Uses pandas.read_csv's `converters` and `parse_dates` parameters.
+        Uses many pandas parameters defined at Extractor instanciation.
 
         :param file_path: absolute path to the file
         :return: pandas.Dataframe object
@@ -74,5 +89,3 @@ class Extractor:
                                  engine="xlrd")
         else:
             raise ValueError("File has unsupported file extension")
-
-
