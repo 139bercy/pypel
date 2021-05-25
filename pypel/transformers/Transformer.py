@@ -1,5 +1,6 @@
 import os
 
+import pypel
 from pypel.extractors.Extractor import Extractor
 import pandas as pd
 import warnings
@@ -116,6 +117,7 @@ class Transformer:
                           df,
                           mergekey: str or list,
                           referential: str or os.PathLike or pd.DataFrame,
+                          extractor=None,
                           how="inner",
                           converters=None,
                           dates=False,
@@ -124,6 +126,11 @@ class Transformer:
                           skiprows=None):
         if isinstance(referential, pd.DataFrame):
             df.merge(referential, how=how, on=mergekey)
+        if extractor:
+            assert isinstance(extractor, pypel.Extractor)
+            return df.merge(extractor.init_dataframe(referential),
+                            how=how,
+                            on=mergekey)
         else:
             return df.merge(Extractor(converters, dates, dates_format, sheet_name, skiprows).init_dataframe(referential),
                             how=how,
