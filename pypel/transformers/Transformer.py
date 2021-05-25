@@ -124,6 +124,21 @@ class Transformer:
                           dates_format='%Y-%m-%d',
                           sheet_name=0,
                           skiprows=None):
+        """
+        Enrich passed dataframe by merging it with a referential, either passed as dataframe or by a path to extract.
+
+        :param df: the dataframe to enrich
+        :param mergekey: the mergekeys the merge will be executed upon (pandas merge's on parameter)
+        :param referential: the referential to merge with. Either a `Dataframe` a string, or `PathLike`
+        :param extractor: the extractor to use for extracting the referential
+        :param how: the mergetype e.g. `inner`, `outer` etc... equivalent to pandas.merge's `how` parameter.
+        :param converters:
+        :param dates:
+        :param dates_format:
+        :param sheet_name:
+        :param skiprows:
+        :return:
+        """
         if isinstance(referential, pd.DataFrame):
             df.merge(referential, how=how, on=mergekey)
         if extractor:
@@ -132,6 +147,10 @@ class Transformer:
                             how=how,
                             on=mergekey)
         else:
+            try:
+                assert isinstance(referential, str) or isinstance(referential, os.PathLike)
+            except AssertionError as e:
+                raise ValueError("Pass a string or an os.PathLike object pointing to the referential !") from e
             return df.merge(Extractor(converters, dates, dates_format, sheet_name, skiprows).init_dataframe(referential),
                             how=how,
                             on=mergekey)
