@@ -3,6 +3,22 @@ import warnings
 
 
 class Transformer:
+    """
+    Encapsulated all the data-transformation related logic. Massively relies on pandas.
+
+    :param strip: list
+        list of columns whose name should be stripped off
+    :param column_replace: dict
+        dictionnary of format {"old": "new"} where old is a regex matching the strings to replace and new its replacement
+        This is used to format column names.
+    :param df_replace: dict
+        dictionnary of format {"old": "new"} where old is a regex matching the strings to replace and new its replacement
+        This is use to replace the dataframe's contents.
+    :param date_format:
+        the format in which datetimes are to be. cf [this website](https://strftime.org/) or [the docs](https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes)
+    :param date_columns:
+        list of columns that are to be parsed as dates
+    """
     def __init__(self,
                  strip: list = None,
                  column_replace: dict = None,
@@ -17,6 +33,13 @@ class Transformer:
 
     def transform(self,
                   dataframe: pd.DataFrame):
+        """
+        Transforms the passed dataframe.
+
+        :param dataframe: pd.Dataframe
+            the dataframe to transform
+        :return:
+        """
         df = dataframe.copy()
         self.format_str_columns(df)
         self.format_contents(df)
@@ -26,8 +49,10 @@ class Transformer:
 
     def format_str_columns(self, df: pd.DataFrame):
         """
-        returns df_ with no accents in column names, column names all UPPERCASE and _ separated
-        also drops column with all na values
+        returns df with normalized column names, replacing using self.column_replace & applying str.upper()
+
+        :param df: the dataframe to be normalized
+        :return: the dataframe with normalized columns
         """
         df.columns = df.columns.astype(str).str.strip()
         df.columns = df.columns.to_series().replace(self.column_replace, regex=True).apply(str.upper)
@@ -39,18 +64,36 @@ class Transformer:
         return df
 
     def format_contents(self, df: pd.DataFrame):
+        """
+        returns df with normalized contents, replacing every value using self.df_replace
+        self.df_replace should be in the following format : {"value_to_replace": "replacement_value"}
+
+        :param df: the dataframe to normalize
+        :return: the normalized dataframe
+        """
         df.replace(self.df_replace, regex=True, inplace=True)
         return df
 
     def format_na(self, df: pd.DataFrame):
         """
-        fills missing values of self.df with None
+        returns df with replaced NaNs & NaTs in the passed dataframe by None
+
+        :param df: the dataframe that is to be treated
+        :return: the modified dataframe, with Nones instead of NaNs & NaTs
         """
         df = df.applymap(lambda x: None if x == "NaT" or x == "nan" else x)
         df = df.where(pd.notnull(df), None)
         return df
 
     def format_dates(self, df: pd.DataFrame, date_format: str = None, date_columns: list = None):
+        """
+        Formats datetimes in columns date_columns from dataframe df according to format date_format, or self.date_format
+
+        :param df: the dataframe to format
+        :param date_format: the dateformat to use, let to None if you wish to use self.date_format
+        :param date_columns: the list of column names containing datetimes
+        :return: the modified dataframe with datetimes formatted
+        """
         date_format = date_format if date_format else self.date_format
         cols = date_columns if date_columns else self.date_columns
         if cols is not None and date_format is not None:
