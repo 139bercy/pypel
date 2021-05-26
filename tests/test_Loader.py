@@ -16,7 +16,7 @@ class LoaderTest(pypel.Loader):
     def export_csv(self, df, sep: str = '|'):
         with tempfile.TemporaryDirectory() as path:
             if not self.name_export_file:
-                name_file = "exported_data_" + str(self.indice) + self.get_date() + ".csv"
+                name_file = "exported_data_" + str(self.indice) + self._get_date() + ".csv"
             else:
                 name_file = self.name_export_file
             path_to_csv = os.path.join(path, name_file)
