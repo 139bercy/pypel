@@ -86,7 +86,7 @@ class Process:
         :return:
         """
         if self.__extractor_is_instancied:
-            return self.extractor.init_dataframe(file_path=file_path)
+            return self.extractor.init_dataframe(file_path=file_path) # noqa
         else:
             return self.extractor(*args, **kwargs).init_dataframe(file_path)
 
@@ -99,7 +99,7 @@ class Process:
         :return:
         """
         if self.__transformer_is_instancied:
-            return self.transformer.transform(dataframe=dataframe)
+            return self.transformer.transform(dataframe=dataframe) # noqa
         else:
             return self.transformer(*args, **kwargs).transform(dataframe)
 
