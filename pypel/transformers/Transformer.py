@@ -41,13 +41,13 @@ class Transformer:
         :return:
         """
         df = dataframe.copy()
-        self.format_str_columns(df)
-        self.format_contents(df)
-        self.format_dates(df)
-        df = self.format_na(df)
+        self._format_str_columns(df)
+        self._format_contents(df)
+        self._format_dates(df)
+        df = self._format_na(df)
         return df
 
-    def format_str_columns(self, df: pd.DataFrame):
+    def _format_str_columns(self, df: pd.DataFrame):
         """
         returns df with normalized column names, replacing using self.column_replace & applying str.upper()
 
@@ -63,7 +63,7 @@ class Transformer:
                 warnings.warn(f"NO SUCH COLUMN {column} IN DATAFRAME PASSED")
         return df
 
-    def format_contents(self, df: pd.DataFrame):
+    def _format_contents(self, df: pd.DataFrame):
         """
         returns df with normalized contents, replacing every value using self.df_replace
         self.df_replace should be in the following format : {"value_to_replace": "replacement_value"}
@@ -74,7 +74,7 @@ class Transformer:
         df.replace(self.df_replace, regex=True, inplace=True)
         return df
 
-    def format_na(self, df: pd.DataFrame):
+    def _format_na(self, df: pd.DataFrame):
         """
         returns df with replaced NaNs & NaTs in the passed dataframe by None
 
@@ -85,7 +85,7 @@ class Transformer:
         df = df.where(pd.notnull(df), None)
         return df
 
-    def format_dates(self, df: pd.DataFrame, date_format: str = None, date_columns: list = None):
+    def _format_dates(self, df: pd.DataFrame, date_format: str = None, date_columns: list = None):
         """
         Formats datetimes in columns date_columns from dataframe df according to format date_format, or self.date_format
 

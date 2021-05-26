@@ -49,11 +49,11 @@ class Loader:
         """
         df = dataframe.copy()
         if self.backup_uploaded_data:
-            self.export_csv(df)
-        actions = self.wrap_df_in_actions(df)
-        self.bulk_into_elastic(actions)
+            self._export_csv(df)
+        actions = self._wrap_df_in_actions(df)
+        self._bulk_into_elastic(actions)
 
-    def bulk_into_elastic(self, actions: list):
+    def _bulk_into_elastic(self, actions: list):
         """
         Attempts to load actions into elasticsearch using the bulk API.
         Successful loads are logged, errors are sent as warnings
@@ -72,7 +72,7 @@ class Loader:
         if errors:
             warnings.warn(f"{failed} errors detected\nError details : {errors}")
 
-    def wrap_df_in_actions(self, df: pd.DataFrame):
+    def _wrap_df_in_actions(self, df: pd.DataFrame):
         """
         Reformats the dataframe object as a list of Elasticsearch actions, fit for elasticsearch's bulk API.
         If self.backup is True, save a copy of the dataframe as csv for debugging.
@@ -86,14 +86,14 @@ class Loader:
         data_dict = df.to_dict(orient="index")
         actions = [
             {
-                "_index": self.indice + self.get_date() if self.append_date else self.indice,
+                "_index": self.indice + self._get_date() if self.append_date else self.indice,
                 "_source": value
             }
             for value in data_dict.values()
         ]
         return actions
 
-    def export_csv(self, df: pd.DataFrame):
+    def _export_csv(self, df: pd.DataFrame):
         """
         Save a the dataframe as csv in TODO: fix and document
 
@@ -101,11 +101,11 @@ class Loader:
         :return: None
         """
         if not self.name_export_file:
-            name_file = "exported_data_" + str(self.indice) + self.get_date() + ".csv"
+            name_file = "exported_data_" + str(self.indice) + self._get_date() + ".csv"
         else:
             name_file = self.name_export_file
         path_to_csv = os.path.join(self.path_to_folder(), name_file)
         df.to_csv(path_to_csv, sep='|', index=False)
 
-    def get_date(self):
+    def _get_date(self):
         return dt.datetime.today().strftime("_%m_%d")
