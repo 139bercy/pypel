@@ -16,10 +16,10 @@ class Extractor:
 
     :param converters:
         cf [pandas' doc](https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.read_excel.html)
-    :param dates:
-        cf [pandas' doc](https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.read_excel.html)
+    :param dates: this is equivalent to pandas' `parse_dates` in
+         [read_excel](https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.read_excel.html)
     :param dates_format:
-        cf [pandas' doc](https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.read_excel.html)
+        the date format that will be used when reading data
     :param sheet_name:
         cf [pandas' doc](https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.read_excel.html)
     :param skiprows:
@@ -50,7 +50,8 @@ class Extractor:
                          f"detected in the csv {file_name}")
             return pd.read_csv(file_path,
                                converters=self.converters,
-                               parse_dates=self.dates)
+                               parse_dates=self.dates,
+                               **self.additional_pandas_args)
         elif file_path.endswith(".xlsx"):
             wb = openpyxl.load_workbook(filename=file_path)
             if self.sheet_name != 0:

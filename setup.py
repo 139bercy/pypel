@@ -5,7 +5,8 @@ except ImportError:
 
 
 setup(name='pypel',
-      version='0.1.2',
+      version='0.1.5',
+      description="PYthon Pipeline into ELasticsearch",
       packages=["pypel"],
       author="Quentin Dimarellis",
       author_email="quentin.dimarellis@finances.gouv.fr",
@@ -13,4 +14,5 @@ setup(name='pypel',
                         "elasticsearch",
                         "openpyxl >= 3.0.0",
                         "numpy >= 1.19.1",
-                        "unidecode"])
+                        "unidecode",
+                        "xlrd >= 2.0.0"])
