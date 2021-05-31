@@ -30,8 +30,11 @@ class Loader:
                  backup=False,
                  name_export=None,
                  dont_append_date=False):
-        if not path_to_export_folder and backup:
-            raise ValueError("No path for export but backup set to true !")
+        if backup:
+            if path_to_export_folder is None:
+                raise ValueError("No export folder passed but backup set to true !")
+            if not os.path.isdir(path_to_export_folder):
+                raise ValueError("Export folder does not exist but backup set to true !")
         self.indice = indice
         self.backup_uploaded_data = backup
         self.path_to_folder = path_to_export_folder
@@ -93,19 +96,21 @@ class Loader:
         ]
         return actions
 
-    def _export_csv(self, df: pd.DataFrame):
+    def export_csv(self, df: pd.DataFrame, sep: str = '|'):
         """
-        Save a the dataframe as csv in TODO: fix and document
+        Appends the dataframe to the csv located in the loader's backup folder `self.path_to_folder`, creating said csv
+            if missing. This means a single Loader has a single backup file, regardless of how many dataframes it loads.
 
         :param df: the dataframe to save
+        :param sep: a single character to use as separator in the resulting csv file
         :return: None
         """
         if not self.name_export_file:
             name_file = "exported_data_" + str(self.indice) + self._get_date() + ".csv"
         else:
             name_file = self.name_export_file
-        path_to_csv = os.path.join(self.path_to_folder(), name_file)
-        df.to_csv(path_to_csv, sep='|', index=False)
+        path_to_csv = os.path.join(self.path_to_folder, name_file)
+        df.to_csv(path_to_csv, sep=sep, index=False, mode='a')
 
     def _get_date(self):
         return dt.datetime.today().strftime("_%m_%d")

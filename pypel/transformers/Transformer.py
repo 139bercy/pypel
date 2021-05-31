@@ -4,18 +4,19 @@ import warnings
 
 class Transformer:
     """
-    Encapsulated all the data-transformation related logic. Massively relies on pandas.
+    Encapsulates all the data-transformation related logic. Massively relies on pandas.
 
     :param strip: list
         list of columns whose name should be stripped off
     :param column_replace: dict
-        dictionnary of format {"old": "new"} where old is a regex matching the strings to replace and new its replacement
+        dictionnary of format {"old": "new"} where old is a regex matching the string to replace and new its replacement
         This is used to format column names.
     :param df_replace: dict
-        dictionnary of format {"old": "new"} where old is a regex matching the strings to replace and new its replacement
+        dictionnary of format {"old": "new"} where old is a regex matching the string to replace and new its replacement
         This is use to replace the dataframe's contents.
     :param date_format:
-        the format in which datetimes are to be. cf [this website](https://strftime.org/) or [the docs](https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes)
+        the format in which datetimes are to be. cf [this website](https://strftime.org/)
+        or [the docs](https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes)
     :param date_columns:
         list of columns that are to be parsed as dates
     """
