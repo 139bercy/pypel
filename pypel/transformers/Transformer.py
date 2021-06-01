@@ -28,8 +28,7 @@ class Transformer:
                  column_replace: dict = None,
                  df_replace: dict = None,
                  date_format: str = None,
-                 date_columns: list = None,
-                 referential=None):
+                 date_columns: list = None):
         self.column_replace = {} if not column_replace else column_replace
         self.df_replace = {} if not df_replace else df_replace
         self.columns_to_strip = [] if not strip else strip
@@ -122,7 +121,7 @@ class Transformer:
                           dates=False,
                           dates_format='%Y-%m-%d',
                           sheet_name=0,
-                          skiprows=None):
+                          skiprows=None) -> pd.DataFrame:
         """
         Enrich passed dataframe by merging it with a referential, either passed as dataframe
             or by a path to extract from, and then return it.
@@ -151,6 +150,7 @@ class Transformer:
                 assert isinstance(referential, str) or isinstance(referential, os.PathLike)
             except AssertionError as e:
                 raise ValueError("Pass a string or an os.PathLike object pointing to the referential !") from e
-            return df.merge(Extractor(converters, dates, dates_format, sheet_name, skiprows).init_dataframe(referential),
+            return df.merge(Extractor(converters, dates, dates_format, sheet_name, skiprows)
+                            .init_dataframe(referential),
                             how=how,
                             on=mergekey)
