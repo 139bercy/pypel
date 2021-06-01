@@ -35,16 +35,16 @@ class TestLoader:
         loader = LoaderTest()
         loader.load(df)
 
-    def test_bad_folder_crashes(self):
+    def test_bad_folder_instanciation_crashes(self):
         with pytest.raises(ValueError):
             pypel.Loader("", None, path_to_export_folder="/this_folder_does_not_exist", backup=True)
 
-    def test_no_folder_crashes(self):
+    def test_no_folder_instanciation_crashes(self):
         with pytest.raises(ValueError):
             pypel.Loader("", None, backup=True)
 
-    def test_good_folder(self):
+    def test_good_folder_instanciation(self):
         pypel.Loader("", None, path_to_export_folder="/", backup=True)
 
-    def test_no_backup(self):
+    def test_no_backup_instanciation(self):
         pypel.Loader("", None)
