@@ -11,9 +11,9 @@ class LoaderTest(pypel.Loader):
         super().__init__("", "") # noqa
 
     def load(self, dataframe):
-        self.export_csv(df=dataframe)
+        self._export_csv(df=dataframe)
 
-    def export_csv(self, df, sep: str = '|'):
+    def _export_csv(self, df, sep: str = '|'):
         with tempfile.TemporaryDirectory() as path:
             if not self.name_export_file:
                 name_file = "exported_data_" + str(self.indice) + self._get_date() + ".csv"
