@@ -13,6 +13,7 @@ if get_config().get("LOGS"):
 
 
 class BaseLoader:
+    """Dummy class that all Loaders should inherit from."""
     pass
 
 
