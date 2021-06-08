@@ -1,6 +1,6 @@
 from pypel.extractors.Extractor import Extractor
 from pypel.transformers.Transformer import Transformer
-from pypel.loaders.Loader import Loader
+from pypel.loaders.Loader import Loader, BaseLoader
 
 
 class Process:
@@ -58,10 +58,10 @@ class Process:
             raise ValueError("Bad transformer") from e
         try:
             # TODO: add support for instanced loaders
-            assert isinstance(self.loader("", ""), Loader)
+            assert isinstance(self.loader("", ""), BaseLoader)
             self.__loader_is_instancied = False
         except AssertionError as e:
-            raise ValueError("Bad loader") from e
+            raise ValueError("Bad loader argument") from e
 
     def process(self, file_path, es_instance, es_indice):
         """
