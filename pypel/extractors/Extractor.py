@@ -45,7 +45,7 @@ class Extractor:
         :return: pandas.Dataframe object
         """
         if file_path.endswith(".csv"):
-            if _conf["LOGS"]:
+            if get_config()["LOGS"]:
                 with open(file_path) as file:
                     row_count = sum(1 for row in file)
                 file_name = re.findall(r"(?<=/)[^/]*$", file_path)[0]
@@ -56,7 +56,7 @@ class Extractor:
                                parse_dates=self.dates,
                                **self.additional_pandas_args)
         elif file_path.endswith(".xlsx"):
-            if _conf["LOGS"]:
+            if get_config()["LOGS"]:
                 wb = openpyxl.load_workbook(filename=file_path)
                 if self.sheet_name != 0:
                     sheet = wb[self.sheet_name]
