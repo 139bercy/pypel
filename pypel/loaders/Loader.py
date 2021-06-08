@@ -4,10 +4,12 @@ import logging
 import warnings
 import datetime as dt
 import os
+from _config.config import get_config
 
 
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+if get_config().get("LOGS"):
+    logger = logging.getLogger(__name__)
+    logger.setLevel(getattr(logging, get_config()["LOGS_LEVEL"]))
 
 
 class Loader:

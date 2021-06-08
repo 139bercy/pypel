@@ -4,10 +4,12 @@ import openpyxl
 from pypel.utils.utils import arrayer
 import warnings
 import logging
+from _config.config import get_config
 
 
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+if get_config().get("LOGS"):
+    logger = logging.getLogger(__name__)
+    logger.setLevel(getattr(logging, get_config()["LOGS_LEVEL"]))
 
 
 class Extractor:
@@ -43,31 +45,33 @@ class Extractor:
         :return: pandas.Dataframe object
         """
         if file_path.endswith(".csv"):
-            with open(file_path) as file:
-                row_count = sum(1 for row in file)
-            file_name = re.findall(r"(?<=/)[^/]*$", file_path)[0]
-            logger.debug(f"{row_count} rows (including header)"
-                         f"detected in the csv {file_name}")
+            if _conf["LOGS"]:
+                with open(file_path) as file:
+                    row_count = sum(1 for row in file)
+                file_name = re.findall(r"(?<=/)[^/]*$", file_path)[0]
+                logger.debug(f"{row_count} rows (including header)"
+                             f"detected in the csv {file_name}")
             return pd.read_csv(file_path,
                                converters=self.converters,
                                parse_dates=self.dates,
                                **self.additional_pandas_args)
         elif file_path.endswith(".xlsx"):
-            wb = openpyxl.load_workbook(filename=file_path)
-            if self.sheet_name != 0:
-                sheet = wb[self.sheet_name]
-                self.sheet = self.sheet_name
-            else:
-                sheet = wb[wb.sheetnames[0]]
-                self.sheet = sheet.title
-            excel_rows = sheet.max_row
-            try:
-                file_name = re.findall(r"(?<=/)[.\s\w_-]+$", file_path)[0]
-            except IndexError:
-                warnings.warn(f"Could not get file name from file path :"
-                              f"{file_path}")
-                file_name = "ERROR"
-            logger.info(f"{excel_rows} rows in the excel sheet \'{self.sheet}\'   from file \'{file_name}\'")
+            if _conf["LOGS"]:
+                wb = openpyxl.load_workbook(filename=file_path)
+                if self.sheet_name != 0:
+                    sheet = wb[self.sheet_name]
+                    self.sheet = self.sheet_name
+                else:
+                    sheet = wb[wb.sheetnames[0]]
+                    self.sheet = sheet.title
+                excel_rows = sheet.max_row
+                try:
+                    file_name = re.findall(r"(?<=/)[.\s\w_-]+$", file_path)[0]
+                except IndexError:
+                    warnings.warn(f"Could not get file name from file path :"
+                                  f"{file_path}")
+                    file_name = "ERROR"
+                logger.info(f"{excel_rows} rows in the excel sheet \'{self.sheet}\'   from file \'{file_name}\'")
             if self.skiprows is None:
                 skiprows = self.skiprows
             else:
