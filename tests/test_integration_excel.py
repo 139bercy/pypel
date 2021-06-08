@@ -78,7 +78,8 @@ def test_init_dataframe_excel(ep, params, monkeypatch):
                                           [8, 8, 8, 8, 8],
                                           [9, 9, 9, 9, 9]], columns=["A", "B", "C", "D", "E"])
     df = ep.extract(path)
-    obtained_default = ep.transform(df)
+    with pytest.warns(UserWarning):
+        obtained_default = ep.transform(df)
     assert_frame_equal(expected_default, obtained_default)
 
 
@@ -91,7 +92,8 @@ def test_init_dataframe_excel_skiprows(ep, params, monkeypatch):
                                    columns=["0", "1", "2", "3", "4"])
 
     df = ep.extract(path, skiprows=5, header=None)
-    obtained_skip_5 = ep.transform(df)
+    with pytest.warns(UserWarning):
+        obtained_skip_5 = ep.transform(df)
     assert_frame_equal(expected_skip_5, obtained_skip_5)
 
 
@@ -99,7 +101,8 @@ def test_init_dataframe_excel_sheetname(ep, params, monkeypatch):
     path = os.path.join(os.getcwd(), "tests", "fake_data", "test_init_df.xlsx")
     expected_sheetname = pd.DataFrame(data=[[9]], columns=["A"])
     df = ep.extract(path, sheet_name="TEST")
-    obtained_sheetname = ep.transform(df)
+    with pytest.warns(UserWarning):
+        obtained_sheetname = ep.transform(df)
     assert_frame_equal(expected_sheetname, obtained_sheetname)
 
 
@@ -115,7 +118,8 @@ def test_init_dataframe_excel_csv(ep, params, monkeypatch):
                                       [8, 8, 8, 8, 8],
                                       [9, 9, 9, 9, 9]], columns=["A", "B", "C", "D", "E"])
     df = ep.extract(path_csv)
-    obtained_csv = ep.transform(df)
+    with pytest.warns(UserWarning):
+        obtained_csv = ep.transform(df)
     assert_frame_equal(expected_csv, obtained_csv)
 
 
@@ -131,7 +135,8 @@ def test_init_bad_filename(ep, params, monkeypatch):
                                               [8, 8, 8, 8, 8],
                                               [9, 9, 9, 9, 9]], columns=["A", "B", "C", "D", "E"])
     df = ep.extract(path)
-    obtained_bad_filename = ep.transform(df)
+    with pytest.warns(UserWarning):
+        obtained_bad_filename = ep.transform(df)
     assert_frame_equal(expected_badfilename, obtained_bad_filename)
 
 
@@ -146,6 +151,8 @@ def test_init_bad_filename_excel(ep, params, monkeypatch):
                                               [7, 7, 7, 7, 7],
                                               [8, 8, 8, 8, 8],
                                               [9, 9, 9, 9, 9]], columns=["A", "B", "C", "D", "E"])
-    df = ep.extract(path)
-    obtained_bad_filename = ep.transform(df)
+    with pytest.warns(UserWarning):
+        df = ep.extract(path)
+    with pytest.warns(UserWarning):
+        obtained_bad_filename = ep.transform(df)
     assert_frame_equal(expected_badfilename, obtained_bad_filename)

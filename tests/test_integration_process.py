@@ -55,10 +55,11 @@ def test_integration_no_date(ep_strip_dpt, params, monkeypatch):
         "SHOULDBENONE": None
         }
     df = ep_strip_dpt.extract()
-    obtained = ep_strip_dpt.transform(df,
-                                      column_replace={
-                                          "é": "e",
-                                          " ": "_"},
-                                      strip=["DEPARTEMENT"])
+    with pytest.warns(UserWarning):
+        obtained = ep_strip_dpt.transform(df,
+                                          column_replace={
+                                              "é": "e",
+                                              " ": "_"},
+                                          strip=["DEPARTEMENT"])
     expected_df = pd.DataFrame(expected)
     assert_frame_equal(expected_df, obtained, check_names=True)
