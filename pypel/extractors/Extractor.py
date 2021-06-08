@@ -71,7 +71,7 @@ class Extractor:
                     warnings.warn(f"Could not get file name from file path :"
                                   f"{file_path}")
                     file_name = "ERROR"
-                logger.info(f"{excel_rows} rows in the excel sheet \'{self.sheet}\'   from file \'{file_name}\'")
+                logger.debug(f"{excel_rows} rows in the excel sheet \'{self.sheet}\'   from file \'{file_name}\'")
             if self.skiprows is None:
                 skiprows = self.skiprows
             else:
