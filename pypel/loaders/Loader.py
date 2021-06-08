@@ -12,7 +12,11 @@ if get_config().get("LOGS"):
     logger.setLevel(getattr(logging, get_config()["LOGS_LEVEL"]))
 
 
-class Loader:
+class BaseLoader:
+    pass
+
+
+class Loader(BaseLoader):
     """
     Encapsulates all the loading logic.
 
