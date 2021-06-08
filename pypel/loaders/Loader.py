@@ -96,7 +96,7 @@ class Loader:
         ]
         return actions
 
-    def export_csv(self, df: pd.DataFrame, sep: str = '|'):
+    def _export_csv(self, df: pd.DataFrame, sep: str = '|'):
         """
         Appends the dataframe to the csv located in the loader's backup folder `self.path_to_folder`, creating said csv
             if missing. This means a single Loader has a single backup file, regardless of how many dataframes it loads.
