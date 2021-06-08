@@ -14,7 +14,3 @@ def params(get_conf):
 def get_conf():
     get_conf = "Doc/"
     return get_conf
-
-
-
-
