@@ -120,4 +120,4 @@ class Process:
         :return:
         """
         # instanced loaders not currently supported
-        self.loader(es_indice, es_instance, *args, **kwargs).load(df)
+        self.loader(es_instance, *args, **kwargs).load(df, es_indice)
