@@ -43,35 +43,36 @@ class Process:
         self.transformer = transformer if transformer else Transformer
         self.loader = loader if loader else Loader
         try:
-            assert isinstance(self.extractor(), Extractor)
-            self.__extractor_is_instanced = False
-        except TypeError:
-            assert isinstance(self.extractor, Extractor)
-            self.__extractor_is_instanced = True
+            try:
+                assert isinstance(self.extractor(), Extractor)
+                self.__extractor_is_instanced = False
+            except TypeError:
+                assert isinstance(self.extractor, Extractor)
+                self.__extractor_is_instanced = True
         except AssertionError as e:
             raise ValueError("Bad extractor") from e
         try:
-            assert isinstance(self.transformer(), Transformer)
-            self.__transformer_is_instanced = False
-            if isinstance(self.transformer, list):
-                self.multiple_transformers = True
-                for t in self.transformer:
-                    assert isinstance(t, Transformer)
-            else:
-                self.multiple_transformers = False
-                assert isinstance(self.transformer(), Transformer)
-                self.__transformer_is_instancied = False
-        except TypeError:
-            assert isinstance(self.transformer, Transformer)
-            self.__transformer_is_instanced = True
+            try:
+                if isinstance(self.transformer, list):
+                    self.__multiple_transformers = True
+                    for t in self.transformer:
+                        assert isinstance(t, Transformer)
+                else:
+                    self.__multiple_transformers = False
+                    assert isinstance(self.transformer(), Transformer)
+                    self.__transformer_is_instanced = False
+            except TypeError:
+                assert isinstance(self.transformer, Transformer)
+                self.__transformer_is_instanced = True
         except AssertionError as e:
             raise ValueError("Bad transformer") from e
         try:
-            assert isinstance(self.loader(None), BaseLoader) # noqa
-            self.__loader_is_instanced = False
-        except TypeError:
-            assert isinstance(self.loader, BaseLoader)
-            self.__loader_is_instanced = True
+            try:
+                assert isinstance(self.loader(None), BaseLoader) # noqa
+                self.__loader_is_instanced = False
+            except TypeError:
+                assert isinstance(self.loader, BaseLoader)
+                self.__loader_is_instanced = True
         except AssertionError as e:
             raise ValueError("Bad loader argument") from e
 
@@ -122,13 +123,16 @@ class Process:
         :return: pandas.Dataframe
             the transformed Dataframe
         """
-        if self.__transformer_is_instanced:
-            if len(args) + len(kwargs) > 0:
-                warnings.warn("Instanced transformer receiving extra arguments !")
-            result = dataframe
-            for transformer in self.transformer:
-                result = transformer.transform(result)
-            return result
+        if self.__multiple_transformers:
+            if self.__transformer_is_instanced:
+                if len(args) + len(kwargs) > 0:
+                    warnings.warn("Instanced transformer receiving extra arguments !")
+                result = dataframe
+                for transformer in self.transformer:
+                    result = transformer.transform(result)
+                return result
+        elif self.__transformer_is_instanced:
+            return self.transformer.transform(dataframe)  # noqa
         else:
             return self.transformer(*args, **kwargs).transform(dataframe)
 
