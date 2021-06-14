@@ -1,6 +1,7 @@
 from pypel.extractors.Extractor import Extractor
 from pypel.transformers.Transformer import Transformer
 from pypel.loaders.Loader import Loader, BaseLoader
+from elasticsearch import Elasticsearch
 
 
 class Process:
@@ -57,13 +58,15 @@ class Process:
         except AssertionError as e:
             raise ValueError("Bad transformer") from e
         try:
-            # TODO: add support for instanced loaders
             assert isinstance(self.loader("", ""), BaseLoader)
             self.__loader_is_instancied = False
+        except TypeError:
+            assert isinstance(self.loader, BaseLoader)
+            self.__loader_is_instancied = True
         except AssertionError as e:
             raise ValueError("Bad loader argument") from e
 
-    def process(self, file_path, es_instance, es_indice):
+    def process(self, file_path, es_indice, es_instance=None):
         """
         Conveniance wrapper around Process.extract, Process.transform & Process.load
 
@@ -75,7 +78,7 @@ class Process:
             the name of the elasticsearch indice in which data is to be loaded
         :return: None
         """
-        self.load(self.transform(self.extract(file_path)), es_indice, es_instance)
+        self.load(self.transform(self.extract(file_path)), es_indice, es_instance=es_instance)
 
     def extract(self, file_path, *args, **kwargs):
         """
@@ -103,7 +106,7 @@ class Process:
         else:
             return self.transformer(*args, **kwargs).transform(dataframe)
 
-    def load(self, df, es_indice, es_instance, *args, **kwargs):
+    def load(self, df, es_indice, es_instance=None, *args, **kwargs):
         """
         Loads the passed dataframe into the passed elasticsearch instance's indice es_indice.
 
@@ -120,4 +123,8 @@ class Process:
         :return:
         """
         # instanced loaders not currently supported
-        self.loader(es_instance, *args, **kwargs).load(df, es_indice)
+        if self.__loader_is_instancied:
+            self.loader.load(df, es_indice) # noqa
+        else:
+            assert isinstance(es_instance, Elasticsearch)
+            self.loader(es_instance, *args, **kwargs).load(df, es_indice)
