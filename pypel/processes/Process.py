@@ -53,6 +53,14 @@ class Process:
         try:
             assert isinstance(self.transformer(), Transformer)
             self.__transformer_is_instanced = False
+            if isinstance(self.transformer, list):
+                self.multiple_transformers = True
+                for t in self.transformer:
+                    assert isinstance(t, Transformer)
+            else:
+                self.multiple_transformers = False
+                assert isinstance(self.transformer(), Transformer)
+                self.__transformer_is_instancied = False
         except TypeError:
             assert isinstance(self.transformer, Transformer)
             self.__transformer_is_instanced = True
@@ -117,7 +125,10 @@ class Process:
         if self.__transformer_is_instanced:
             if len(args) + len(kwargs) > 0:
                 warnings.warn("Instanced transformer receiving extra arguments !")
-            return self.transformer.transform(dataframe=dataframe) # noqa
+            result = dataframe
+            for transformer in self.transformer:
+                result = transformer.transform(result)
+            return result
         else:
             return self.transformer(*args, **kwargs).transform(dataframe)
 
