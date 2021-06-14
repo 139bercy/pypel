@@ -107,7 +107,19 @@ class Loader(BaseLoader):
     def _export_csv(self, df: pd.DataFrame, indice: str, sep: str = '|'):
         """
         Appends the dataframe to the csv located in the loader's backup folder `self.path_to_folder`, creating said csv
-            if missing. This means a single Loader has a single backup file, regardless of how many dataframes it loads.
+            if missing. Filename is `exported_data_` OR Loader's name_export_file parameter, followed by target indice
+            followed by month & day. This means there is a single backup file per day, per indice. These backups should
+            be cleared at least once a year because the year is not added to the filename.
+
+        Example :
+        >>> import pandas, elasticsearch
+        >>> loader = Loader(elasticsearch.Elasticsearch(), path_to_export_folder="/", backup=True)
+        >>> loader.load(pandas.DataFrame(), "my_indice")
+        Will create a file `exported_data_my_indice_01_01.csv` in the root directory if you execute it on January 1st.
+
+        >>> loader2 = Loader(elasticsearch.Elasticsearch(), path_to_export_folder="/", backup=True, name_export="EX")
+        >>> loader2.load(pandas.DataFrame(), "another_indice")
+        Will create a file `EX_another_indice_01_01.csv` in the root directory if executed on the same day.
 
         :param df: the dataframe to save
         :param indice: str
@@ -118,7 +130,7 @@ class Loader(BaseLoader):
         if not self.name_export_file:
             name_file = "exported_data_" + indice + self._get_date() + ".csv"
         else:
-            name_file = self.name_export_file + indice + ".csv"
+            name_file = self.name_export_file + indice + self._get_date() + ".csv"
         path_to_csv = os.path.join(self.path_to_folder, name_file)
         df.to_csv(path_to_csv, sep=sep, index=False, mode='a')
 
