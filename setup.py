@@ -5,9 +5,9 @@ except ImportError:
 
 
 setup(name='pypel',
-      version='0.2.0',
+      version='0.2.1',
       description="PYthon Pipeline into ELasticsearch",
-      packages=["pypel"],
+      packages=["pypel", "_config"],
       author="Quentin Dimarellis",
       author_email="quentin.dimarellis@finances.gouv.fr",
       install_requires=["pandas >= 1.2.0",
