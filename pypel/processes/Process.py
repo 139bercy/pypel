@@ -44,26 +44,26 @@ class Process:
         self.loader = loader if loader else Loader
         try:
             assert isinstance(self.extractor(), Extractor)
-            self.__extractor_is_instancied = False
+            self.__extractor_is_instanced = False
         except TypeError:
             assert isinstance(self.extractor, Extractor)
-            self.__extractor_is_instancied = True
+            self.__extractor_is_instanced = True
         except AssertionError as e:
             raise ValueError("Bad extractor") from e
         try:
             assert isinstance(self.transformer(), Transformer)
-            self.__transformer_is_instancied = False
+            self.__transformer_is_instanced = False
         except TypeError:
             assert isinstance(self.transformer, Transformer)
-            self.__transformer_is_instancied = True
+            self.__transformer_is_instanced = True
         except AssertionError as e:
             raise ValueError("Bad transformer") from e
         try:
             assert isinstance(self.loader("", ""), BaseLoader)
-            self.__loader_is_instancied = False
+            self.__loader_is_instanced = False
         except TypeError:
             assert isinstance(self.loader, BaseLoader)
-            self.__loader_is_instancied = True
+            self.__loader_is_instanced = True
         except AssertionError as e:
             raise ValueError("Bad loader argument") from e
 
@@ -94,9 +94,9 @@ class Process:
         :return: pandas.Dataframe
             the extracted Dataframe
         """
-        if self.__extractor_is_instancied:
+        if self.__extractor_is_instanced:
             if len(args) + len(kwargs) > 0:
-                warnings.warn("Instancied extractor receiving extra arguments !")
+                warnings.warn("Instanced extractor receiving extra arguments !")
             return self.extractor.init_dataframe(file_path=file_path) # noqa
         else:
             return self.extractor(*args, **kwargs).init_dataframe(file_path)
@@ -114,9 +114,9 @@ class Process:
         :return: pandas.Dataframe
             the transformed Dataframe
         """
-        if self.__transformer_is_instancied:
+        if self.__transformer_is_instanced:
             if len(args) + len(kwargs) > 0:
-                warnings.warn("Instancied transformer receiving extra arguments !")
+                warnings.warn("Instanced transformer receiving extra arguments !")
             return self.transformer.transform(dataframe=dataframe) # noqa
         else:
             return self.transformer(*args, **kwargs).transform(dataframe)
@@ -137,9 +137,9 @@ class Process:
             optional keyword parameters for custom loader instanciation
         :return:
         """
-        if self.__loader_is_instancied:
+        if self.__loader_is_instanced:
             if len(args) + len(kwargs) > 0:
-                warnings.warn("Instancied loader receiving extra arguments !")
+                warnings.warn("Instanced loader receiving extra arguments !")
             self.loader.load(df, es_indice) # noqa
         else:
             assert isinstance(es_instance, Elasticsearch)
