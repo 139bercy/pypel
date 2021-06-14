@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 import pytest
 import pandas as pd
 from pandas.testing import assert_frame_equal
@@ -6,6 +5,11 @@ import pypel
 import os
 import datetime as dt
 import numpy
+
+
+class TransformerForTesting(pypel.Transformer):
+    def _format_na(self, df: pd.DataFrame) -> pd.DataFrame:
+        return df.where(df.notnull(), 0).astype(int)
 
 
 @pytest.fixture
@@ -207,3 +211,11 @@ def test_init_bad_filename_excel(ep, params, monkeypatch):
     with pytest.warns(UserWarning):
         obtained_bad_filename = ep.transform(df)
     assert_frame_equal(expected_badfilename, obtained_bad_filename)
+
+
+def test_multiple_transformers(ep):
+    testing_df = pd.DataFrame({"0": [numpy.NaN]})
+    expected_df = pd.DataFrame({"0": [0]})
+    with pytest.warns(UserWarning):
+        obtained_df = pypel.Process(transformer=[pypel.Transformer(), TransformerForTesting()]).transform(testing_df)
+    assert_frame_equal(expected_df, obtained_df, check_names=True)
