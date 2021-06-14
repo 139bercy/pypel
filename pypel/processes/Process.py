@@ -12,11 +12,14 @@ class Process:
     Parameters
     ----------
     :param extractor: pypel.Extractor
-        instance to use for extracting data. MUST be derived from pypel.Extractor
+        instance or class to use for extracting data. MUST be derived from pypel.Extractor
     :param transformer: pypel.Transformer
-        instance to use for transforming data. MUST be derived from pypel.Transformer
+        instance, class or list of instances to use for transforming data.
+        MUST be derived from pypel.Transformer, for lists, all elements of the list must inherit from pypel.Transformer.
+        if list-like, will be for-in looped on, so mind the order.
+
     :param loader: pypel.Loader
-        instance to use for loading data. MUST be derived from pypel.Loader
+        class to use for loading data. MUST be derived from pypel.Loader
 
     Examples
     --------
