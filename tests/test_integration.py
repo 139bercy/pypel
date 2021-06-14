@@ -5,6 +5,7 @@ from pandas.testing import assert_frame_equal
 import pypel.processes as proc
 import os
 import datetime as dt
+import numpy
 
 
 @pytest.fixture
@@ -35,7 +36,57 @@ def mockreturn_extract(self, dummy):
     return df
 
 
-def test_integration_excel(ep, params, monkeypatch):
+def mockreturn_extract_no_date(self):
+    test = {
+        "Projet": ["nom du projet"],
+        "ENtReprISE": ["MINISTERE DE L'ECONOMIE DES FINANCES ET DE LA RELANCE"],
+        "TYPE eNTReprISE": ["PME"],
+        "SIreN": [110020013],
+        "SIREt": [11002001300097],
+        "Département": [" 75 "],
+        "Ville": ["Paris"],
+        "MonTANT INVESTISSEMENT": [10000],
+        "DESCRIPTION pROJET": ["belle description de ce projet"],
+        "RETOMBEES PROJET": ["belle retombées du projet"],
+        "MONTANT PARTICIPATION éTAT": [5000],
+        "CODE_COMMUNE_ETABLISSEMENT": ['75112'],
+        "Statut": ["decidé"],
+        "ShouldBeNone": numpy.NaN
+        }
+    test_df = pd.DataFrame(test)
+    return test_df
+
+
+def test_integration_extract_transform_no_date(ep, params, monkeypatch):
+    monkeypatch.setattr(proc.Process, "extract", mockreturn_extract_no_date)
+    expected = {
+        "PROJET": ["nom du projet"],
+        "ENTREPRISE": ["MINISTERE DE L'ECONOMIE DES FINANCES ET DE LA RELANCE"],
+        "TYPE_ENTREPRISE": ["PME"],
+        "SIREN": [110020013],
+        "SIRET": [11002001300097],
+        "DEPARTEMENT": ["75"],
+        "VILLE": ["Paris"],
+        "MONTANT_INVESTISSEMENT": [10000],
+        "DESCRIPTION_PROJET": ["belle description de ce projet"],
+        "RETOMBEES_PROJET": ["belle retombées du projet"],
+        "MONTANT_PARTICIPATION_ETAT": [5000],
+        "CODE_COMMUNE_ETABLISSEMENT": ['75112'],
+        "STATUT": ["decidé"],
+        "SHOULDBENONE": None
+        }
+    df = ep.extract()
+    with pytest.warns(UserWarning):
+        obtained = ep.transform(df,
+                                  column_replace={
+                                      "é": "e",
+                                      " ": "_"},
+                                  strip=["DEPARTEMENT"])
+    expected_df = pd.DataFrame(expected)
+    assert_frame_equal(expected_df, obtained, check_names=True)
+
+
+def test_integration_exctract_transform(ep, params, monkeypatch):
     monkeypatch.setattr(proc.Process, "extract", mockreturn_extract)
     expected = {
         "PROJET": ["nom du projet"],
