@@ -2,6 +2,7 @@ from pypel.extractors.Extractor import Extractor
 from pypel.transformers.Transformer import Transformer
 from pypel.loaders.Loader import Loader, BaseLoader
 from elasticsearch import Elasticsearch
+import warnings
 
 
 class Process:
@@ -94,6 +95,8 @@ class Process:
             the extracted Dataframe
         """
         if self.__extractor_is_instancied:
+            if len(args) + len(kwargs) > 0:
+                warnings.warn("Instancied extractor receiving extra arguments !")
             return self.extractor.init_dataframe(file_path=file_path) # noqa
         else:
             return self.extractor(*args, **kwargs).init_dataframe(file_path)
@@ -112,6 +115,8 @@ class Process:
             the transformed Dataframe
         """
         if self.__transformer_is_instancied:
+            if len(args) + len(kwargs) > 0:
+                warnings.warn("Instancied transformer receiving extra arguments !")
             return self.transformer.transform(dataframe=dataframe) # noqa
         else:
             return self.transformer(*args, **kwargs).transform(dataframe)
@@ -132,8 +137,9 @@ class Process:
             optional keyword parameters for custom loader instanciation
         :return:
         """
-        # instanced loaders not currently supported
         if self.__loader_is_instancied:
+            if len(args) + len(kwargs) > 0:
+                warnings.warn("Instancied loader receiving extra arguments !")
             self.loader.load(df, es_indice) # noqa
         else:
             assert isinstance(es_instance, Elasticsearch)
