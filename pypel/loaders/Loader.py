@@ -116,9 +116,9 @@ class Loader(BaseLoader):
         :return: None
         """
         if not self.name_export_file:
-            name_file = "exported_data_" + str(indice) + self._get_date() + ".csv"
+            name_file = "exported_data_" + indice + self._get_date() + ".csv"
         else:
-            name_file = self.name_export_file
+            name_file = self.name_export_file + indice + ".csv"
         path_to_csv = os.path.join(self.path_to_folder, name_file)
         df.to_csv(path_to_csv, sep=sep, index=False, mode='a')
 
