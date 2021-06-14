@@ -82,11 +82,16 @@ class Process:
 
     def extract(self, file_path, *args, **kwargs):
         """
+        Returns the `Dataframe` obtained from the extactor
 
-        :param file_path:
+        :param file_path: PathLike
+            the file to extract from
         :param args:
+            extra optional positional parameters for custom extractor instanciation
         :param kwargs:
-        :return:
+            extra optional keyword parameters for custom extractor instanciation
+        :return: pandas.Dataframe
+            the extracted Dataframe
         """
         if self.__extractor_is_instancied:
             return self.extractor.init_dataframe(file_path=file_path) # noqa
@@ -95,11 +100,16 @@ class Process:
 
     def transform(self, dataframe, *args, **kwargs):
         """
+        Return the transformed Dataframe
 
-        :param dataframe:
+        :param dataframe: pandas.Dataframe
+            the input Dataframe
         :param args:
+            extra optional positional parameters for custom transformer instanciation
         :param kwargs:
-        :return:
+            extra optional keyword parameters for custom transformer instanciation
+        :return: pandas.Dataframe
+            the transformed Dataframe
         """
         if self.__transformer_is_instancied:
             return self.transformer.transform(dataframe=dataframe) # noqa
@@ -117,9 +127,9 @@ class Process:
         :param es_instance:
             the elasticsearch instance in which to load
         :param args:
-            optional parameters to pass to Loader
+            optional positional parameters for custom loader instanciation
         :param kwargs:
-            optional parameters to pass to Loader
+            optional keyword parameters for custom loader instanciation
         :return:
         """
         # instanced loaders not currently supported
