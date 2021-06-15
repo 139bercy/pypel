@@ -189,4 +189,7 @@ class Process:
                     err = "Loader"
             raise ValueError(f"{err} are not instanced")
         for file, indice in file_indice_dic.items():
+            if isinstance(indice, list):
+                raise NotImplementedError("Dictionnaries or format {'indice': ['file1', 'file2']} are not yet"
+                                          "supported !")
             self.process(file, indice)
