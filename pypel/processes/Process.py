@@ -152,7 +152,24 @@ class Process:
             assert isinstance(es_instance, Elasticsearch)
             self.loader(es_instance, *args, **kwargs).load(df, es_indice)
 
-    def bulk(self, file_indice_dic: dict):
+    def bulk(self, file_indice_dic: dict[str: str]):
+        """
+        Given a dict of format {file1: indice1, file2: indice2} extract and transform all files before loading into the
+            corresponding indice. Only works for Process with instanced Extractors, Transformers and Loaders
+
+        =======
+        Example
+        >>> process = Process(Extractor(), Transformer(), Loader())
+        >>> myconf = {"covid_stats.csv": "covid", "relance.xls": "relance", "obscure_name": "id7654"}
+        >>> process.bulk(myconf)
+        Equivalent to
+        >>> for f, i in myconf:
+        ...     process.process(f, i)
+
+        :param file_indice_dic: the dictionnary of parameters to use for extracting and loading. Must be in the format
+            {file1: indice1}
+        :return: None
+        """
         try:
             assert (self.__transformer_is_instanced & self.__extractor_is_instanced
                     & self.__loader_is_instanced)
