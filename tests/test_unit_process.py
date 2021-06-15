@@ -62,3 +62,8 @@ class TestBulk:
         process_bad_loader = Process(transformer=Transformer(), extractor=Extractor())
         with pytest.raises(ValueError):
             process_bad_loader.bulk({"fake": "also_fake"})
+
+    def test_bulk_raises_notimplementederror_if_dict_of_lists(self):
+        process = Process(Extractor(), Transformer(), Loader(Elasticsearch()))
+        with pytest.raises(NotImplementedError):
+            process.bulk({"indice": ["file1", "file2"]})
