@@ -46,3 +46,19 @@ class TestParameters:
         assert (process.extract("myfile") == {"0": "myfile"})
         assert (process.extract("myfile2", converters={"i convert": "to stuff"})
                 == {"0": "myfile2", "converters": {"i convert": "to stuff"}})
+
+class TestBulk:
+    def test_bulk_crashes_if_extractor_not_instanced(self):
+        process_bad_extractor = Process(transformer=Transformer(), loader=Loader(Elasticsearch(), None))
+        with pytest.raises(ValueError):
+            process_bad_extractor.bulk({"fake": "also_fake"})
+
+    def test_bulk_crashes_if_transformer_not_instanced(self):
+        process_bad_transformer = Process(extractor=Extractor(), loader=Loader(Elasticsearch(), None))
+        with pytest.raises(ValueError):
+            process_bad_transformer.bulk({"fake": "also_fake"})
+
+    def test_bulk_crashes_if_loader_not_instanced(self):
+        process_bad_loader = Process(transformer=Transformer(), extractor=Extractor())
+        with pytest.raises(ValueError):
+            process_bad_loader.bulk({"fake": "also_fake"})
