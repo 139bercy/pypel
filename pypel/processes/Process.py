@@ -151,3 +151,22 @@ class Process:
         else:
             assert isinstance(es_instance, Elasticsearch)
             self.loader(es_instance, *args, **kwargs).load(df, es_indice)
+
+    def bulk(self, file_indice_dic):
+        try:
+            assert self.__transformer_is_instancied & self.__extractor_is_instancied & self.__loader_is_instancied
+        except AssertionError:
+            err = ""
+            if self.__extractor_is_instancied:
+                err = "Extractor"
+            if self.__transformer_is_instancied:
+                if err:
+                    err = f"{err} Transformer"
+                else:
+                    err = "Transformer"
+            if self.__loader_is_instancied:
+                if err:
+                    err = f"{err} Loader"
+                else:
+                    err = "Loader"
+            raise ValueError(f"")
