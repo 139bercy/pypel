@@ -144,7 +144,7 @@ class Process:
             optional keyword parameters for custom loader instanciation
         :return:
         """
-        if self.__loader_is_instanced:
+        if self._Process__loader_is_instanced:
             if len(args) + len(kwargs) > 0:
                 warnings.warn("Instanced loader receiving extra arguments !")
             self.loader.load(df, es_indice) # noqa
@@ -154,17 +154,18 @@ class Process:
 
     def bulk(self, file_indice_dic):
         try:
-            assert self.__transformer_is_instancied & self.__extractor_is_instancied & self.__loader_is_instancied
+            assert (self._Process__transformer_is_instanced & self._Process__extractor_is_instanced
+                    & self._Process__loader_is_instanced)
         except AssertionError:
             err = ""
-            if self.__extractor_is_instancied:
+            if self._Process__extractor_is_instanced:
                 err = "Extractor"
-            if self.__transformer_is_instancied:
+            if self._Process__transformer_is_instanced:
                 if err:
                     err = f"{err} Transformer"
                 else:
                     err = "Transformer"
-            if self.__loader_is_instancied:
+            if self._Process__loader_is_instanced:
                 if err:
                     err = f"{err} Loader"
                 else:
