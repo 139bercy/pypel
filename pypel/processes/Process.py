@@ -3,6 +3,7 @@ from pypel.transformers.Transformer import Transformer
 from pypel.loaders.Loader import Loader, BaseLoader
 from elasticsearch import Elasticsearch
 import warnings
+from typing import Dict, List
 
 
 class Process:
@@ -152,7 +153,7 @@ class Process:
             assert isinstance(es_instance, Elasticsearch)
             self.loader(es_instance, *args, **kwargs).load(df, es_indice)
 
-    def bulk(self, file_indice_dic: dict[str: str]):
+    def bulk(self, file_indice_dic: Dict[str, str] or Dict[str, List[str, ...]]):
         """
         Given a dict of format {file1: indice1, file2: indice2} extract and transform all files before loading into the
             corresponding indice. Only works for Process with instanced Extractors, Transformers and Loaders
