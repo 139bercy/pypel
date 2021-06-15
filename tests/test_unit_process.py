@@ -49,12 +49,12 @@ class TestParameters:
 
 class TestBulk:
     def test_bulk_crashes_if_extractor_not_instanced(self):
-        process_bad_extractor = Process(transformer=Transformer(), loader=Loader(Elasticsearch(), None))
+        process_bad_extractor = Process(transformer=Transformer(), loader=Loader(Elasticsearch()))
         with pytest.raises(ValueError):
             process_bad_extractor.bulk({"fake": "also_fake"})
 
     def test_bulk_crashes_if_transformer_not_instanced(self):
-        process_bad_transformer = Process(extractor=Extractor(), loader=Loader(Elasticsearch(), None))
+        process_bad_transformer = Process(extractor=Extractor(), loader=Loader(Elasticsearch()))
         with pytest.raises(ValueError):
             process_bad_transformer.bulk({"fake": "also_fake"})
 
