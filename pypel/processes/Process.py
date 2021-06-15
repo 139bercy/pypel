@@ -38,7 +38,7 @@ class Process:
     def __init__(self,
                  extractor: Extractor or type = None,
                  transformer: Transformer or type = None,
-                 loader: type = None):
+                 loader: Loader or type = None):
         self.extractor = extractor if extractor else Extractor
         self.transformer = transformer if transformer else Transformer
         self.loader = loader if loader else Loader
@@ -59,7 +59,7 @@ class Process:
         except AssertionError as e:
             raise ValueError("Bad transformer") from e
         try:
-            assert isinstance(self.loader("", ""), BaseLoader)
+            assert isinstance(self.loader(None), BaseLoader) # noqa
             self.__loader_is_instanced = False
         except TypeError:
             assert isinstance(self.loader, BaseLoader)
