@@ -1,13 +1,10 @@
-try:
-    from setuptools import setup
-except ImportError:
-    from distutils.core import setup
-
+from setuptools import setup, find_packages
 
 setup(name='pypel',
       version='0.2.1',
-      description="PYthon Pipeline into ELasticsearch",
-      packages=["pypel", "_config"],
+      description="Python Pipeline into Elasticsearch",
+      packages=find_packages(exclude=('tests', 'docs', "docker", "Doc"), where="."),
+      packages=find_packages(exclude=('tests', 'docs', "docker", "Doc"), where="."),
       author="Quentin Dimarellis",
       author_email="quentin.dimarellis@finances.gouv.fr",
       install_requires=["pandas >= 1.2.0",

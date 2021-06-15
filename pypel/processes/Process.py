@@ -21,17 +21,17 @@ class Process:
     Instanciate the default Process
 
     >>> import pypel
-    >>> my_process = pypel.Process()
+    >>> my_process = Process()
 
     Instanciate a Process with a custom Extractor (same logic applies for custom Transformers/Loaders)
 
-    >>> class MyExtractor(pypel.Extractor):
+    >>> class MyExtractor(pypel..extractors.Extractor):
     ...       def __init__(self):
     ...          super().__init__()
-    >>> my_process = pypel.Process(extractor=MyExtractor)
+    >>> my_process = Process(extractor=MyExtractor)
     or
     >>> my_extractor_instance = MyExtractor(converter={"columns1": float})
-    >>> my_process2 = pypel.Process(extractor=my_extractor_instance)
+    >>> my_process2 = Process(extractor=my_extractor_instance)
     """
     def __init__(self,
                  extractor: Extractor or type = None,
