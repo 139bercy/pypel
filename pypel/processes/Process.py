@@ -144,7 +144,7 @@ class Process:
             optional keyword parameters for custom loader instanciation
         :return:
         """
-        if self._Process__loader_is_instanced:
+        if self.__loader_is_instanced:
             if len(args) + len(kwargs) > 0:
                 warnings.warn("Instanced loader receiving extra arguments !")
             self.loader.load(df, es_indice) # noqa
@@ -152,22 +152,24 @@ class Process:
             assert isinstance(es_instance, Elasticsearch)
             self.loader(es_instance, *args, **kwargs).load(df, es_indice)
 
-    def bulk(self, file_indice_dic):
+    def bulk(self, file_indice_dic: dict):
         try:
-            assert (self._Process__transformer_is_instanced & self._Process__extractor_is_instanced
-                    & self._Process__loader_is_instanced)
+            assert (self.__transformer_is_instanced & self.__extractor_is_instanced
+                    & self.__loader_is_instanced)
         except AssertionError:
             err = ""
-            if self._Process__extractor_is_instanced:
-                err = "Extractor"
-            if self._Process__transformer_is_instanced:
+            if self.__extractor_is_instanced:
+                err = "Extractor,"
+            if self.__transformer_is_instanced:
                 if err:
-                    err = f"{err} Transformer"
+                    err = f"{err} Transformer,"
                 else:
                     err = "Transformer"
-            if self._Process__loader_is_instanced:
+            if self.__loader_is_instanced:
                 if err:
-                    err = f"{err} Loader"
+                    err = f"{err} Loader,"
                 else:
                     err = "Loader"
-            raise ValueError(f"")
+            raise ValueError(f"{err} are not instanced")
+        for file, indice in file_indice_dic.items():
+            self.process(file, indice)
