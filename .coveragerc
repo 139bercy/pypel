@@ -6,3 +6,10 @@ omit =
     pypel/init_indice.py
     setup.py
     pypel/main.py
+branch = true
+[report]
+fail_under = 90.0
+show_missing = true
+[html]
+directory = tests/reports/coverage/
+show_contexts = true
