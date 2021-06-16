@@ -1,3 +1,8 @@
 [run]
-omit = pypel/export_file_into_elastic.py
+omit =
+    pypel/export_file_into_elastic.py
     pypel/import_kibana_data.py
+    pypel/clean_indice.py
+    pypel/init_indice.py
+    setup.py
+    pypel/main.py
