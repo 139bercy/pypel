@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(name='pypel',
-      version='0.5.0',
+      version='0.6.0',
       description="Python Pipeline into Elasticsearch",
       packages=find_packages(exclude=('tests', 'docs', "docker", "Doc"), where="."),
       author="Quentin Dimarellis",
