@@ -30,28 +30,20 @@ class Process:
 
     Instanciate a Process with a custom Extractor (same logic applies for custom Transformers/Loaders)
 
-    >>> class MyExtractor(pypel..extractors.Extractor):
-    ...       def __init__(self):
-    ...          super().__init__()
-    >>> my_process = Process(extractor=MyExtractor)
-    or
-    >>> my_extractor_instance = MyExtractor(converter={"columns1": float})
-    >>> my_process2 = Process(extractor=my_extractor_instance)
+    >>> class MyExtractor(pypel.Extractor):
+    ...       pass
+    >>> my_extractor_instance = MyExtractor()
+    >>> my_process2 = pypel.Process(extractor=my_extractor_instance)
     """
     def __init__(self,
-                 extractor: Extractor or type = None,
+                 extractor: Extractor = None,
                  transformer: Transformer or type = None,
                  loader: Loader or type = None):
         self.extractor = extractor if extractor is not None else Extractor
         self.transformer = transformer if transformer is not None else Transformer
         self.loader = loader if loader is not None else Loader
         try:
-            try:
-                assert isinstance(self.extractor(), Extractor)
-                self.__extractor_is_instanced = False
-            except TypeError:
-                assert isinstance(self.extractor, Extractor)
-                self.__extractor_is_instanced = True
+            assert isinstance(self.extractor, Extractor)
         except AssertionError as e:
             raise ValueError("Bad extractor") from e
         try:
@@ -107,12 +99,7 @@ class Process:
         :return: pandas.Dataframe
             the extracted Dataframe
         """
-        if self.__extractor_is_instanced:
-            if len(args) + len(kwargs) > 0:
-                warnings.warn("Instanced extractor receiving extra arguments !")
-            return self.extractor.init_dataframe(file_path=file_path) # noqa
-        else:
-            return self.extractor(*args, **kwargs).init_dataframe(file_path)
+        return self.extractor.init_dataframe(file_path, *args, **kwargs) # noqa
 
     def transform(self, dataframe, *args, **kwargs):
         """
