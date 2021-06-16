@@ -1,7 +1,7 @@
 import importlib
 
-from pypel import Transformer
-from pypel import Process
+from pypel.transformers.Transformer import Transformer
+from pypel.processes.Process import Process
 
 
 class MinimalTransformer(Transformer):
