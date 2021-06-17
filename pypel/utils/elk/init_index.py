@@ -7,9 +7,7 @@ Created on Mon Aug  3 10:54:19 2020
 """
 import argparse
 import json
-
 import elasticsearch
-
 from pypel.utils.logs import initialize_logs
 
 logger = initialize_logs(__name__)
