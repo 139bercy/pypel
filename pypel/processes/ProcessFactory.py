@@ -1,5 +1,4 @@
 import importlib
-
 from pypel.transformers.Transformer import Transformer
 from pypel.processes.Process import Process
 
@@ -11,10 +10,10 @@ class MinimalTransformer(Transformer):
 
 class ProcessFactory:
 
-    def __init__(self, path_to_refs):
+    def __init__(self, path_to_refs=None):
         self.path_to_refs = path_to_refs
 
-    def create_process(self, process_name, config, index_pattern):
+    def create_process(self, config, index_pattern):
         canonical_class_name = config["class"]
         class_name_splitted = canonical_class_name.split('.')
         class_name = class_name_splitted[-1]
