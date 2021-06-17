@@ -3,7 +3,6 @@ from pypel.processes.ProcessFactory import ProcessFactory
 from pypel.transformers.Transformer import Transformer
 from pypel.loaders.Loader import Loader
 from pypel.extractors.Extractor import Extractor
-from pypel.main import init_index
 from pypel.main import process_into_elastic
 from pypel.utils.elk.init_index import *
 from pypel.utils.elk.clean_index import *
