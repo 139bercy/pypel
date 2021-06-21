@@ -13,8 +13,8 @@ class LoaderTest(Loader):
 
 
 class ExtractorTest(Extractor):
-    def init_dataframe(self, file_path):
-        pass
+    def init_dataframe(self, file_path, **kwargs):
+        return {"0": file_path, **kwargs}
 
 
 @pytest.fixture
@@ -28,12 +28,6 @@ def process():
 
 
 class TestWarnings:
-    def test_instanced_extractor_warns_if_addition_params_are_passed(self, process):
-        with pytest.warns(UserWarning):
-            process.extract(None, 0)
-        with pytest.warns(UserWarning):
-            process.extract(None, keyword_arg=0)
-
     def test_instanced_transformer_warns_if_addition_params_are_passed(self, process, df):
         with pytest.warns(UserWarning):
             process.transform(df, 0)
@@ -45,3 +39,10 @@ class TestWarnings:
             process.load(df, "fake", Elasticsearch(), 0)
         with pytest.warns(UserWarning):
             process.load(df, "fake", Elasticsearch(), keyword_arg=0)
+
+
+class TestParameters:
+    def test_extractor_calls_init_dataframe_with_extract_parameters(self, process):
+        assert (process.extract("myfile") == {"0": "myfile"})
+        assert (process.extract("myfile2", converters={"i convert": "to stuff"})
+                == {"0": "myfile2", "converters": {"i convert": "to stuff"}})
