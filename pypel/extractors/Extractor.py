@@ -4,7 +4,7 @@ import openpyxl
 from pypel.utils.utils import arrayer
 import warnings
 import logging
-from _config.config import get_config
+from pypel._config.config import get_config
 
 
 if get_config().get("LOGS"):
