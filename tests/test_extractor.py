@@ -35,18 +35,14 @@ class TestExtractor:
                                              [7, 7, 7, 7, 7],
                                              [8, 8, 8, 8, 8],
                                              [9, 9, 9, 9, 9]],
-                                       columns=["0", "1", "2", "3", "4"])
-
+                                       columns=[0, 1, 2, 3, 4])
         df = ex.init_dataframe(path, skiprows=5, header=None)
         assert_frame_equal(expected_skip_5, df)
 
-    def test_init_dataframe_excel_sheetname(self):
+    def test_init_dataframe_excel_sheetname(self, ex):
         path = os.path.join(os.getcwd(), "tests", "fake_data", "test_init_df.xlsx")
         expected_sheetname = pd.DataFrame(data=[[9]], columns=["a"])
-        ex = Extractor(sheet_name="TEST")
-        df = ex.init_dataframe(path)
-        with pytest.warns(UserWarning):
-            obtained_sheetname = ex.transform(df)
+        obtained_sheetname = ex.init_dataframe(path, sheet_name="TEST")
         assert_frame_equal(expected_sheetname, obtained_sheetname)
 
     def test_init_dataframe_excel_csv(self, ex):
