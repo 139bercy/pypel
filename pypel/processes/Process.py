@@ -42,9 +42,9 @@ class Process:
                  extractor: Extractor or type = None,
                  transformer: Transformer or type = None,
                  loader: Loader or type = None):
-        self.extractor = extractor if extractor else Extractor
-        self.transformer = transformer if transformer else Transformer
-        self.loader = loader if loader else Loader
+        self.extractor = extractor if extractor is not None else Extractor
+        self.transformer = transformer if transformer is not None else Transformer
+        self.loader = loader if loader is not None else Loader
         try:
             try:
                 assert isinstance(self.extractor(), Extractor)
@@ -58,6 +58,7 @@ class Process:
             try:
                 if isinstance(self.transformer, list):
                     self.__multiple_transformers = True
+                    self.__transformer_is_instanced = False
                     for t in self.transformer:
                         assert isinstance(t, Transformer)
                 else:
@@ -127,14 +128,15 @@ class Process:
             the transformed Dataframe
         """
         if self.__multiple_transformers:
-            if self.__transformer_is_instanced:
-                if len(args) + len(kwargs) > 0:
-                    warnings.warn("Instanced transformer receiving extra arguments !")
-                result = dataframe
-                for transformer in self.transformer:
-                    result = transformer.transform(result)
-                return result
+            if len(args) + len(kwargs) > 0:
+                warnings.warn("Instanced transformers receiving extra arguments !")
+            result = dataframe
+            for transformer in self.transformer:
+                result = transformer.transform(result)
+            return result
         elif self.__transformer_is_instanced:
+            if len(args) + len(kwargs) > 0:
+                warnings.warn("Instanced transformers receiving extra arguments !")
             return self.transformer.transform(dataframe)  # noqa
         else:
             return self.transformer(*args, **kwargs).transform(dataframe)
