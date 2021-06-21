@@ -39,7 +39,7 @@ class Process:
                  extractor: Extractor = None,
                  transformer: Transformer or type = None,
                  loader: Loader or type = None):
-        self.extractor = extractor if extractor is not None else Extractor
+        self.extractor = extractor if extractor is not None else Extractor()
         self.transformer = transformer if transformer is not None else Transformer
         self.loader = loader if loader is not None else Loader
         try:
@@ -86,7 +86,7 @@ class Process:
         """
         self.load(self.transform(self.extract(file_path)), es_indice, es_instance=es_instance)
 
-    def extract(self, file_path, *args, **kwargs):
+    def extract(self, file_path, **kwargs):
         """
         Returns the `Dataframe` obtained from the extactor
 
@@ -99,7 +99,7 @@ class Process:
         :return: pandas.Dataframe
             the extracted Dataframe
         """
-        return self.extractor.init_dataframe(file_path, *args, **kwargs) # noqa
+        return self.extractor.init_dataframe(file_path, **kwargs) # noqa
 
     def transform(self, dataframe, *args, **kwargs):
         """
