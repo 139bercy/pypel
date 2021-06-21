@@ -24,12 +24,12 @@ class TestProcessInstanciation:
         with pytest.raises(ValueError):
             pypel.Process(extractor=[])
 
-    def test_bad_class_fails(self):
+    def test_instance_from_bad_class_fails(self):
         with pytest.raises(ValueError):
-            pypel.Process(extractor=FakeExtractor)
+            pypel.Process(extractor=FakeExtractor())
 
     def test_good_args_instanciates(self):
-        pypel.Process(extractor=Extractor2)
+        pypel.Process(extractor=Extractor2())
 
     def test_list_of_transformers_instanciates(self):
         pypel.Process(transformer=[pypel.Transformer(), pypel.Transformer()])
