@@ -1,9 +1,10 @@
+# TODO refacotring pour découper entre E, T et L
 import os
 import elasticsearch.helpers
 import argparse
-import pypel.processes as processes
-import pypel.init_indice as init_indice
-import pypel.clean_indice as clean_indice
+import pypel.processes.ProcessFactory as ProcessFactory
+import pypel.utils.elk.clean_index as clean_index
+import pypel.utils.elk.init_index as init_index
 import copy
 import logging.handlers
 
@@ -18,7 +19,6 @@ def process_into_elastic(conf: dict, params: dict, mappings: dict, process: str 
     Given a set of configurations (global configuration `conf`, process configuration `params` and mapping configuration
     `mappings`, load all processes related to `process`, or all of them if `process` is omitted in to the Elasticsearch
     specified in `conf.elastic_ip`
-
     :param conf: the configuration file
     :param params: the process' configuration file
     :param mappings: an export of the Elasticsearch indices' mappings
@@ -33,8 +33,8 @@ def process_into_elastic(conf: dict, params: dict, mappings: dict, process: str 
     else:
         process_range = process
     indice = get_indice(params, process_range)
-    clean_indice.clean_indice(mappings, es_index_client, indice)
-    init_indice.init_indice(mappings, es_index_client, indice)
+    clean_index.clean_index(mappings, es_index_client, indice)
+    init_index.init_index(mappings, es_index_client, indice)
     bulk_all_es_actions(es, params, path_to_data, process_range)
 
 
@@ -60,7 +60,7 @@ def get_indice(params, process):
 def bulk_all_es_actions(es, params, path_to_data, process_range: str = "all"):
     """Iterate on processes and bulk them one at a time."""
     process_names = params["Processes"]
-    process_factory = processes.ProcessFactory()
+    process_factory = ProcessFactory.ProcessFactory()
 
     if process_range == "all":
         for process_name in process_names.keys():
@@ -84,7 +84,6 @@ def bulk_all_es_actions(es, params, path_to_data, process_range: str = "all"):
 def bulk_es_actions(es, params, process_factory, process_name, path_to_data):
     """
     Bulk a process into Elasticsearch.
-
     :param es: the Elasticsearch instance
     :param params: the dictionnary containing the process' parameters
     :param process_factory: the factory that instantiates processes

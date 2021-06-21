@@ -2,7 +2,7 @@
 import pytest
 import pandas as pd
 from pandas.testing import assert_frame_equal
-import pypel.processes as proc
+import pypel
 import os
 import datetime as dt
 import numpy
@@ -10,7 +10,7 @@ import numpy
 
 @pytest.fixture
 def ep():
-    return proc.Process()
+    return pypel.Process()
 
 
 def mockreturn_extract(self, dummy):
@@ -58,7 +58,7 @@ def mockreturn_extract_no_date(self):
 
 
 def test_integration_extract_transform_no_date(ep, params, monkeypatch):
-    monkeypatch.setattr(proc.Process, "extract", mockreturn_extract_no_date)
+    monkeypatch.setattr(pypel.Process, "extract", mockreturn_extract_no_date)
     expected = {
         "PROJET": ["nom du projet"],
         "ENTREPRISE": ["MINISTERE DE L'ECONOMIE DES FINANCES ET DE LA RELANCE"],
@@ -87,7 +87,7 @@ def test_integration_extract_transform_no_date(ep, params, monkeypatch):
 
 
 def test_integration_exctract_transform(ep, params, monkeypatch):
-    monkeypatch.setattr(proc.Process, "extract", mockreturn_extract)
+    monkeypatch.setattr(pypel.Process, "extract", mockreturn_extract)
     expected = {
         "PROJET": ["nom du projet"],
         "ENTREPRISE": ["MINISTERE DE L'ECONOMIE DES FINANCES ET DE LA RELANCE"],

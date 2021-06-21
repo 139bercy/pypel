@@ -8,8 +8,3 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the module in /app
 COPY pypel /app/pypel
 COPY _config /app/_config
-
-# Copy our main function as well
-COPY docker/main.py .
-
-CMD [ "python3", "main.py"]
