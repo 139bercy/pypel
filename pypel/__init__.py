@@ -6,7 +6,7 @@ from pypel.extractors.Extractor import Extractor
 from pypel.main import process_into_elastic
 from pypel.utils.elk.init_index import *
 from pypel.utils.elk.clean_index import *
-from _config.config import set_config, get_config
+from pypel._config.config import set_config, get_config
 
 __all__ = ["Process", "ProcessFactory", "process_into_elastic", "init_index", "clean_index",
            "Loader", "Transformer", "Extractor", "logger", "set_config", "get_config"]

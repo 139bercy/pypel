@@ -4,7 +4,7 @@ import logging
 import warnings
 import datetime as dt
 import os
-from _config.config import get_config
+from pypel._config.config import get_config
 
 
 if get_config().get("LOGS"):
