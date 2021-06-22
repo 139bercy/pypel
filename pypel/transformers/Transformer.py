@@ -120,18 +120,13 @@ class Transformer:
                           **kwargs) -> pd.DataFrame:
         """
         Enrich passed dataframe by merging it with a referential, either passed as dataframe
-            or by a path to extract from, and then return it.
+            or by a path to extract from, and then return it. Additional keyword parameters are passed to the Extractor.
 
         :param df: the dataframe to enrich
         :param mergekey: the mergekeys the merge will be executed upon (pandas merge's on parameter)
         :param referential: the referential to merge with. Either a `Dataframe` a string, or `PathLike`
         :param extractor: the extractor to use for extracting the referential
         :param how: the mergetype e.g. `inner`, `outer` etc... equivalent to pandas.merge's `how` parameter.
-        :param converters: cf pandas' read_excel/read_csv's `converters`
-        :param dates: cf pandas' read_excel/read_csv's `parse_dates`
-        :param dates_format: the date format that will be used when reading data
-        :param sheet_name: cf pandas' read_excel's `sheet_name`
-        :param skiprows: cf pandas' read_excel's `skiprows`
         :return: pd.Dataframe: the enriched dataframe
         """
         if isinstance(referential, pd.DataFrame):
