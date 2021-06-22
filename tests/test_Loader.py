@@ -11,22 +11,8 @@ class Elasticsearch:
 
 
 class LoaderTest(pypel.Loader):
-    def __init__(self):
-        super().__init__("", "") # noqa
-
-    def load(self, dataframe, indice):
-        self._export_csv(df=dataframe, indice=indice)
-
-    def _export_csv(self, df, indice, sep: str = '|'):
-        with tempfile.TemporaryDirectory() as path:
-            if not self.name_export_file:
-                name_file = "exported_data_" + str(indice) + self._get_date() + ".csv"
-            else:
-                name_file = self.name_export_file
-            path_to_csv = os.path.join(path, name_file)
-            df.to_csv(path_to_csv, sep=sep, index=False, mode='a')
-            assert os.path.exists(path_to_csv)
-            assert_frame_equal(df, read_csv(path_to_csv, sep='|'))
+    def _bulk_into_elastic(self, actions: list, indice: str):
+        pass
 
 
 class TestLoader:
@@ -36,8 +22,28 @@ class TestLoader:
                              [8, 8, 8, 8, 8],
                              [9, 9, 9, 9, 9]],
                        columns=["0", "1", "2", "3", "4"])
-        loader = LoaderTest()
+        with tempfile.TemporaryDirectory() as path:
+            loader = LoaderTest(Elasticsearch(), backup=True, path_to_export_folder=path)
+            loader.load(df, "indice")
+
+    def test_loading_no_export(self):
+        df = DataFrame(data=[[6, 6, 6, 6, 6],
+                             [7, 7, 7, 7, 7],
+                             [8, 8, 8, 8, 8],
+                             [9, 9, 9, 9, 9]],
+                       columns=["0", "1", "2", "3", "4"])
+        loader = LoaderTest(Elasticsearch())
         loader.load(df, "indice")
+
+    def test_loading_export_named_file(self):
+        df = DataFrame(data=[[6, 6, 6, 6, 6],
+                             [7, 7, 7, 7, 7],
+                             [8, 8, 8, 8, 8],
+                             [9, 9, 9, 9, 9]],
+                       columns=["0", "1", "2", "3", "4"])
+        with tempfile.TemporaryDirectory() as path:
+            loader = LoaderTest(Elasticsearch(), backup=True, path_to_export_folder=path, name_export="name")
+            loader.load(df, "indice")
 
     def test_bad_folder_crashes(self):
         with pytest.raises(ValueError):
@@ -51,4 +57,4 @@ class TestLoader:
         pypel.Loader(Elasticsearch(), path_to_export_folder="/", backup=True)
 
     def test_no_backup(self):
-        pypel.Loader(Elasticsearch(), None)
+        pypel.Loader(Elasticsearch())
