@@ -123,7 +123,7 @@ class Process:
             return result
         elif self.__transformer_is_instanced:
             if len(args) + len(kwargs) > 0:
-                warnings.warn("Instanced transformers receiving extra arguments !")
+                warnings.warn("Instanced transformer receiving extra arguments !")
             return self.transformer.transform(dataframe)  # noqa
         else:
             return self.transformer(*args, **kwargs).transform(dataframe)
