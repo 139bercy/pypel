@@ -1,9 +1,7 @@
 import tempfile
-import os
 import pytest
 import pypel
-from pandas.testing import assert_frame_equal
-from pandas import read_csv, DataFrame
+from pandas import DataFrame
 
 
 class Elasticsearch:
