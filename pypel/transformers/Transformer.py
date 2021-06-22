@@ -113,15 +113,11 @@ class Transformer:
 
     def merge_referential(self,
                           df,
-                          mergekey: str or list,
                           referential: str or os.PathLike or pd.DataFrame,
-                          extractor=None,
+                          mergekey: str or list = None,
                           how="inner",
-                          converters=None,
-                          dates=False,
-                          dates_format='%Y-%m-%d',
-                          sheet_name=0,
-                          skiprows=None) -> pd.DataFrame:
+                          extractor=None,
+                          **kwargs) -> pd.DataFrame:
         """
         Enrich passed dataframe by merging it with a referential, either passed as dataframe
             or by a path to extract from, and then return it.
@@ -139,10 +135,10 @@ class Transformer:
         :return: pd.Dataframe: the enriched dataframe
         """
         if isinstance(referential, pd.DataFrame):
-            df.merge(referential, how=how, on=mergekey)
-        if extractor:
+            return df.merge(referential, how=how, on=mergekey)
+        elif extractor is not None:
             assert isinstance(extractor, pypel.Extractor)
-            return df.merge(extractor.init_dataframe(referential),
+            return df.merge(extractor.init_dataframe(referential, **kwargs),
                             how=how,
                             on=mergekey)
         else:
@@ -150,7 +146,7 @@ class Transformer:
                 assert isinstance(referential, str) or isinstance(referential, os.PathLike)
             except AssertionError as e:
                 raise ValueError("Pass a string or an os.PathLike object pointing to the referential !") from e
-            return df.merge(Extractor(converters, dates, dates_format, sheet_name, skiprows)
-                            .init_dataframe(referential),
+            return df.merge(Extractor()
+                            .init_dataframe(referential, **kwargs),
                             how=how,
                             on=mergekey)
