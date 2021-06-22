@@ -8,9 +8,8 @@ import abc
 from pypel._config.config import get_config
 
 
-if get_config().get("LOGS"):
-    logger = logging.getLogger(__name__)
-    logger.setLevel(getattr(logging, get_config()["LOGS_LEVEL"]))
+logger = logging.getLogger(__name__)
+logger.setLevel(getattr(logging, get_config()["LOGS_LEVEL"]))
 
 
 class BaseLoader(abc.ABC):
