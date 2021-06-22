@@ -1,23 +1,14 @@
 import pytest
 import pypel
-import pandas as pd
 import elasticsearch
+from tests.test_Loader import Elasticsearch, LoaderTest
 
 
 class Extractor2(pypel.Extractor):
     pass
 
 
-class LoaderTest(pypel.Loader):
-    def _bulk_into_elastic(self, actions: list, indice: str):
-        pass
-
-
 class FakeExtractor:
-    pass
-
-
-class Elasticsearch:
     pass
 
 
@@ -52,11 +43,6 @@ class TestProcessInstanciation:
     def test_list_of_wrong_type_fails(self):
         with pytest.raises(ValueError):
             pypel.Process(transformer=[0, 0])
-
-
-@pytest.fixture
-def df():
-    return pd.DataFrame({"0": [0, 1, 2]})
 
 
 class TestProcessMethods:
