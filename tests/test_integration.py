@@ -146,7 +146,6 @@ def test_init_dataframe_excel_skiprows(ep, params, monkeypatch):
                                          [8, 8, 8, 8, 8],
                                          [9, 9, 9, 9, 9]],
                                    columns=["0", "1", "2", "3", "4"])
-
     df = ep.extract(path, skiprows=5, header=None)
     with pytest.warns(UserWarning):
         obtained_skip_5 = ep.transform(df)

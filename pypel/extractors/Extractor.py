@@ -70,6 +70,7 @@ class Extractor:
                                  converters=converters,
                                  **kwargs)
         elif file_path.endswith(".xls"):
+            logger.debug(f"Targeting file \'{file_path}\'")
             if skiprows is not None:
                 skiprows = arrayer(skiprows)
             return pd.read_excel(io=file_path,
