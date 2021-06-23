@@ -13,6 +13,19 @@ class LoaderTest(pypel.Loader):
         pass
 
 
+def mock_streaming_bulk_no_error(*args, **kwargs):
+    for a in range(10):
+        yield True, {"success": True}
+
+
+def mock_streaming_bulk_some_errors(*args, **kwargs):
+    for a in range(10):
+        if a > 6:
+            yield False, {"error": {"fake_reason": "fake_error"}}
+        else:
+            yield True, {"success": True}
+
+
 class TestLoader:
     def test_loading_export_csv(self):
         df = DataFrame(data=[[6, 6, 6, 6, 6],
@@ -56,3 +69,13 @@ class TestLoader:
 
     def test_no_backup(self):
         pypel.Loader(Elasticsearch())
+
+    def test_bulk_into_elastic(self, monkeypatch):
+        monkeypatch.setattr(pypel.loaders.Loader.elasticsearch.helpers, "streaming_bulk", mock_streaming_bulk_no_error)
+        pypel.Loader(Elasticsearch())._bulk_into_elastic([], "indice")
+
+    def test_bulk_into_elastic_warns_on_error(self, monkeypatch):
+        monkeypatch.setattr(pypel.loaders.Loader.elasticsearch.helpers, "streaming_bulk",
+                            mock_streaming_bulk_some_errors)
+        with pytest.warns(UserWarning):
+            pypel.Loader(Elasticsearch())._bulk_into_elastic([], "indice")
