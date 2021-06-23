@@ -86,3 +86,41 @@ class TestExtractor:
                                           [9, 9, 9, 9, 9]], columns=["a", "b", "c", "d", "e"])
         df = ex.init_dataframe(path_csv)
         assert_frame_equal(expected_csv, df)
+
+    def test_init_datafram_xls(self, ex):
+        path_xls = os.path.join(os.getcwd(), "tests", "fake_data", "test_init_df.xls")
+        expected_xls = pd.DataFrame(data=[[1, 1, 1, 1, 1],
+                                          [2, 2, 2, 2, 2],
+                                          [3, 3, 3, 3, 3],
+                                          [4, 4, 4, 4, 4],
+                                          [5, 5, 5, 5, 5],
+                                          [6, 6, 6, 6, 6],
+                                          [7, 7, 7, 7, 7],
+                                          [8, 8, 8, 8, 8],
+                                          [9, 9, 9, 9, 9]], columns=["a", "b", "c", "d", "e"])
+        df = ex.init_dataframe(path_xls)
+        assert_frame_equal(expected_xls, df)
+
+    def test_init_dataframe_skiprows_xls(self, ex):
+        path_xls = os.path.join(os.getcwd(), "tests", "fake_data", "test_init_df.xls")
+        expected_xls = pd.DataFrame(data=[[5, 5, 5, 5, 5],
+                                          [6, 6, 6, 6, 6],
+                                          [7, 7, 7, 7, 7],
+                                          [8, 8, 8, 8, 8],
+                                          [9, 9, 9, 9, 9]], columns=[0, 1, 2, 3, 4])
+        df = ex.init_dataframe(path_xls, skiprows=4, header=None)
+        assert_frame_equal(expected_xls, df)
+
+    def test_init_datafram_xls_no_logging(self, ex, disable_logs):
+        path_xls = os.path.join(os.getcwd(), "tests", "fake_data", "test_init_df.xls")
+        expected_xls = pd.DataFrame(data=[[1, 1, 1, 1, 1],
+                                          [2, 2, 2, 2, 2],
+                                          [3, 3, 3, 3, 3],
+                                          [4, 4, 4, 4, 4],
+                                          [5, 5, 5, 5, 5],
+                                          [6, 6, 6, 6, 6],
+                                          [7, 7, 7, 7, 7],
+                                          [8, 8, 8, 8, 8],
+                                          [9, 9, 9, 9, 9]], columns=["a", "b", "c", "d", "e"])
+        df = ex.init_dataframe(path_xls)
+        assert_frame_equal(expected_xls, df)
