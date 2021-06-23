@@ -1,8 +1,9 @@
-pandas~=1.1.0
+pandas~=1.2.0
 elasticsearch
 openpyxl~=3.0.0
 numpy~=1.19.1
 unidecode
+xlrd>=2.0.0
 pytest
 pytest-cov
 pytest-html
