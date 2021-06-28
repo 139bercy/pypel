@@ -4,6 +4,7 @@ import logging
 import warnings
 import datetime as dt
 import os
+import abc
 from pypel._config.config import get_config
 
 
@@ -12,9 +13,16 @@ if get_config().get("LOGS"):
     logger.setLevel(getattr(logging, get_config()["LOGS_LEVEL"]))
 
 
-class BaseLoader:
+class BaseLoader(abc.ABC):
     """Dummy class that all Loaders should inherit from."""
-    pass
+    @abc.abstractmethod
+    def load(self, *args, **kwargs):
+        pass
+
+
+class EmptyLoader(BaseLoader):
+    def load(self, *args, **kwargs):
+        pass
 
 
 class Loader(BaseLoader):
@@ -138,11 +146,11 @@ class Loader(BaseLoader):
         return dt.datetime.today().strftime("_%m_%d")
 
 
-class FileLoader(BaseLoader):
+class CSVWriter(BaseLoader):
     """
     Loader that saves the dataframe in a csv file
     """
-    def load(self, dataframe: pd.DataFrame, path: os.PathLike):
+    def load(self, dataframe: pd.DataFrame, path: os.PathLike, **kwargs):
         """
         Saves `dataframe` into the csv `path`
 
@@ -150,6 +158,8 @@ class FileLoader(BaseLoader):
             the dataframe to save
         :param path:
             PathLike to the future csv
+        :param kwargs:
+            Accepts any keyword parameter accepted by pandas.DataFrame.to_csv
         :return: None
         """
-        dataframe.to_csv(path)
+        dataframe.to_csv(path, **kwargs)
