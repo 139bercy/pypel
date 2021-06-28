@@ -139,5 +139,17 @@ class Loader(BaseLoader):
 
 
 class FileLoader(BaseLoader):
+    """
+    Loader that saves the dataframe in a csv file
+    """
     def load(self, dataframe: pd.DataFrame, path: os.PathLike):
+        """
+        Saves `dataframe` into the csv `path`
+
+        :param dataframe:
+            the dataframe to save
+        :param path:
+            PathLike to the future csv
+        :return: None
+        """
         dataframe.to_csv(path)
