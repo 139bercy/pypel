@@ -136,3 +136,8 @@ class Loader(BaseLoader):
 
     def _get_date(self):
         return dt.datetime.today().strftime("_%m_%d")
+
+
+class FileLoader(BaseLoader):
+    def load(self, dataframe: pd.DataFrame, path: os.PathLike):
+        dataframe.to_csv(path)
