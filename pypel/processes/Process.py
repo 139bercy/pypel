@@ -172,17 +172,11 @@ class Process:
         :return: None
         """
         try:
-            assert (self.__transformer_is_instanced & self.__extractor_is_instanced
-                    & self.__loader_is_instanced)
+            assert (self.__transformer_is_instanced & self.__loader_is_instanced)
         except AssertionError:
             err = ""
-            if self.__extractor_is_instanced:
-                err = "Extractor,"
             if self.__transformer_is_instanced:
-                if err:
-                    err = f"{err} Transformer,"
-                else:
-                    err = "Transformer"
+                err = f"Transformer,"
             if self.__loader_is_instanced:
                 if err:
                     err = f"{err} Loader,"
