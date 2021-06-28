@@ -47,6 +47,7 @@ class TestParameters:
         assert (process.extract("myfile2", converters={"i convert": "to stuff"})
                 == {"0": "myfile2", "converters": {"i convert": "to stuff"}})
 
+
 class TestBulk:
     def test_bulk_crashes_if_extractor_not_instanced(self):
         process_bad_extractor = Process(transformer=Transformer(), loader=Loader(Elasticsearch()))
