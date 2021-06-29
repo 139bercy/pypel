@@ -8,10 +8,9 @@ import pypel.utils.elk.init_index as init_index
 import copy
 import logging.handlers
 
-# TODO: rewrite logging calls with warnings.warn as recommended in library code
+
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
-logger.addHandler(logging.NullHandler())
 
 
 def process_into_elastic(conf: dict, params: dict, mappings: dict, process: str = None):
