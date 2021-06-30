@@ -87,7 +87,7 @@ class TestExtractor:
         df = ex.init_dataframe(path_csv)
         assert_frame_equal(expected_csv, df)
 
-    def test_init_datafram_xls(self, ex):
+    def test_init_dataframe_xls(self, ex):
         path_xls = os.path.join(os.getcwd(), "tests", "fake_data", "test_init_df.xls")
         expected_xls = pd.DataFrame(data=[[1, 1, 1, 1, 1],
                                           [2, 2, 2, 2, 2],
