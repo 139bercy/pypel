@@ -79,13 +79,29 @@ class TestProcessMethods:
         process = pypel.Process(loader=LoaderTest(Elasticsearch()))
         process.load(df, "indice")
 
-    def test_bulk_with_indice_to_list_format(self):
-        process = pypel.Process(transformer=pypel.Transformer(), loader=pypel.Loader(Elasticsearch()))
-        with pytest.raises(NotImplementedError):
-            process.bulk({
-                             "indice": ["file1", "file2"]})
+    def test_bulk_with_indice_to_list_format(self, monkeypatch):
+        processed_dic = {}
 
-    def test_bulk_with_indice_to_file_format(self, monkeypatch):
+        def mock_process_for_multiple_bulk(_, file, indice):
+            processed_dic[file] = indice
+
+        monkeypatch.setattr(pypel.Process, "process", mock_process_for_multiple_bulk)
+        process = pypel.Process(transformer=pypel.Transformer(), loader=pypel.Loader(Elasticsearch()))
+        process.bulk({"indice": ["file1", "file2"]})
+        assert processed_dic == {"file1": "indice", "file2": "indice"}
+
+    def test_single_bulk_with_file_indice_format(self, monkeypatch):
         process = pypel.Process(transformer=pypel.Transformer(), loader=pypel.Loader(Elasticsearch()))
         monkeypatch.setattr(pypel.Process, "process", assert_process_called_with_indice1_to_file1)
         process.bulk({"file1": "indice1"})
+
+    def test_multiple_bulk_with_file_indice_format(self, monkeypatch):
+        processed_dic = {}
+
+        def mock_process_for_multiple_bulk(_, file, indice):
+            processed_dic[file] = indice
+
+        process = pypel.Process(transformer=pypel.Transformer(), loader=pypel.Loader(Elasticsearch()))
+        monkeypatch.setattr(pypel.Process, "process", mock_process_for_multiple_bulk)
+        process.bulk({"file1": "indice1", "file2": "indice2", "file3": "indice3"})
+        assert processed_dic == {"file1": "indice1", "file2": "indice2", "file3": "indice3"}
