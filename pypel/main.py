@@ -1,4 +1,3 @@
-# TODO refacotring pour découper entre E, T et L
 import os
 import elasticsearch.helpers
 import argparse
@@ -34,7 +33,7 @@ def process_into_elastic(conf: dict, params: dict, mappings: dict, process: str 
     indice = get_indice(params, process_range)
     clean_index.clean_index(mappings, es_index_client, indice)
     init_index.init_index(mappings, es_index_client, indice)
-    bulk_all_es_actions(es, params, path_to_data, process_range)
+
 
 
 def get_process_range():
@@ -56,66 +55,7 @@ def get_indice(params, process):
     return indice
 
 
-def bulk_all_es_actions(es, params, path_to_data, process_range: str = "all"):
-    """Iterate on processes and bulk them one at a time."""
-    process_names = params["Processes"]
-    process_factory = ProcessFactory.ProcessFactory()
-
-    if process_range == "all":
-        for process_name in process_names.keys():
-            bulk_es_actions(es,
-                            params,
-                            process_factory,
-                            process_name,
-                            path_to_data=path_to_data)
-    else:
-        if process_range in process_names.keys():
-            process_name = process_range
-            bulk_es_actions(es,
-                            params,
-                            process_factory,
-                            process_name,
-                            path_to_data=path_to_data)
-        else:
-            logger.warning(f"Excel process {process_range} not found")
-
-
-def bulk_es_actions(es, params, process_factory, process_name, path_to_data):
-    """
-    Bulk a process into Elasticsearch.
-    :param es: the Elasticsearch instance
-    :param params: the dictionnary containing the process' parameters
-    :param process_factory: the factory that instantiates processes
-    :param process_name: the pypel.processes instance to use
-    :param path_to_data: the absolute path to the directory containing all data
-    :return: does not return
-    """
-    indice = params["Processes"][process_name]["indice"]
-    process = process_factory.create_process(process_name, indice)
-    path_to_class_data = get_path_to_class_data(params, process_name, path_to_data=path_to_data)
-    shared_params = copy.deepcopy(params)
-    shared_params.pop("Processes")
-
-    files = [os.path.join(path_to_class_data, file)
-             for file in os.listdir(path_to_class_data)
-             if not os.path.isdir(os.path.join(path_to_class_data, file))]
-
-    bulk_actions = [action
-                    for file in files
-                    for action in process.get_es_actions(file,
-                                                         params["Processes"][process_name],
-                                                         global_params=shared_params)]
-
-    success, failed, errors = 0, 0, []
-    for ok, item in elasticsearch.helpers.streaming_bulk(es, bulk_actions, raise_on_error=False):
-        if not ok:
-            errors.append(item)
-            failed += 1
-        else:
-            success += 1
-    logger.info(f"{success} successfully inserted into {indice}")
-    if errors:
-        logger.warning(f"{failed} errors detected\nError details : {errors}")
+def
 
 
 def get_path_to_class_data(params, process_name, path_to_data):
