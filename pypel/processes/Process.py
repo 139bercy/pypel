@@ -93,8 +93,6 @@ class Process:
 
         :param file_path: PathLike
             the file to extract from
-        :param args:
-            extra optional positional parameters for custom extractor instanciation
         :param kwargs:
             extra optional keyword parameters for custom extractor instanciation
         :return: pandas.Dataframe
@@ -175,14 +173,14 @@ class Process:
             assert (self.__transformer_is_instanced & self.__loader_is_instanced)
         except AssertionError:
             err = ""
-            if self.__transformer_is_instanced:
-                err = f"Transformer,"
-            if self.__loader_is_instanced:
+            if not self.__transformer_is_instanced:
+                err = f"Transformer"
+            if not self.__loader_is_instanced:
                 if err:
-                    err = f"{err} Loader,"
+                    err = f"{err}, Loader"
                 else:
                     err = "Loader"
-            raise ValueError(f"{err} are not instanced")
+            raise ValueError(f"{err} not instanced")
         for file, indice in file_indice_dic.items():
             if isinstance(indice, list):
                 raise NotImplementedError("Dictionnaries or format {'indice': ['file1', 'file2']} are not yet"
