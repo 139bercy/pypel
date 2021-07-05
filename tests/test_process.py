@@ -12,6 +12,11 @@ class FakeExtractor:
     pass
 
 
+def assert_process_called_with_indice1_to_file1(_, file, indice):
+    assert file == "file1"
+    assert indice == "indice1"
+
+
 class TestProcessInstanciation:
     def test_default_instanciates(self):
         pypel.Process()
@@ -73,3 +78,14 @@ class TestProcessMethods:
     def test_load_instanced_does_not_warn(self, df):
         process = pypel.Process(loader=LoaderTest(Elasticsearch()))
         process.load(df, "indice")
+
+    def test_bulk_with_indice_to_list_format(self):
+        process = pypel.Process(transformer=pypel.Transformer(), loader=pypel.Loader(Elasticsearch()))
+        with pytest.raises(NotImplementedError):
+            process.bulk({
+                             "indice": ["file1", "file2"]})
+
+    def test_bulk_with_indice_to_file_format(self, monkeypatch):
+        process = pypel.Process(transformer=pypel.Transformer(), loader=pypel.Loader(Elasticsearch()))
+        monkeypatch.setattr(pypel.Process, "process", assert_process_called_with_indice1_to_file1)
+        process.bulk({"file1": "indice1"})
