@@ -153,8 +153,9 @@ class Process:
 
     def bulk(self, file_indice_dic: Dict[str, str] or Dict[str, List[str, ...]]):
         """
-        Given a dict of format {file1: indice1, file2: indice2} extract and transform all files before loading into the
-            corresponding indice. Only works for Process with instanced Extractors, Transformers and Loaders
+        Given a dict of format {file1: indice1, file2: indice2} or {indice1: [file1, file2], indice2: [file3, file4]}
+            extract and transform all files before loading into the corresponding indice.
+            Only works for Process with instanced Extractors, Transformers and Loaders
 
         =======
         Example
@@ -164,6 +165,9 @@ class Process:
         Equivalent to
         >>> for f, i in myconf:
         ...     process.process(f, i)
+        Example in the second format
+        >>> my_second_conf = {"covid": ["covid_stats_2020.csv", "covid_stats_2021.csv"]}
+        >>> process.bulk(my_second_conf)
 
         :param file_indice_dic: the dictionnary of parameters to use for extracting and loading. Must be in the format
             {file1: indice1}
@@ -181,8 +185,9 @@ class Process:
                 else:
                     err = "Loader"
             raise ValueError(f"{err} not instanced")
-        for file, indice in file_indice_dic.items():
-            if isinstance(indice, list):
-                raise NotImplementedError("Dictionnaries or format {'indice': ['file1', 'file2']} are not yet"
-                                          "supported !")
-            self.process(file, indice)
+        for key, value in file_indice_dic.items():
+            if isinstance(value, list):
+                for file in value:
+                    self.process(file, key)
+            else:
+                self.process(key, value)
