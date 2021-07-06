@@ -36,9 +36,9 @@ def process_into_elastic(conf: dict, params: dict, mappings: dict, process: str 
         raise ValueError("key 'Process' not found in the passed config, nothing to do.")
     for process_name, parameters in processes:
         if process_range == "all" or process_name in process_range:
-            processor = pypel.ProcessFactory().create_process(parameters)
+            processor = pypel.ProcessFactory().create_process(parameters, es)
             for file in os.listdir(parameters["path_to_data"]):
-                processor.process(file, parameters.get("indice"), es)
+                processor.process(file, parameters.get("indice"))
 
 
 def get_process_range():
