@@ -145,3 +145,8 @@ class Transformer:
                             .init_dataframe(referential, **kwargs),
                             how=how,
                             on=mergekey)
+
+
+class MinimalTransformer(Transformer):
+    def format_str_columns(self, df):
+        pass
