@@ -1,10 +1,9 @@
 import os
 import elasticsearch.helpers
 import argparse
-import pypel.processes.ProcessFactory as ProcessFactory
+import pypel
 import pypel.utils.elk.clean_index as clean_index
 import pypel.utils.elk.init_index as init_index
-import copy
 import logging.handlers
 
 
@@ -25,7 +24,6 @@ def process_into_elastic(conf: dict, params: dict, mappings: dict, process: str 
     """
     es = elasticsearch.Elasticsearch(hosts=conf["elastic_ip"])
     es_index_client = elasticsearch.client.IndicesClient(es)
-    path_to_data = conf["path_to_data"]
     if process is None:
         process_range = get_process_range()
     else:
@@ -33,7 +31,14 @@ def process_into_elastic(conf: dict, params: dict, mappings: dict, process: str 
     indice = get_indice(params, process_range)
     clean_index.clean_index(mappings, es_index_client, indice)
     init_index.init_index(mappings, es_index_client, indice)
-
+    processes = params.get("Process")
+    if processes is None:
+        raise ValueError("key 'Process' not found in the passed config, nothing to do.")
+    for process_name, parameters in processes:
+        if process_range == "all" or process_name in process_range:
+            processor = pypel.ProcessFactory().create_process(parameters)
+            for file in os.listdir(parameters["path_to_data"]):
+                processor.process(file, parameters.get("indice"), es)
 
 
 def get_process_range():
@@ -53,9 +58,6 @@ def get_indice(params, process):
     else:
         raise Exception(f"The given excel_process argument {process} does not exist in config.json.")
     return indice
-
-
-def
 
 
 def get_path_to_class_data(params, process_name, path_to_data):
