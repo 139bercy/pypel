@@ -1,11 +1,6 @@
 [run]
 omit =
-    pypel/export_file_into_elastic.py
-    pypel/import_kibana_data.py
-    pypel/clean_indice.py
-    pypel/init_indice.py
     setup.py
-    pypel/main.py
 branch = true
 [report]
 fail_under = 90.0
