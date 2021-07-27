@@ -1,8 +1,7 @@
 import importlib
 from pypel.processes.Process import Process
 from typing import Optional, Dict, TypedDict, TYPE_CHECKING, Union, List
-if TYPE_CHECKING:
-    from elasticsearch import Elasticsearch
+from elasticsearch import Elasticsearch
 
 
 class ProcessConfig(TypedDict):
