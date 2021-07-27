@@ -148,5 +148,14 @@ class Transformer:
 
 
 class MinimalTransformer(Transformer):
-    def format_str_columns(self, df):
+    def _format_str_columns(self, df):
+        pass
+
+    def _format_contents(self, df: pd.DataFrame):
+        pass
+
+    def _format_na(self, df: pd.DataFrame) -> pd.DataFrame:
+        return df
+
+    def _format_dates(self, df: pd.DataFrame, date_format: str = None, date_columns: list = None):
         pass
