@@ -1,6 +1,5 @@
 import pytest
-import pypel
-from pypel import Transformer
+from pypel import Transformer, Extractor, MinimalTransformer
 import os
 from pandas import DataFrame
 from pandas.testing import assert_frame_equal
@@ -11,7 +10,7 @@ def transformer():
     return Transformer()
 
 
-class RefExtractor(pypel.Extractor):
+class RefExtractor(Extractor):
     def init_dataframe(self, *args, **kwargs):
         return DataFrame({"0": [0, 1, 2]})
 
@@ -42,22 +41,22 @@ class TestTransformer:
         with pytest.raises(AssertionError):
             transformer.merge_referential(df, None, None, extractor=1)
         with pytest.raises(AssertionError):
-            transformer.merge_referential(df, None, None, extractor=pypel.Extractor)
+            transformer.merge_referential(df, None, None, extractor=Extractor)
 
     def test_merge_ref_crashes_if_ref_is_not_path_nor_str(self, df, transformer):
         with pytest.raises(ValueError):
             transformer.merge_referential(df, 0, "0")
 
     def test_merge_ref_with_default_extractor(self, transformer):
-        df = pypel.Extractor().init_dataframe(os.path.join(os.getcwd(), "tests", "fake_data", "test_init_df.csv"))
+        df = Extractor().init_dataframe(os.path.join(os.getcwd(), "tests", "fake_data", "test_init_df.csv"))
         transformer.merge_referential(df,
                                       os.path.join(os.getcwd(), "tests", "fake_data", "test_init_df.csv"))
 
 
 class TestMinimalTransformer:
     def test_assert_columns_names_unchanged(self, df):
-        df = pypel.Extractor().init_dataframe(os.path.join(os.getcwd(), "tests", "fake_data", "test_init_df.csv"))
-        transformed = pypel.MinimalTransformer().transform(df)
+        df = Extractor().init_dataframe(os.path.join(os.getcwd(), "tests", "fake_data", "test_init_df.csv"))
+        transformed = MinimalTransformer().transform(df)
         expected = DataFrame(data=[[1, 1, 1, 1, 1],
                                       [2, 2, 2, 2, 2],
                                       [3, 3, 3, 3, 3],

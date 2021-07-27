@@ -1,11 +1,8 @@
 import os
-import pypel
 from pypel.extractors.Extractor import Extractor
 import warnings
-from typing import List, TYPE_CHECKING, Dict, Optional, Any, Union
-from pandas import notnull
-if TYPE_CHECKING:
-    from pandas import DataFrame
+from typing import List, Dict, Optional, Any, Union
+from pandas import notnull, DataFrame
 
 
 class Transformer:
@@ -120,7 +117,7 @@ class Transformer:
                           referential: Union[str, bytes, os.PathLike, DataFrame],
                           mergekey: Optional[Union[str, List[str]]] = None,
                           how: str = "inner",
-                          extractor: Optional[pypel.Extractor] = None,
+                          extractor: Optional[Extractor] = None,
                           **kwargs) -> DataFrame:
         """
         Enrich passed dataframe by merging it with a referential, either passed as dataframe
@@ -136,7 +133,7 @@ class Transformer:
         if isinstance(referential, DataFrame):
             return df.merge(referential, how=how, on=mergekey)
         elif extractor is not None:
-            assert isinstance(extractor, pypel.Extractor)
+            assert isinstance(extractor, Extractor)
             return df.merge(extractor.init_dataframe(referential, **kwargs),
                             how=how,
                             on=mergekey)

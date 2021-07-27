@@ -1,17 +1,11 @@
 import os
-import typing
-
-import elasticsearch
-
-import pypel
 from pypel.extractors.Extractor import Extractor
 from pypel.transformers.Transformer import Transformer
 from pypel.loaders.Loader import Loader, BaseLoader
 from elasticsearch import Elasticsearch
 import warnings
 from typing import Dict, List, Union, Optional, Any
-if typing.TYPE_CHECKING:
-    from pandas import DataFrame
+from pandas import DataFrame
 
 
 class Process:
@@ -82,7 +76,7 @@ class Process:
             raise ValueError("Bad loader argument") from e
 
     def process(self, file_path: Union[str, bytes, os.PathLike], es_indice: Optional[str],
-                es_instance: Optional[elasticsearch.Elasticsearch] = None) -> None:
+                es_instance: Optional[Elasticsearch] = None) -> None:
         """
         Conveniance wrapper around Process.extract, Process.transform & Process.load
 
@@ -137,7 +131,7 @@ class Process:
             return self.transformer(*args, **kwargs).transform(dataframe)
 
     def load(self, df, es_indice: str,
-             es_instance: Optional[elasticsearch.Elasticsearch] = None, *args, **kwargs) -> None:
+             es_instance: Optional[Elasticsearch] = None, *args, **kwargs) -> None:
         """
         Loads the passed dataframe into the passed elasticsearch instance's indice es_indice.
 
@@ -161,7 +155,7 @@ class Process:
             assert isinstance(es_instance, Elasticsearch)
             self.loader(es_instance, *args, **kwargs).load(df, es_indice)
 
-    def bulk(self, file_indice_dic: Union[Dict[str, str], Dict[str, List[str, Any]]]) -> None:
+    def bulk(self, file_indice_dic: Union[Dict[str, str], Dict[str, List[Dict[str, Any]]]]) -> None:
         """
         Given a dict of format {file1: indice1, file2: indice2} or {indice1: [file1, file2], indice2: [file3, file4]}
             extract and transform all files before loading into the corresponding indice.
