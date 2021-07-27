@@ -5,13 +5,14 @@ import pypel
 import pypel.utils.elk.clean_index as clean_index
 import pypel.utils.elk.init_index as init_index
 import logging.handlers
+from typing import Optional
 
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 
-def process_into_elastic(conf: dict, params: dict, mappings: dict, process: str = None):
+def process_into_elastic(conf: dict, params: dict, mappings: dict, process: Optional[str] = None):
     """
     Given a set of configurations (global configuration `conf`, process configuration `params` and mapping configuration
     `mappings`, load all processes related to `process`, or all of them if `process` is omitted in to the Elasticsearch

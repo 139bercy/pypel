@@ -6,10 +6,16 @@ import datetime as dt
 import os
 import abc
 from pypel._config.config import get_config
+from typing import Union, Optional, List, Any, TypedDict
 
 
 logger = logging.getLogger(__name__)
 logger.setLevel(getattr(logging, get_config()["LOGS_LEVEL"]))
+
+
+class Action(TypedDict):
+    _index: str
+    _source: Any
 
 
 class BaseLoader(abc.ABC):
@@ -37,10 +43,10 @@ class Loader(BaseLoader):
     """
     def __init__(self,
                  elasticsearch_instance: elasticsearch.Elasticsearch,
-                 path_to_export_folder=None,
-                 backup=False,
-                 name_export=None,
-                 dont_append_date=False):
+                 path_to_export_folder: Union[None, str, bytes, os.PathLike] = None,
+                 backup: bool = False,
+                 name_export: Optional[str] = None,
+                 dont_append_date: bool = False):
         if backup:
             if path_to_export_folder is None:
                 raise ValueError("No export folder passed but backup set to true !")
@@ -52,7 +58,7 @@ class Loader(BaseLoader):
         self.es = elasticsearch_instance
         self.append_date = not dont_append_date
 
-    def load(self, dataframe: pd.DataFrame, indice: str):
+    def load(self, dataframe: pd.DataFrame, indice: str) -> None:
         """
         Load passed dataframe using current Loader's parameters
 
@@ -68,7 +74,7 @@ class Loader(BaseLoader):
         actions = self._wrap_df_in_actions(df, indice)
         self._bulk_into_elastic(actions, indice)
 
-    def _bulk_into_elastic(self, actions: list, indice: str):
+    def _bulk_into_elastic(self, actions: List[Action], indice: str):
         """
         Attempts to load actions into elasticsearch using the bulk API.
         Successful loads are logged, errors are sent as warnings
@@ -89,7 +95,7 @@ class Loader(BaseLoader):
         if errors:
             warnings.warn(f"{failed} errors detected\nError details : {errors}")
 
-    def _wrap_df_in_actions(self, df: pd.DataFrame, indice: str):
+    def _wrap_df_in_actions(self, df: pd.DataFrame, indice: str) -> List[Action]:
         """
         Reformats the dataframe object as a list of Elasticsearch actions, fit for elasticsearch's bulk API.
         If self.backup is True, save a copy of the dataframe as csv for debugging.
@@ -111,7 +117,7 @@ class Loader(BaseLoader):
         ]
         return actions
 
-    def _export_csv(self, df: pd.DataFrame, indice: str, sep: str = '|'):
+    def _export_csv(self, df: pd.DataFrame, indice: str, sep: str = '|') -> None:
         """
         Appends the dataframe to the csv located in the loader's backup folder `self.path_to_folder`, creating said csv
             if missing. Filename is `exported_data_` OR Loader's name_export_file parameter, followed by target indice
@@ -141,7 +147,7 @@ class Loader(BaseLoader):
         path_to_csv = os.path.join(self.path_to_folder, name_file)
         df.to_csv(path_to_csv, sep=sep, index=False, mode='a')
 
-    def _get_date(self):
+    def _get_date(self) -> str:
         return dt.datetime.today().strftime("_%m_%d")
 
 
