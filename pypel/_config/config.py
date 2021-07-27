@@ -5,6 +5,9 @@ Configuration is stored inside a dictionnary where the config's name is the key,
 Example :
 >>> {"LOGS": True}
 """
+from typing import Dict, Any
+
+
 _conf = {"LOGS": True,
          "LOGS_LEVEL": "DEBUG"}
 
@@ -20,6 +23,6 @@ def set_config(**kwargs) -> None:
     _conf.update(kwargs)
 
 
-def get_config() -> dict:
+def get_config() -> Dict[str, Any]:
     """Returns a **soft** copy of the configuration. You should never modify `get_config`'s return directly."""
     return _conf

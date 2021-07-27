@@ -5,6 +5,7 @@ from pypel.utils.utils import arrayer
 import warnings
 import logging
 from pypel._config.config import get_config
+from typing import Dict, Optional, List, Union
 
 
 logger = logging.getLogger(__name__)
@@ -15,8 +16,11 @@ class Extractor:
     """
     Encapsulates all the extracting, getting data logic.
     """
-    def init_dataframe(self, file_path: str, converters=None, dates=False, sheet_name=0,
-                       skiprows=None, **kwargs):
+    def init_dataframe(self, file_path: Union[str, bytes],
+                       converters: Optional[Dict[str, type]] = None,
+                       dates: Optional[List[str]] = False,
+                       sheet_name: Union[None, int, str, List[Union[int, str]]] = 0,
+                       skiprows: Optional[int] = None, **kwargs):
         """
         Read the passed file and return it as a dataframe.
         Uses many pandas parameters defined at Extractor instanciation.
@@ -26,8 +30,6 @@ class Extractor:
             cf [pandas' doc](https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.read_excel.html)
         :param dates: this is equivalent to pandas' `parse_dates` in
              [read_excel](https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.read_excel.html)
-        :param dates_format:
-            the date format that will be used when reading data
         :param sheet_name:
             cf [pandas' doc](https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.read_excel.html)
         :param skiprows:

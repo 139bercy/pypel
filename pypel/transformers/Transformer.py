@@ -1,8 +1,11 @@
 import os
 import pypel
 from pypel.extractors.Extractor import Extractor
-import pandas as pd
 import warnings
+from typing import List, TYPE_CHECKING, Dict, Optional, Any, Union
+from pandas import notnull
+if TYPE_CHECKING:
+    from pandas import DataFrame
 
 
 class Transformer:
@@ -24,11 +27,11 @@ class Transformer:
         list of columns that are to be parsed as dates
     """
     def __init__(self,
-                 strip: list = None,
-                 column_replace: dict = None,
-                 df_replace: dict = None,
-                 date_format: str = None,
-                 date_columns: list = None):
+                 strip: Optional[List[str]] = None,
+                 column_replace: Optional[Dict[str, str]] = None,
+                 df_replace: Optional[Dict[Any, Any]] = None,
+                 date_format: Optional[str] = None,
+                 date_columns: Optional[List[str]] = None):
         self.column_replace = {} if not column_replace else column_replace
         self.df_replace = {} if not df_replace else df_replace
         self.columns_to_strip = [] if not strip else strip
@@ -36,7 +39,7 @@ class Transformer:
         self.date_columns = date_columns
 
     def transform(self,
-                  dataframe: pd.DataFrame) -> pd.DataFrame:
+                  dataframe: DataFrame) -> DataFrame:
         """
         Transforms the passed dataframe.
 
@@ -51,7 +54,7 @@ class Transformer:
         df = self._format_na(df)
         return df
 
-    def _format_str_columns(self, df: pd.DataFrame) -> pd.DataFrame:
+    def _format_str_columns(self, df: DataFrame) -> DataFrame:
         """
         returns df with normalized column names, replacing using self.column_replace & applying str.upper()
 
@@ -67,7 +70,7 @@ class Transformer:
                 warnings.warn(f"NO SUCH COLUMN {column} IN DATAFRAME PASSED")
         return df
 
-    def _format_contents(self, df: pd.DataFrame) -> pd.DataFrame:
+    def _format_contents(self, df: DataFrame) -> DataFrame:
         """
         returns df with normalized contents, replacing every value using self.df_replace
         self.df_replace should be in the following format : {"value_to_replace": "replacement_value"}
@@ -78,7 +81,7 @@ class Transformer:
         df.replace(self.df_replace, regex=True, inplace=True)
         return df
 
-    def _format_na(self, df: pd.DataFrame) -> pd.DataFrame:
+    def _format_na(self, df: DataFrame) -> DataFrame:
         """
         returns df with replaced NaNs & NaTs in the passed dataframe by None
 
@@ -86,10 +89,11 @@ class Transformer:
         :return: the modified dataframe, with Nones instead of NaNs & NaTs
         """
         df = df.applymap(lambda x: None if x == "NaT" or x == "nan" else x)
-        df = df.where(pd.notnull(df), None)
+        df = df.where(notnull(df), None)
         return df
 
-    def _format_dates(self, df: pd.DataFrame, date_format: str = None, date_columns: list = None) -> pd.DataFrame:
+    def _format_dates(self, df: DataFrame, date_format: Optional[str] = None,
+                      date_columns: Optional[List[str]] = None) -> DataFrame:
         """
         Formats datetimes in columns date_columns from dataframe df according to format date_format, or self.date_format
 
@@ -112,12 +116,12 @@ class Transformer:
         return df
 
     def merge_referential(self,
-                          df,
-                          referential: str or os.PathLike or pd.DataFrame,
-                          mergekey: str or list = None,
-                          how="inner",
-                          extractor=None,
-                          **kwargs) -> pd.DataFrame:
+                          df: DataFrame,
+                          referential: Union[str, bytes, os.PathLike, DataFrame],
+                          mergekey: Optional[Union[str, List[str]]] = None,
+                          how: str = "inner",
+                          extractor: Optional[pypel.Extractor] = None,
+                          **kwargs) -> DataFrame:
         """
         Enrich passed dataframe by merging it with a referential, either passed as dataframe
             or by a path to extract from, and then return it. Additional keyword parameters are passed to the Extractor.
@@ -129,7 +133,7 @@ class Transformer:
         :param how: the mergetype e.g. `inner`, `outer` etc... equivalent to pandas.merge's `how` parameter.
         :return: pd.Dataframe: the enriched dataframe
         """
-        if isinstance(referential, pd.DataFrame):
+        if isinstance(referential, DataFrame):
             return df.merge(referential, how=how, on=mergekey)
         elif extractor is not None:
             assert isinstance(extractor, pypel.Extractor)
@@ -148,14 +152,15 @@ class Transformer:
 
 
 class MinimalTransformer(Transformer):
-    def _format_str_columns(self, df):
+    def _format_str_columns(self, df: DataFrame) -> None:
         pass
 
-    def _format_contents(self, df: pd.DataFrame):
+    def _format_contents(self, df: DataFrame) -> None:
         pass
 
-    def _format_na(self, df: pd.DataFrame) -> pd.DataFrame:
+    def _format_na(self, df: DataFrame) -> DataFrame:
         return df
 
-    def _format_dates(self, df: pd.DataFrame, date_format: str = None, date_columns: list = None):
+    def _format_dates(self, df: DataFrame, date_format: Optional[str] = None,
+                      date_columns: Optional[List[str]] = None) -> None:
         pass

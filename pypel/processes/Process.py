@@ -1,10 +1,17 @@
+import os
+import typing
+
+import elasticsearch
+
 import pypel
 from pypel.extractors.Extractor import Extractor
 from pypel.transformers.Transformer import Transformer
 from pypel.loaders.Loader import Loader, BaseLoader
 from elasticsearch import Elasticsearch
 import warnings
-from typing import Dict, List
+from typing import Dict, List, Union, Optional, Any
+if typing.TYPE_CHECKING:
+    from pandas import DataFrame
 
 
 class Process:
@@ -39,8 +46,8 @@ class Process:
     """
     def __init__(self,
                  extractor: Extractor = None,
-                 transformer: Transformer or type or list = None,
-                 loader: Loader or type = None):
+                 transformer: Union[Transformer, type, List[Transformer]] = None,
+                 loader: Union[Loader, type, None] = None):
         self.extractor = extractor if extractor is not None else Extractor()
         self.transformer = transformer if transformer is not None else Transformer
         self.loader = loader if loader is not None else Loader
@@ -74,7 +81,8 @@ class Process:
         except AssertionError as e:
             raise ValueError("Bad loader argument") from e
 
-    def process(self, file_path, es_indice, es_instance=None):
+    def process(self, file_path: Union[str, bytes, os.PathLike], es_indice: Optional[str],
+                es_instance: Optional[elasticsearch.Elasticsearch] = None) -> None:
         """
         Conveniance wrapper around Process.extract, Process.transform & Process.load
 
@@ -88,7 +96,7 @@ class Process:
         """
         self.load(self.transform(self.extract(file_path)), es_indice, es_instance=es_instance)
 
-    def extract(self, file_path, **kwargs):
+    def extract(self, file_path: Union[str, bytes, os.PathLike], **kwargs) -> DataFrame:
         """
         Returns the `Dataframe` obtained from the extactor
 
@@ -101,7 +109,7 @@ class Process:
         """
         return self.extractor.init_dataframe(file_path, **kwargs) # noqa
 
-    def transform(self, dataframe, *args, **kwargs):
+    def transform(self, dataframe: DataFrame, *args, **kwargs) -> DataFrame:
         """
         Return the transformed Dataframe
 
@@ -128,7 +136,8 @@ class Process:
         else:
             return self.transformer(*args, **kwargs).transform(dataframe)
 
-    def load(self, df, es_indice, es_instance=None, *args, **kwargs):
+    def load(self, df, es_indice: str,
+             es_instance: Optional[elasticsearch.Elasticsearch] = None, *args, **kwargs) -> None:
         """
         Loads the passed dataframe into the passed elasticsearch instance's indice es_indice.
 
@@ -152,7 +161,7 @@ class Process:
             assert isinstance(es_instance, Elasticsearch)
             self.loader(es_instance, *args, **kwargs).load(df, es_indice)
 
-    def bulk(self, file_indice_dic: Dict[str, str] or Dict[str, List[str, ...]]):
+    def bulk(self, file_indice_dic: Union[Dict[str, str], Dict[str, List[str, Any]]]) -> None:
         """
         Given a dict of format {file1: indice1, file2: indice2} or {indice1: [file1, file2], indice2: [file3, file4]}
             extract and transform all files before loading into the corresponding indice.

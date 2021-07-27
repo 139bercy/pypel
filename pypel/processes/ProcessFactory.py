@@ -1,13 +1,22 @@
 import importlib
 from pypel.processes.Process import Process
+from typing import Optional, Dict, TypedDict, TYPE_CHECKING, Union, List
+if TYPE_CHECKING:
+    from elasticsearch import Elasticsearch
+
+
+class ProcessConfig(TypedDict):
+    Extractors: Dict[str, str]
+    Transformers: Union[Dict[str, str], List[Dict[str, str]]]
+    Loaders: Dict[str, str]
 
 
 class ProcessFactory:
 
-    def __init__(self, path_to_refs=None):
+    def __init__(self, path_to_refs: Optional[str] = None):
         self.path_to_refs = path_to_refs
 
-    def create_process(self, process_config, es_instance):
+    def create_process(self, process_config: ProcessConfig, es_instance: Elasticsearch) -> Process:
         """
         Generates a Process matching a configuration passed as parameter.
 
@@ -31,7 +40,8 @@ class ProcessFactory:
                        transformer=transformers,
                        loader=loaders)
 
-    def create_subclasses(self, class_config, es_instance=None):
+    def create_subclasses(self, class_config: Union[Dict[str, str], List[Dict[str, str]]],
+                          es_instance: Optional[Elasticsearch] = None):
         if class_config is None:
             return None
         if isinstance(class_config, list):
@@ -39,7 +49,7 @@ class ProcessFactory:
         else:
             return self.create_single_class(class_config, es_instance=es_instance)
 
-    def create_single_class(self, instance_config, es_instance=None):
+    def create_single_class(self, instance_config: Dict[str, str], es_instance: Optional[Elasticsearch] = None):
         canonical_class_name = instance_config.pop("name")
         class_name_splitted = canonical_class_name.split('.')
         class_name = class_name_splitted[-1]
