@@ -1,7 +1,7 @@
 import pytest
 import pypel
 import elasticsearch
-from tests.test_Loader import Elasticsearch, LoaderTest
+from tests.unit.test_Loader import Elasticsearch, LoaderTest
 
 
 class Extractor2(pypel.Extractor):

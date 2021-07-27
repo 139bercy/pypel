@@ -1,3 +1,4 @@
+import pypel
 from pypel.extractors.Extractor import Extractor
 from pypel.transformers.Transformer import Transformer
 from pypel.loaders.Loader import Loader, BaseLoader
@@ -38,7 +39,7 @@ class Process:
     """
     def __init__(self,
                  extractor: Extractor = None,
-                 transformer: Transformer or type = None,
+                 transformer: Transformer or type or list = None,
                  loader: Loader or type = None):
         self.extractor = extractor if extractor is not None else Extractor()
         self.transformer = transformer if transformer is not None else Transformer

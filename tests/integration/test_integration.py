@@ -5,7 +5,7 @@ import pypel
 import os
 import datetime as dt
 import numpy
-from tests.test_Loader import LoaderTest, Elasticsearch
+from tests.unit.test_Loader import LoaderTest, Elasticsearch
 
 
 class TransformerForTesting(pypel.Transformer):

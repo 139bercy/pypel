@@ -28,3 +28,12 @@ def disable_logs():
 @pytest.fixture
 def df():
     return DataFrame({"0": [0, 1, 2]})
+
+
+class Elasticsearch:
+    pass
+
+
+@pytest.fixture
+def es_instance():
+    return Elasticsearch()
