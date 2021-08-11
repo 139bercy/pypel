@@ -34,8 +34,7 @@ The Process constructor takes optional Extractor, Transformer & Loader arguments
 For options, detailed usage and/or functionalities please refer to the documentation
 
 ## Tests
-   - move to the project's root directory `pypel` then run `pytest --cov=. tests/`
-   - to generate a html report for easier reading, run `pytest --html=tests/reports/report.html`
+   - move to the project's root directory `pypel` then run `make`. This generates html reports for easier reading.
    - to assert the library installation isnt broken, use dockerfile : `docker build -t pypel .` from the project's root
 directory, then `docker run pypel`
 
