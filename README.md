@@ -36,6 +36,8 @@ For options, detailed usage and/or functionalities please refer to the documenta
 ## Tests
    - move to the project's root directory `pypel` then run `pytest --cov=. tests/`
    - to generate a html report for easier reading, run `pytest --html=tests/reports/report.html`
+   - to assert the library installation isnt broken, use dockerfile : `docker build -t pypel .` from the project's root
+directory, then `docker run pypel`
 
 ## Run with docker
 
