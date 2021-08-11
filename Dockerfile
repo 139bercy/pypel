@@ -2,10 +2,6 @@ FROM python:3.8 as build
 
 WORKDIR /code
 
-COPY requirements.txt .
-
-RUN pip install -r requirements.txt
-
 COPY . .
 
 RUN ["python", "setup.py", "sdist", "bdist_wheel"]
