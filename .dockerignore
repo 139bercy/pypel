@@ -1,0 +1,9 @@
+build
+dist
+.pytest_cache
+.github
+pypel.egg-info
+docker
+.coverage*
+Makefile
+**.pyc
