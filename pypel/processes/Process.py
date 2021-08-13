@@ -155,7 +155,7 @@ class Process:
             assert isinstance(es_instance, Elasticsearch)
             self.loader(es_instance, *args, **kwargs).load(df, es_indice)
 
-    def bulk(self, file_indice_dic: Union[Dict[str, str], Dict[str, List[Dict[str, Any]]]]) -> None:
+    def bulk(self, file_indice_dic: Union[Dict[str, str], Dict[str, List[str]]]) -> None:
         """
         Given a dict of format {file1: indice1, file2: indice2} or {indice1: [file1, file2], indice2: [file3, file4]}
             extract and transform all files before loading into the corresponding indice.
