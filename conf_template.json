@@ -1,0 +1,18 @@
+{
+  "Processes": [
+      {
+      "Extractors": {
+        "name": "pypel.Extractor"
+      },
+      "Transformers": {
+        "name": "pypel.Transformer"
+      },
+      "Loaders": {
+        "name": "pypel.Loader"
+      },
+      "todo": {
+        "./tests/fake_data/test_init_df.csv": "pypel_bulk"
+      }
+    }
+  ]
+}
