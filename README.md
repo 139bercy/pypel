@@ -13,13 +13,13 @@ xlrd (only for .xls)
 ## Installation
  - Clone or fork the github repo, then install via setup.py : `python setup.py`
 
-### PYPEL in a nutshell
+## PYPEL in a nutshell
  - What does it do ?
 PYPEL (PYthon Pipeline into ELasticsearch) is a customizable ETL (Extract / Transform / Load) in python. It natively extracts csv, xls & xlsx files and uploads them into elasticsearch.
  - What if my usecase slightly differs from that ?
 The Extract/Transform/Load parts are separated, and you can modify each one independantly to fit your usecase.
 
-### API descrption
+## API descrption
 All functionalities are available through the pypel.Process class:
 
  - instantiate your Process : `process = pypel.Process()`
@@ -32,6 +32,16 @@ All functionalities are available through the pypel.Process class:
 The Process constructor takes optional Extractor, Transformer & Loader arguments. These must derive from their pypel-class.
 
 For options, detailed usage and/or functionalities please refer to the documentation
+
+### Loading from the command line
+Pypel allows generating & loading from the command line by executing `pypel/main.py`.
+pypel.main takes several arguments :
+ - `-f` or `--config-file` to specify what file to generate/load from
+ - `-c` or `--clean` to clean indices
+ - `-m` or `--mapping` to specify what mappings to use if -c is on
+
+For a `--config-file` example, see `pypel/conf_template.json`.
+Only json config files are currently supported.
 
 ## Tests
    - move to the project's root directory `pypel` then run `make`. This generates html reports for easier reading.
