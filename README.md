@@ -44,9 +44,13 @@ For a `--config-file` example, see `pypel/conf_template.json`.
 Only json config files are currently supported.
 
 ## Tests
-   - move to the project's root directory `pypel` then run `make`. This generates html reports for easier reading.
-   - to assert the library installation isnt broken, use dockerfile : `docker build -t pypel .` from the project's root
-directory, then `docker run pypel`
+Move to the project's root directory `pypel` then run `make`. This generates html reports for easier reading.
+
+To try loading from a config file, start a local elasticsearch then run `make local_elastic`
+
+### Testing the setup.py
+Use the dockerfile : run `docker build -t pypel .` from the project's root
+directory, then run `docker run pypel`
 
 ## Run with docker
 
