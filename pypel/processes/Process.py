@@ -101,7 +101,7 @@ class Process:
         :return: pandas.Dataframe
             the extracted Dataframe
         """
-        return self.extractor.init_dataframe(file_path, **kwargs) # noqa
+        return self.extractor.extract(file_path, **kwargs) # noqa
 
     def transform(self, dataframe: DataFrame, *args, **kwargs) -> DataFrame:
         """

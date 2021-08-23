@@ -7,7 +7,6 @@ import logging
 from pypel._config.config import get_config
 from typing import Dict, Optional, List, Union
 
-
 logger = logging.getLogger(__name__)
 logger.setLevel(getattr(logging, get_config()["LOGS_LEVEL"]))
 
@@ -16,11 +15,12 @@ class Extractor:
     """
     Encapsulates all the extracting, getting data logic.
     """
-    def init_dataframe(self, file_path: Union[str, bytes],
-                       converters: Optional[Dict[str, type]] = None,
-                       dates: Optional[List[str]] = False,
-                       sheet_name: Union[None, int, str, List[Union[int, str]]] = 0,
-                       skiprows: Optional[int] = None, **kwargs):
+
+    def extract(self, file_path: Union[str, bytes],
+                converters: Optional[Dict[str, type]] = None,
+                dates: Optional[List[str]] = False,
+                sheet_name: Union[None, int, str, List[Union[int, str]]] = 0,
+                skiprows: Optional[int] = None, **kwargs):
         """
         Read the passed file and return it as a dataframe.
         Uses many pandas parameters defined at Extractor instanciation.
