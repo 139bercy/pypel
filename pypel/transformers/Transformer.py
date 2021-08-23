@@ -134,7 +134,7 @@ class Transformer:
             return df.merge(referential, how=how, on=mergekey)
         elif extractor is not None:
             assert isinstance(extractor, Extractor)
-            return df.merge(extractor.init_dataframe(referential, **kwargs),
+            return df.merge(extractor.extract(referential, **kwargs),
                             how=how,
                             on=mergekey)
         else:
@@ -143,7 +143,7 @@ class Transformer:
             except AssertionError as e:
                 raise ValueError("Pass a string or an os.PathLike object pointing to the referential !") from e
             return df.merge(Extractor()
-                            .init_dataframe(referential, **kwargs),
+                            .extract(referential, **kwargs),
                             how=how,
                             on=mergekey)
 
