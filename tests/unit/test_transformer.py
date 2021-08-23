@@ -11,8 +11,9 @@ def transformer():
 
 
 class RefExtractor(Extractor):
-    def init_dataframe(self, *args, **kwargs):
-        return DataFrame({"0": [0, 1, 2]})
+    def extract(self, *args, **kwargs):
+        return DataFrame({
+                             "0": [0, 1, 2]})
 
 
 class TestTransformer:
@@ -48,23 +49,22 @@ class TestTransformer:
             transformer.merge_referential(df, 0, "0")
 
     def test_merge_ref_with_default_extractor(self, transformer):
-        df = Extractor().init_dataframe(os.path.join(os.getcwd(), "tests", "fake_data", "test_init_df.csv"))
+        df = Extractor().extract(os.path.join(os.getcwd(), "tests", "fake_data", "test_init_df.csv"))
         transformer.merge_referential(df,
                                       os.path.join(os.getcwd(), "tests", "fake_data", "test_init_df.csv"))
 
 
 class TestMinimalTransformer:
     def test_assert_columns_names_unchanged(self, df):
-        df = Extractor().init_dataframe(os.path.join(os.getcwd(), "tests", "fake_data", "test_init_df.csv"))
+        df = Extractor().extract(os.path.join(os.getcwd(), "tests", "fake_data", "test_init_df.csv"))
         transformed = MinimalTransformer().transform(df)
         expected = DataFrame(data=[[1, 1, 1, 1, 1],
-                                      [2, 2, 2, 2, 2],
-                                      [3, 3, 3, 3, 3],
-                                      [4, 4, 4, 4, 4],
-                                      [5, 5, 5, 5, 5],
-                                      [6, 6, 6, 6, 6],
-                                      [7, 7, 7, 7, 7],
-                                      [8, 8, 8, 8, 8],
-                                      [9, 9, 9, 9, 9]], columns=["a", "b", "c", "d", "e"])
+                                   [2, 2, 2, 2, 2],
+                                   [3, 3, 3, 3, 3],
+                                   [4, 4, 4, 4, 4],
+                                   [5, 5, 5, 5, 5],
+                                   [6, 6, 6, 6, 6],
+                                   [7, 7, 7, 7, 7],
+                                   [8, 8, 8, 8, 8],
+                                   [9, 9, 9, 9, 9]], columns=["a", "b", "c", "d", "e"])
         assert_frame_equal(transformed, expected)
-

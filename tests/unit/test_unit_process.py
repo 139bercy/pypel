@@ -13,7 +13,7 @@ class LoaderTest(Loader):
 
 
 class ExtractorTest(Extractor):
-    def init_dataframe(self, file_path, **kwargs):
+    def extract(self, file_path, **kwargs):
         return {"0": file_path, **kwargs}
 
 
