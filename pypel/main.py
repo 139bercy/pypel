@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 
-def process_into_elastic(_es, processes: List[Dict[str, Any]]):
+def process_from_config(_es, processes: List[Dict[str, Any]]):
     """
     Given a set of configurations (global configuration `conf`, process configuration `params` and mapping configuration
     `mappings`, load all processes related to `process`, or all of them if `process` is omitted in to the Elasticsearch
@@ -32,14 +32,13 @@ def process_into_elastic(_es, processes: List[Dict[str, Any]]):
         assert isinstance(processes, list)
     for process in processes:
         processor = ProcessFactory().create_process(process, _es)
-        # TODO: trouver un meilleur nom que "todo"
-        if isinstance(process["todo"], list):
-            for bulk_op in process["todo"]:
+        if isinstance(process["action"], list):
+            for bulk_op in process["action"]:
                 processor.bulk(bulk_op)
-        elif isinstance(process["todo"], dict):
-            processor.bulk(process["todo"])
+        elif isinstance(process["action"], dict):
+            processor.bulk(process["action"])
         else:
-            warnings.warn("This format of 'todo' is not supported")
+            warnings.warn("This format of 'action' is not supported")
 
 
 def get_args():
@@ -100,4 +99,4 @@ if __name__ == "__main__":
         clean_index.clean_index(mappings, es_index_client)
         init_index.init_index(mappings, es_index_client)
     print(config["Processes"])
-    process_into_elastic(es, config["Processes"])
+    process_from_config(es, config["Processes"])
