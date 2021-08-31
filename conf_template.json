@@ -1,6 +1,7 @@
 {
   "Processes": [
-      {
+    {
+      "name": "EXAMPLE",
       "Extractors": {
         "name": "pypel.Extractor"
       },
