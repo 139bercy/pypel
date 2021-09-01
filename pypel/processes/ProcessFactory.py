@@ -1,6 +1,6 @@
 import importlib
 from pypel.processes.Process import Process
-from typing import Optional, Dict, TypedDict, TYPE_CHECKING, Union, List
+from typing import Optional, Dict, TypedDict, Union, List
 from elasticsearch import Elasticsearch
 
 
@@ -11,7 +11,6 @@ class ProcessConfig(TypedDict):
 
 
 class ProcessFactory:
-
     def __init__(self, path_to_refs: Optional[str] = None):
         self.path_to_refs = path_to_refs
 
@@ -29,7 +28,7 @@ class ProcessFactory:
             respectively
 
         :param process_config: Configuration of the process' E/T/L classes as a dictionnary
-        :param es_instance: The Elasticsearch instance to pass to Loader at instanciation
+        :param es_instance: The Elasticsearch instance to passTYPE_CHECKING to Loader at instanciation
         :return: A Process instance with the E/T/L classes specified in the configuration
         """
         extractors = self.create_subclasses(process_config.get("Extractors"))
