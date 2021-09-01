@@ -14,6 +14,21 @@
       "action": {
         "./tests/fake_data/test_init_df.csv": "pypel_bulk"
       }
+    },
+    {
+      "name": "ANOTHER_EXAMPLE",
+      "Extractors": {
+        "name": "pypel.Extractor"
+      },
+      "Transformers": {
+        "name": "pypel.Transformer"
+      },
+      "Loaders": {
+        "name": "pypel.Loader"
+      },
+      "action": {
+        "./tests/fake_data/test_init_df.csv": "pypel_bulk_2"
+      }
     }
   ]
 }
