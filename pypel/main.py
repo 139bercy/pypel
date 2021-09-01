@@ -108,7 +108,7 @@ if __name__ == "__main__":
                 mappings = json.load(f)
         except FileNotFoundError as e:
             raise ValueError("Cannot find file passed through the -m / --mapping argument") from e
-        es_index_client = elasticsearch.client.IndicesClient(es)
+        es_index_client = es.indices
         clean_index.clean_index(mappings, es_index_client)
         init_index.init_index(mappings, es_index_client)
     print(config["Processes"])
