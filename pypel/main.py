@@ -30,7 +30,7 @@ class Config(TypedDict):
     Process: List[ProcessConfig]
 
 
-def process_from_config(_es, processes: Config):
+def process_from_config(_es: elasticsearch.Elasticsearch, processes: Config):
     """
     Given a set of configurations (global configuration `conf`, process configuration `params` and mapping configuration
     `mappings`, load all processes related to `process`, or all of them if `process` is omitted in to the Elasticsearch
@@ -63,11 +63,6 @@ def get_args():
     parser.add_argument("-m", "--mapping", default="./conf/index_mappings.json", type=pathlib.Path,
                         help="path to the elasticsearch indices's mappings")
     return parser.parse_args()
-
-
-def get_path_to_class_data(params, process_name, path_to_data):
-    """Return the absolute path to a specific process's subdirectory."""
-    return os.path.join(path_to_data, params["Processes"][process_name]["path"])
 
 
 def get_es_instance(conf):
