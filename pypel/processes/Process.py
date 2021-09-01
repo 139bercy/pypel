@@ -4,7 +4,7 @@ from pypel.transformers.Transformer import Transformer
 from pypel.loaders.Loader import Loader, BaseLoader
 from elasticsearch import Elasticsearch
 import warnings
-from typing import Dict, List, Union, Optional, Any
+from typing import Dict, List, Union, Optional
 from pandas import DataFrame
 
 
@@ -164,7 +164,7 @@ class Process:
         =======
         Example
         >>> process = Process(Extractor(), Transformer(), Loader())
-        >>> myconf = {"covid_stats.csv": "covid", "relance.xls": "relance", "obscure_name": "id7654"}
+        >>> myconf = {"covid_stats.csv": "covid", "relance.xls": "relance", "obscure_name.xlsx": "id7654"}
         >>> process.bulk(myconf)
         Equivalent to
         >>> for f, i in myconf:
