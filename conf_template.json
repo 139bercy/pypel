@@ -3,13 +3,23 @@
     {
       "name": "EXAMPLE",
       "Extractors": {
-        "name": "pypel.Extractor"
+        "name": "pypel.Extractor",
+        "converters": null,
+        "dates": null
       },
       "Transformers": {
-        "name": "pypel.Transformer"
+        "name": "pypel.Transformer",
+        "column_replace": null,
+        "df_replace": null,
+        "date_format": "%Y/%m/%d",
+        "date_columns": null
       },
       "Loaders": {
-        "name": "pypel.Loader"
+        "name": "pypel.Loader",
+        "backup": false,
+        "name_export": null,
+        "dont_append_date": false,
+        "path_to_export_folder": null
       },
       "action": {
         "./tests/fake_data/test_init_df.csv": "pypel_bulk"
