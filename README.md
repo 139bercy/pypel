@@ -46,7 +46,9 @@ Only json config files are currently supported.
 ## Tests
 Move to the project's root directory `pypel` then run `make`. This generates html reports for easier reading.
 
-To try loading from a config file, start a local elasticsearch then run `make local_elastic`
+To try loading from a config file, start a local elasticsearch then run `make local_elastic`. The test is successful if
+the recipe executed without failure AND the two indices `pypel_bulk_MM_JJ`, `pypel_bulk_2_MM_JJ` have been created and
+contain 9 documents. Manually delete these afterwars by running `DELETE <indice>` from the devtools console.
 
 ### Testing the setup.py
 Use the dockerfile : run `docker build -t pypel .` from the project's root
