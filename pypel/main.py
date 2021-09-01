@@ -111,5 +111,5 @@ if __name__ == "__main__":
         es_index_client = es.indices
         clean_index.clean_index(mappings, es_index_client)
         init_index.init_index(mappings, es_index_client)
-    print(config["Processes"])
+    logger.debug(config["Processes"])
     process_from_config(es, config["Processes"])
