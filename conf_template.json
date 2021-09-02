@@ -3,16 +3,10 @@
     {
       "name": "EXAMPLE",
       "Extractors": {
-        "name": "pypel.Extractor",
-        "converters": null,
-        "dates": null
+        "name": "pypel.Extractor"
       },
       "Transformers": {
-        "name": "pypel.Transformer",
-        "column_replace": null,
-        "df_replace": null,
-        "date_format": "%Y/%m/%d",
-        "date_columns": null
+        "name": "pypel.Transformer"
       },
       "Loaders": {
         "name": "pypel.Loader",
@@ -21,9 +15,7 @@
         "dont_append_date": false,
         "path_to_export_folder": null
       },
-      "action": {
-        "./tests/fake_data/test_init_df.csv": "pypel_bulk"
-      }
+      "indice": "pypel_bulk"
     },
     {
       "name": "ANOTHER_EXAMPLE",
@@ -36,9 +28,7 @@
       "Loaders": {
         "name": "pypel.Loader"
       },
-      "action": {
-        "./tests/fake_data/test_init_df.csv": "pypel_bulk_2"
-      }
+      "indice":"pypel_bulk_2"
     }
   ]
 }
