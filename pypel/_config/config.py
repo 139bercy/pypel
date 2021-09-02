@@ -9,7 +9,7 @@ from typing import Dict, Any
 
 
 _conf = {"LOGS": True,
-         "LOGS_LEVEL": "DEBUG"}
+         "LOGS_LEVEL": "INFO"}
 
 
 def set_config(**kwargs) -> None:
