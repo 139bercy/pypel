@@ -1,4 +1,3 @@
-import pytest
 from pypel import get_config, set_config
 
 
