@@ -2,10 +2,19 @@ import os
 from pypel.extractors.Extractor import Extractor
 import warnings
 from typing import List, Dict, Optional, Any, Union
-from pandas import notnull, DataFrame
+from pandas import DataFrame, to_datetime
+import abc
 
 
-class Transformer:
+class BaseTransformer(abc.ABC):
+    """Dummy class that all Transformers must inherit from."""
+
+    @abc.abstractmethod
+    def transform(self, *args, **kwargs):
+        pass
+
+
+class Transformer(BaseTransformer):
     """
     Encapsulates all the data-transformation related logic. Massively relies on pandas.
 
@@ -23,6 +32,7 @@ class Transformer:
     :param date_columns:
         list of columns that are to be parsed as dates
     """
+
     def __init__(self,
                  strip: Optional[List[str]] = None,
                  column_replace: Optional[Dict[str, str]] = None,
@@ -85,8 +95,7 @@ class Transformer:
         :param df: the dataframe that is to be treated
         :return: the modified dataframe, with Nones instead of NaNs & NaTs
         """
-        df = df.applymap(lambda x: None if x == "NaT" or x == "nan" else x)
-        df = df.where(notnull(df), None)
+        df = df.applymap(lambda x: None if x != x else x)
         return df
 
     def _format_dates(self, df: DataFrame, date_format: Optional[str] = None,
@@ -148,16 +157,108 @@ class Transformer:
                             on=mergekey)
 
 
-class MinimalTransformer(Transformer):
-    def _format_str_columns(self, df: DataFrame) -> None:
-        pass
+class ColumnStripperTransformer(BaseTransformer):
+    """Strips column names, removing trailing and leading whitespaces."""
 
-    def _format_contents(self, df: DataFrame) -> None:
-        pass
+    def transform(self, df: DataFrame):
+        return df.columns.astype(str).str.strip()
 
-    def _format_na(self, df: DataFrame) -> DataFrame:
-        return df
 
-    def _format_dates(self, df: DataFrame, date_format: Optional[str] = None,
-                      date_columns: Optional[List[str]] = None) -> None:
-        pass
+class ColumnReplacerTransformer(BaseTransformer):
+    """Allows replacing column names."""
+
+    def transform(self, df: DataFrame, column_replace_dict: Dict[str, str]):
+        return df.columns.to_series().replace(column_replace_dict, regex=True)
+
+
+class ColumnCapitaliser(BaseTransformer):
+    """Capitalizes column names."""
+
+    def transform(self, df: DataFrame):
+        return df.columns.to_series().astype(str).str.capitalize()
+
+
+class ColumnContenStripper(BaseTransformer):
+    """Strips/trims the contents of a column. Said column(s) must contain only str values."""
+
+    def transform(self, df: DataFrame, columns_to_strip: List[str]):
+        df_ = df.copy()
+        for column in columns_to_strip:
+            try:
+                df_[column] = df_[column].str.strip()
+            except KeyError:
+                warnings.warn(f"No such column {column} in passed dataframe")
+            except AttributeError:
+                warnings.warn(f"Column {column} is not of type `str`, cannot strip.")
+        return df_
+
+
+class ContentReplacerTransformer(BaseTransformer):
+    """Allows replacing contents of a column"""
+
+    def transform(self, df: DataFrame, replace_dict: Dict[Any: Any]):
+        return df.replace(replace_dict, regex=True)
+
+
+class NullValuesReplacerTransformer(BaseTransformer):
+    """Replaces NaNs, NaTs or similar values by None, because None is understood by elasticsearc where nans arent."""
+
+    def transform(self, df: DataFrame):
+        """
+        We use x != x because we want to check for both NaN & NaT at the same time, also any value that do pass this
+        check should probably be taken care of anyway.
+        """
+        return df.applymap(lambda x: None if x != x else x)
+
+
+class DateFormatterTransformer(BaseTransformer):
+    """Allows changing the date format of specific datetime columns"""
+
+    def transform(self, df: DataFrame, date_columns: List[str], date_format="%Y-%m-%d"):
+        """
+        :param df: the dataframe to modify
+        :param date_columns: the columns containing the datetime values to modify
+        :param date_format: the desired dateformat. Defaults to yyyy-MM-dd
+        :return: the modified dataframe
+        """
+        df_ = df.copy()
+        for col in date_columns:
+            try:
+                df_[col] = df_[col].dt.strftime(date_format)
+            except AttributeError as e:
+                raise ValueError(f"Column {col} has non-datetime values, the columns to format must be datetimes."
+                                 f"Please parse beforehands.") from e
+        return df_
+
+
+class DateParserTransformer(BaseTransformer):
+    """Converts passed columns' values to datetime objects. Date parsing is prefered at extraction."""
+
+    def transform(self, df: DataFrame, date_columns: List[str], date_format: str = "%Y-%m-%d"):
+        """
+
+        :param df: the dataframe containing the columns to parse
+        :param date_columns: list of names of columns to parse
+        :param date_format: the strftime format to parse from
+        :return:
+        """
+        df_ = df.copy()
+        for col in date_columns:
+            df_[col] = to_datetime(df_[col], format=date_format)
+        return df_
+
+
+class MergerTransformer(BaseTransformer):
+    def transform(self, df: DataFrame, ref: DataFrame, mergekey: Optional[Union[str, List[str]]] = None,
+                  how: str = "inner") -> DataFrame:
+        """
+        Enrich passed dataframe by merging it with a referential passed as dataframe.
+            Uses pandas.DataFrame.merge.
+
+        :param df: the dataframe to enrich
+        :param mergekey: the mergekeys the merge will be executed upon (pandas merge's on parameter)
+        :param ref: the referential to merge with
+        :param how: the mergetype e.g. `inner`, `outer` etc... equivalent to pandas.merge's `how` parameter.
+        :return: pd.Dataframe: the enriched dataframe
+        """
+        return df.merge(ref, how=how, on=mergekey)
