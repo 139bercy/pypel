@@ -22,12 +22,12 @@ class BaseLoader(abc.ABC):
     """Dummy class that all Loaders should inherit from."""
     @abc.abstractmethod
     def load(self, *args, **kwargs):
-        pass
+        """This method must be implemented"""
 
 
 class EmptyLoader(BaseLoader):
     def load(self, *args, **kwargs):
-        pass
+        """This loader does nothing."""
 
 
 class Loader(BaseLoader):
