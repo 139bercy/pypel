@@ -1,6 +1,6 @@
 import os
 from pypel.extractors.Extractor import Extractor
-from pypel.transformers.Transformer import Transformer
+from pypel.transformers.Transformer import Transformer, BaseTransformer
 from pypel.loaders.Loader import Loader, BaseLoader
 from elasticsearch import Elasticsearch
 import warnings
@@ -55,13 +55,13 @@ class Process:
                     self.__multiple_transformers = True
                     self.__transformer_is_instanced = False
                     for t in self.transformer:
-                        assert isinstance(t, Transformer)
+                        assert isinstance(t, BaseTransformer)
                 else:
                     self.__multiple_transformers = False
-                    assert isinstance(self.transformer(), Transformer)
+                    assert isinstance(self.transformer(), BaseTransformer)
                     self.__transformer_is_instanced = False
             except TypeError:
-                assert isinstance(self.transformer, Transformer)
+                assert isinstance(self.transformer, BaseTransformer)
                 self.__transformer_is_instanced = True
         except AssertionError as e:
             raise ValueError("Bad transformer") from e
