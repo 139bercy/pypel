@@ -10,8 +10,8 @@ class BaseTransformer(abc.ABC):
     """Dummy class that all Transformers must inherit from."""
 
     @abc.abstractmethod
-    def transform(self, *args, **kwargs):
-        pass
+    def transform(self, *args, **kwargs) -> DataFrame:
+        """This method must be implemented"""
 
 
 class Transformer(BaseTransformer):

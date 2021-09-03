@@ -110,7 +110,7 @@ def get_es_instance(conf):
     return es_instance
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     args = get_args()
     for arg in args.__dict__:
         logger.debug(arg, args.__getattribute__(arg))
