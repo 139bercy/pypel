@@ -1,5 +1,5 @@
 import pytest
-from pypel import Transformer, Extractor, MinimalTransformer
+from pypel import Transformer, Extractor
 import os
 from pandas import DataFrame
 from pandas.testing import assert_frame_equal
@@ -53,18 +53,3 @@ class TestTransformer:
         transformer.merge_referential(df,
                                       os.path.join(os.getcwd(), "tests", "fake_data", "test_init_df.csv"))
 
-
-class TestMinimalTransformer:
-    def test_assert_columns_names_unchanged(self, df):
-        df = Extractor().extract(os.path.join(os.getcwd(), "tests", "fake_data", "test_init_df.csv"))
-        transformed = MinimalTransformer().transform(df)
-        expected = DataFrame(data=[[1, 1, 1, 1, 1],
-                                   [2, 2, 2, 2, 2],
-                                   [3, 3, 3, 3, 3],
-                                   [4, 4, 4, 4, 4],
-                                   [5, 5, 5, 5, 5],
-                                   [6, 6, 6, 6, 6],
-                                   [7, 7, 7, 7, 7],
-                                   [8, 8, 8, 8, 8],
-                                   [9, 9, 9, 9, 9]], columns=["a", "b", "c", "d", "e"])
-        assert_frame_equal(transformed, expected)
