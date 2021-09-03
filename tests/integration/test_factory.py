@@ -14,16 +14,17 @@ class TestFactory:
         assert isinstance(obtained, type(expected))
 
     def test_factory_instantiates_non_default_transformers(self, factory, es_instance):
-        expected = pypel.Process(transformer=pypel.MinimalTransformer)
+        expected = pypel.Process(transformer=pypel.transformers.Transformer.ColumnStripperTransformer)
         obtained = factory.create_process({"Extractors": {"name": "pypel.Extractor"},
-                                           "Transformers": {"name": "pypel.MinimalTransformer"},
+                                           "Transformers": {"name": "pypel.ColumnStripperTransformer"},
                                            "Loaders": {"name": "pypel.Loader"}}, es_instance=es_instance)
         assert isinstance(obtained, type(expected))
 
     def test_factory_instanciates_list_of_transformers(self, factory, es_instance):
-        expected = pypel.Process(transformer=[pypel.MinimalTransformer(), pypel.Transformer()])
+        expected = pypel.Process(transformer=[pypel.transformers.Transformer.ColumnStripperTransformer(),
+                                              pypel.Transformer()])
         obtained = factory.create_process({"Extractors": {"name": "pypel.Extractor"},
-                                           "Transformers": [{"name": "pypel.MinimalTransformer"},
+                                           "Transformers": [{"name": "pypel.ColumnStripperTransformer"},
                                                             {"name": "pypel.Transformer"}],
                                            "Loaders": {"name": "pypel.Loader"}}, es_instance=es_instance)
         assert isinstance(obtained, type(expected))
