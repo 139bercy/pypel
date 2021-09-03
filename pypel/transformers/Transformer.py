@@ -196,7 +196,7 @@ class ColumnContenStripper(BaseTransformer):
 class ContentReplacerTransformer(BaseTransformer):
     """Allows replacing contents of a column"""
 
-    def transform(self, df: DataFrame, replace_dict: Dict[Any: Any]):
+    def transform(self, df: DataFrame, replace_dict: Dict[Any, Any]):
         return df.replace(replace_dict, regex=True)
 
 
