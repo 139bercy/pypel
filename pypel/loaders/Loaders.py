@@ -18,16 +18,11 @@ class Action(TypedDict):
     _source: Any
 
 
-class BaseLoader(abc.ABC):
+class BaseLoader:
     """Dummy class that all Loaders should inherit from."""
     @abc.abstractmethod
     def load(self, *args, **kwargs):
         """This method must be implemented"""
-
-
-class EmptyLoader(BaseLoader):
-    def load(self, *args, **kwargs):
-        """This loader does nothing."""
 
 
 class Loader(BaseLoader):
