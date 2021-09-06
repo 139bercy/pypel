@@ -119,7 +119,7 @@ if __name__ == "__main__":  # pragma: no cover
         with open(path_to_conf) as f:
             config = json.load(f)
     except FileNotFoundError as e:
-        raise ValueError("Cannot find file passed through the -f / --config-file argument") from e
+        raise ValueError("Cannot find file passed through the -c / --config-file argument") from e
     es = get_es_instance(config)
     """
     if args.clean:
