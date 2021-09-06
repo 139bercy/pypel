@@ -2,14 +2,15 @@
   "Processes": [
     {
       "name": "EXAMPLE",
-      "Extractor": {
-        "name": "pypel.Extractor"
+      "Extractors": {
+        "name": "pypel.extractors.Extractor"
       },
-      "Transformers": {
-        "name": "pypel.Transformer"
-      },
-      "Loader": {
-        "name": "pypel.Loader",
+      "Transformers": [
+      {
+        "name": "pypel.transformers.Transformer"
+      }],
+      "Loaders": {
+        "name": "pypel.loaders.Loader",
         "backup": false,
         "name_export": null,
         "dont_append_date": false,
@@ -19,19 +20,19 @@
     },
     {
       "name": "ANOTHER_EXAMPLE",
-      "Extractor": {
-        "name": "pypel.Extractor"
+      "Extractors": {
+        "name": "pypel.extractors.Extractor"
       },
       "Transformers": [
         {
-          "name": "pypel.Transformer"
+          "name": "pypel.transformers.Transformer"
         },
         {
-          "name":"pypel.ColumnStripperTransformer"
+          "name":"pypel.transformers.ColumnStripperTransformer"
         }
       ],
       "Loader": {
-        "name": "pypel.Loader"
+        "name": "pypel.transformers.Loader"
       },
       "indice": "pypel_bulk_2"
     }
