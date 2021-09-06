@@ -6,7 +6,7 @@ from pandas import DataFrame, to_datetime
 import abc
 
 
-class BaseTransformer(abc.ABC):
+class BaseTransformer:
     """Dummy class that all Transformers must inherit from."""
 
     @abc.abstractmethod
