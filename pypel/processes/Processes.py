@@ -1,10 +1,10 @@
 import os
-from pypel.extractors.Extractor import Extractor
-from pypel.transformers.Transformer import Transformer, BaseTransformer
-from pypel.loaders.Loader import Loader, BaseLoader
+from pypel.extractors.Extractors import Extractor
+from pypel.transformers.Transformers import Transformer, BaseTransformer
+from pypel.loaders.Loaders import Loader, BaseLoader
 from elasticsearch import Elasticsearch
 import warnings
-from typing import Dict, List, Union, Optional
+from typing import Dict, List, Union, Optional, TypeVar, Generic
 from pandas import DataFrame
 
 
@@ -14,14 +14,14 @@ class Process:
 
     Parameters
     ----------
-    :param extractor: pypel.Extractor
+    :param extractor: Optional[pypel.extractors.Extractor]
         instance or class to use for extracting data. MUST be derived from pypel.Extractor
-    :param transformer: pypel.Transformer
+    :param transformer: Union[pypel.BaseTransformer, type, List[pypel.transformers.BaseTransformers], None]
         instance, class or list of instances to use for transforming data.
         MUST be derived from pypel.Transformer, for lists, all elements of the list must inherit from pypel.Transformer.
         if list-like, will be for-in looped on, so mind the order.
 
-    :param loader: pypel.Loader
+    :param loader: Union[pypel.loaders.BaseLoader, type, None]
         class to use for loading data. MUST be derived from pypel.Loader
 
     Examples
@@ -29,18 +29,18 @@ class Process:
     Instanciate the default Process
 
     >>> import pypel
-    >>> my_process = Process()
+    >>> my_process = pypel.processes.Process()
 
     Instanciate a Process with a custom Extractor (same logic applies for custom Transformers/Loaders)
 
-    >>> class MyExtractor(pypel.Extractor):
+    >>> class MyExtractor(pypel.extractors.Extractor):
     ...       pass
     >>> my_extractor_instance = MyExtractor()
-    >>> my_process2 = pypel.Process(extractor=my_extractor_instance)
+    >>> my_process2 = pypel.processes.Process(extractor=my_extractor_instance)
     """
     def __init__(self,
-                 extractor: Extractor = None,
-                 transformer: Union[Transformer, type, List[Transformer]] = None,
+                 extractor: Optional[Extractor] = None,
+                 transformer: Union[BaseTransformer, type, List[BaseTransformer], None] = None,
                  loader: Union[Loader, type, None] = None):
         self.extractor = extractor if extractor is not None else Extractor()
         self.transformer = transformer if transformer is not None else Transformer
