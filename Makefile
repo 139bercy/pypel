@@ -1,4 +1,4 @@
-.PHONY: report local_elastic
+.PHONY: report test_cli
 
 report:
 	pytest --cov=. --html=tests/reports/report.html --cov-report html -W error tests/
