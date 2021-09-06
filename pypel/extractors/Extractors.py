@@ -1,5 +1,4 @@
 import abc
-
 import pandas as pd
 import re
 import openpyxl
@@ -7,7 +6,7 @@ from pypel.utils.utils import arrayer
 import warnings
 import logging
 from pypel._config.config import get_config
-from typing import Dict, Optional, List, Union
+from typing import Dict, Optional, List, Union, Any
 
 logger = logging.getLogger(__name__)
 logger.setLevel(getattr(logging, get_config()["LOGS_LEVEL"]))
@@ -15,7 +14,7 @@ logger.setLevel(getattr(logging, get_config()["LOGS_LEVEL"]))
 
 class BaseExtractor:
     @abc.abstractmethod
-    def extract(self, *args, **kwargs):
+    def extract(self, *args, **kwargs) -> Any:
         """This method must be implemented"""
 
 
@@ -27,7 +26,7 @@ class Extractor(BaseExtractor):
                 converters: Optional[Dict[str, type]] = None,
                 dates: Optional[List[str]] = False,
                 sheet_name: Union[None, int, str, List[Union[int, str]]] = 0,
-                skiprows: Optional[int] = None, **kwargs):
+                skiprows: Optional[int] = None, **kwargs) -> pd.DataFrame:
         """
         Read the passed file and return it as a dataframe.
         Uses many pandas parameters defined at Extractor instanciation.
@@ -97,7 +96,7 @@ class CSVExtractor(BaseExtractor):
     def extract(self, file_path: Union[str, bytes],
                 converters: Optional[Dict[str, type]] = None,
                 dates: Optional[List[str]] = False,
-                skiprows: Optional[int] = None, **kwargs):
+                skiprows: Optional[int] = None, **kwargs) -> pd.DataFrame:
         """
         Read the passed file and return it as a dataframe.
         Uses many pandas parameters defined at Extractor instanciation.
@@ -129,7 +128,7 @@ class XLSExtractor(BaseExtractor):
                 converters: Optional[Dict[str, type]] = None,
                 dates: Optional[List[str]] = False,
                 sheet_name: Union[None, int, str, List[Union[int, str]]] = 0,
-                skiprows: Optional[int] = None, **kwargs):
+                skiprows: Optional[int] = None, **kwargs) -> pd.DataFrame:
         """
         Read the passed file and return it as a dataframe.
         Uses many pandas parameters defined at Extractor instanciation.
@@ -163,7 +162,7 @@ class XLSXExtractor(BaseExtractor):
                 converters: Optional[Dict[str, type]] = None,
                 dates: Optional[List[str]] = False,
                 sheet_name: Union[None, int, str, List[Union[int, str]]] = 0,
-                skiprows: Optional[int] = None, **kwargs):
+                skiprows: Optional[int] = None, **kwargs) -> pd.DataFrame:
         """
         Read the passed file and return it as a dataframe.
         Uses many pandas parameters defined at Extractor instanciation.
