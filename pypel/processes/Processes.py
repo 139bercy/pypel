@@ -1,10 +1,10 @@
 import os
-from pypel.extractors.Extractors import Extractor
+from pypel.extractors.Extractors import BaseExtractor, CSVExtractor
 from pypel.transformers.Transformers import Transformer, BaseTransformer
 from pypel.loaders.Loaders import Loader, BaseLoader
 from elasticsearch import Elasticsearch
 import warnings
-from typing import Dict, List, Union, Optional, TypeVar, Generic
+from typing import Dict, List, Union, Optional
 from pandas import DataFrame
 
 
@@ -39,14 +39,14 @@ class Process:
     >>> my_process2 = pypel.processes.Process(extractor=my_extractor_instance)
     """
     def __init__(self,
-                 extractor: Optional[Extractor] = None,
+                 extractor: Optional[BaseExtractor] = None,
                  transformer: Union[BaseTransformer, type, List[BaseTransformer], None] = None,
                  loader: Union[Loader, type, None] = None):
-        self.extractor = extractor if extractor is not None else Extractor()
+        self.extractor = extractor if extractor is not None else CSVExtractor()
         self.transformer = transformer if transformer is not None else Transformer
         self.loader = loader if loader is not None else Loader
         try:
-            assert isinstance(self.extractor, Extractor)
+            assert isinstance(self.extractor, BaseExtractor)
         except AssertionError as e:
             raise ValueError("Bad extractor") from e
         try:
@@ -163,7 +163,7 @@ class Process:
 
         =======
         Example
-        >>> process = Process(Extractor(), Transformer(), Loader())
+        >>> process = Process(CSVExtractor(), Transformer(), Loader())
         >>> myconf = {"covid_stats.csv": "covid", "relance.xls": "relance", "obscure_name.xlsx": "id7654"}
         >>> process.bulk(myconf)
         Equivalent to
