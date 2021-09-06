@@ -1,4 +1,4 @@
-from .Extractors import Extractor
+from .Extractors import BaseExtractor, Extractor, XLSExtractor, XLSXExtractor, CSVExtractor
 
 
-__all__ = ["Extractor"]
+__all__ = ["BaseExtractor", "Extractor", "XLSExtractor", "XLSXExtractor", "CSVExtractor"]
