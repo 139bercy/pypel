@@ -1,5 +1,6 @@
 import pytest
-from pypel import Transformer, Extractor
+from pypel.transformers import Transformer
+from pypel.extractors import Extractor
 import os
 from pandas import DataFrame
 from pandas.testing import assert_frame_equal
