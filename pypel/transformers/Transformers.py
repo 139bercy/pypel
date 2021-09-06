@@ -1,5 +1,5 @@
 import os
-from pypel.extractors.Extractor import Extractor
+from pypel.extractors.Extractors import Extractor
 import warnings
 from typing import List, Dict, Optional, Any, Union
 from pandas import DataFrame, to_datetime
@@ -171,14 +171,14 @@ class ColumnReplacerTransformer(BaseTransformer):
         return df.columns.to_series().replace(column_replace_dict, regex=True)
 
 
-class ColumnCapitaliser(BaseTransformer):
+class ColumnCapitaliserTransformer(BaseTransformer):
     """Capitalizes column names."""
 
     def transform(self, df: DataFrame):
         return df.columns.to_series().astype(str).str.capitalize()
 
 
-class ColumnContenStripper(BaseTransformer):
+class ColumnContenStripperTransformer(BaseTransformer):
     """Strips/trims the contents of a column. Said column(s) must contain only str values."""
 
     def transform(self, df: DataFrame, columns_to_strip: List[str]):

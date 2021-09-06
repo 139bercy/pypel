@@ -1,5 +1,5 @@
 import importlib
-from pypel.processes.Process import Process
+from pypel.processes import Process
 from typing import Optional, Dict, TypedDict, Union, List
 from elasticsearch import Elasticsearch
 

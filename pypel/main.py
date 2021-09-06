@@ -1,11 +1,10 @@
 import json
 import os
 import pathlib
-import warnings
 import elasticsearch
 import argparse
 import ssl
-from pypel.processes.ProcessFactory import ProcessFactory
+from pypel.ProcessFactory import ProcessFactory
 # import pypel.utils.elk.clean_index as clean_index
 # import pypel.utils.elk.init_index as init_index
 import logging.handlers

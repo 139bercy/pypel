@@ -8,14 +8,14 @@ import numpy
 from tests.unit.test_Loader import LoaderTest, Elasticsearch
 
 
-class TransformerForTesting(pypel.Transformer):
+class TransformerForTesting(pypel.transformers.Transformer):
     def _format_na(self, df: pd.DataFrame) -> pd.DataFrame:
         return df.where(df.notnull(), 0).astype(int)
 
 
 @pytest.fixture
 def ep():
-    return pypel.Process()
+    return pypel.processes.Process()
 
 
 def mockreturn_extract(self, dummy):
@@ -36,7 +36,7 @@ def mockreturn_extract(self, dummy):
         "DATE_DECISION": [dt.datetime.strptime("2019/05/12", "%Y/%m/%d")],
         "CODE_COMMUNE_ETABLISSEMENT": ['75112'],
         "STATUT": ["decidé"]
-        }
+    }
     df = pd.DataFrame(d)
     return df
 
@@ -57,13 +57,13 @@ def mockreturn_extract_no_date(self):
         "CODE_COMMUNE_ETABLISSEMENT": ['75112'],
         "Statut": ["decidé"],
         "ShouldBeNone": numpy.NaN
-        }
+    }
     test_df = pd.DataFrame(test)
     return test_df
 
 
 def test_integration_extract_transform_no_date(ep, params, monkeypatch):
-    monkeypatch.setattr(pypel.Process, "extract", mockreturn_extract_no_date)
+    monkeypatch.setattr(pypel.processes.Process, "extract", mockreturn_extract_no_date)
     expected = {
         "PROJET": ["nom du projet"],
         "ENTREPRISE": ["MINISTERE DE L'ECONOMIE DES FINANCES ET DE LA RELANCE"],
@@ -79,20 +79,18 @@ def test_integration_extract_transform_no_date(ep, params, monkeypatch):
         "CODE_COMMUNE_ETABLISSEMENT": ['75112'],
         "STATUT": ["decidé"],
         "SHOULDBENONE": None
-        }
+    }
     df = ep.extract()
     with pytest.warns(UserWarning):
         obtained = ep.transform(df,
-                                  column_replace={
-                                      "é": "e",
-                                      " ": "_"},
-                                  strip=["DEPARTEMENT"])
+                                column_replace={"é": "e", " ": "_"},
+                                strip=["DEPARTEMENT"])
     expected_df = pd.DataFrame(expected)
     assert_frame_equal(expected_df, obtained, check_names=True)
 
 
 def test_integration_exctract_transform(ep, params, monkeypatch):
-    monkeypatch.setattr(pypel.Process, "extract", mockreturn_extract)
+    monkeypatch.setattr(pypel.processes.Process, "extract", mockreturn_extract)
     expected = {
         "PROJET": ["nom du projet"],
         "ENTREPRISE": ["MINISTERE DE L'ECONOMIE DES FINANCES ET DE LA RELANCE"],
@@ -110,12 +108,10 @@ def test_integration_exctract_transform(ep, params, monkeypatch):
         "DATE_DECISION": ["2019-05-12"],
         "CODE_COMMUNE_ETABLISSEMENT": ['75112'],
         "STATUT": ["decidé"]
-        }
+    }
     df = ep.extract("")
     obtained = ep.transform(df,
-                            column_replace={
-                                "é": "e",
-                                " ": "_"},
+                            column_replace={"é": "e", " ": "_"},
                             date_format="%Y-%m-%d",
                             date_columns=["DATE_DEPOT_PROJET", "DATE_DEBUT_INSTRUCTION", "DATE_DECISION"])
     expected_df = pd.DataFrame(expected)
@@ -217,12 +213,13 @@ def test_multiple_transformers(ep):
     testing_df = pd.DataFrame({"0": [numpy.NaN]})
     expected_df = pd.DataFrame({"0": [0]})
     with pytest.warns(UserWarning):
-        obtained_df = pypel.Process(transformer=[pypel.Transformer(), TransformerForTesting()]).transform(testing_df)
+        obtained_df = pypel.processes.Process(
+            transformer=[pypel.transformers.Transformer(), TransformerForTesting()]).transform(testing_df)
     assert_frame_equal(expected_df, obtained_df, check_names=True)
 
 
 def test_process_method():
     path_csv = os.path.join(os.getcwd(), "tests", "fake_data", "test_init_df.csv")
-    process = pypel.Process(loader=LoaderTest(Elasticsearch()))
+    process = pypel.processes.Process(loader=LoaderTest(Elasticsearch()))
     with pytest.warns(UserWarning):
         process.process(path_csv, "indice")
