@@ -19,19 +19,32 @@ PYPEL (PYthon Pipeline into ELasticsearch) is a customizable ETL (Extract / Tran
  - What if my usecase slightly differs from that ?
 The Extract/Transform/Load parts are separated, and you can modify each one independantly to fit your usecase.
 
-## API descrption
-All functionalities are available through the pypel.Process class:
+## API summary
+All functionalities are available through the pypel.processes.Process class:
 
- - instantiate your Process : `process = pypel.Process()`
+ - instantiate your Process : `process = pypel.processes.Process()`
  - extract data : `df = process.extract(file_path)`
  - transform data : `df = process.transform(df)`
  - load data : `process.load(df, es_indice, es_instance)`
      es_indice is the elasticsearch indice you wanna load into, es_instance is an elasticsearch connection : `es = elasticserach.Elasticsearch(ip, ...)`
  - for conveniance, a wrap-up function exists that bundles all 3 operations in one : `process.process(file_path, es_indice, es_instance)`
 
-The Process constructor takes optional Extractor, Transformer & Loader arguments. These must derive from their pypel-class.
+The Process constructor takes optional Extractor, Transformer & Loader arguments. These must derive from their BaseClass.
 
-For options, detailed usage and/or functionalities please refer to the documentation
+4 subpackages are made accessible for customization :
+ - extractors are located in `pypel.extractors`
+ - transformers in `pypel.transformers`
+ - loaders in `pypel.loaders`
+ - processes in `pypel.processes`
+
+For options, detailed usage and/or functionalities please refer to the docstrings.
+
+### In-depth API usage
+All custom extractors, transformers and loaders MUST be derived from their respective BaseClass, e.g `BaseTransformer`
+
+The `Process` class exists for conveniance only. Complex use-cases can (and probably should) ignore it completely, but
+the cli currently only instanciates & executes `Process`es.
+
 
 ### Loading from the command line
 Pypel allows generating & loading from the command line by executing `pypel/main.py`.
@@ -44,7 +57,8 @@ For a `--config-file` example, see `pypel/conf_template.json`.
 Only json config files are currently supported.
 
 ## Tests
-Move to the project's root directory `pypel` then run `make`. This generates html reports for easier reading.
+Move to the project's root directory `pypel` then run `make`. This generates html reports for easier reading, located
+at: `./tests/reports/report.html` & `./tests/reports/coverage/index.html` for coverage details.
 
 To try loading from a config file, start a local elasticsearch then run `make test_cli`. The test is successful if
 the recipe executed without failure AND the indices `pypel_bulk_MM_DD`, `pypel_bulk_2_MM_DD`, `pypel_change_indice_MM_DD`
