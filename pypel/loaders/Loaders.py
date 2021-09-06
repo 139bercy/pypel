@@ -21,7 +21,7 @@ class Action(TypedDict):
 class BaseLoader:
     """Dummy class that all Loaders should inherit from."""
     @abc.abstractmethod
-    def load(self, *args, **kwargs):
+    def load(self, *args, **kwargs) -> Any:
         """This method must be implemented"""
 
 
@@ -41,7 +41,7 @@ class Loader(BaseLoader):
                  path_to_export_folder: Union[None, str, bytes, os.PathLike] = None,
                  backup: bool = False,
                  name_export: Optional[str] = None,
-                 dont_append_date: bool = False):
+                 dont_append_date: bool = False) -> None:
         if backup:
             if path_to_export_folder is None:
                 raise ValueError("No export folder passed but backup set to true !")
@@ -150,7 +150,7 @@ class CSVWriter(BaseLoader):
     """
     Loader that saves the dataframe in a csv file
     """
-    def load(self, dataframe: pd.DataFrame, path: os.PathLike, **kwargs):
+    def load(self, dataframe: pd.DataFrame, path: os.PathLike, **kwargs) -> None:
         """
         Saves `dataframe` into the csv `path`
 
