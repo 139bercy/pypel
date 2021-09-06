@@ -1,5 +1,8 @@
 import pytest
-from pypel import Extractor, Transformer, Loader, Process
+from pypel.extractors import Extractor
+from pypel.loaders import Loader
+from pypel.transformers import Transformer
+from pypel.processes import Process
 from pandas import DataFrame
 
 

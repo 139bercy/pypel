@@ -1,5 +1,5 @@
 import pytest
-from pypel import Extractor
+from pypel.extractors import Extractor
 import pandas as pd
 from pandas.testing import assert_frame_equal
 import os
