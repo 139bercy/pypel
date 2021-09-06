@@ -10,7 +10,7 @@ class BaseTransformer:
     """Dummy class that all Transformers must inherit from."""
 
     @abc.abstractmethod
-    def transform(self, *args, **kwargs) -> DataFrame:
+    def transform(self, *args, **kwargs) -> Any:
         """This method must be implemented"""
 
 
@@ -160,28 +160,28 @@ class Transformer(BaseTransformer):
 class ColumnStripperTransformer(BaseTransformer):
     """Strips column names, removing trailing and leading whitespaces."""
 
-    def transform(self, df: DataFrame):
+    def transform(self, df: DataFrame) -> DataFrame:
         return df.columns.astype(str).str.strip()
 
 
 class ColumnReplacerTransformer(BaseTransformer):
     """Allows replacing column names."""
 
-    def transform(self, df: DataFrame, column_replace_dict: Dict[str, str]):
+    def transform(self, df: DataFrame, column_replace_dict: Dict[str, str]) -> DataFrame:
         return df.columns.to_series().replace(column_replace_dict, regex=True)
 
 
 class ColumnCapitaliserTransformer(BaseTransformer):
     """Capitalizes column names."""
 
-    def transform(self, df: DataFrame):
+    def transform(self, df: DataFrame) -> DataFrame:
         return df.columns.to_series().astype(str).str.capitalize()
 
 
 class ColumnContenStripperTransformer(BaseTransformer):
     """Strips/trims the contents of a column. Said column(s) must contain only str values."""
 
-    def transform(self, df: DataFrame, columns_to_strip: List[str]):
+    def transform(self, df: DataFrame, columns_to_strip: List[str]) -> DataFrame:
         df_ = df.copy()
         for column in columns_to_strip:
             try:
@@ -196,14 +196,14 @@ class ColumnContenStripperTransformer(BaseTransformer):
 class ContentReplacerTransformer(BaseTransformer):
     """Allows replacing contents of a column"""
 
-    def transform(self, df: DataFrame, replace_dict: Dict[Any, Any]):
+    def transform(self, df: DataFrame, replace_dict: Dict[Any, Any]) -> DataFrame:
         return df.replace(replace_dict, regex=True)
 
 
 class NullValuesReplacerTransformer(BaseTransformer):
     """Replaces NaNs, NaTs or similar values by None, because None is understood by elasticsearc where nans arent."""
 
-    def transform(self, df: DataFrame):
+    def transform(self, df: DataFrame) -> DataFrame:
         """
         We use x != x because we want to check for both NaN & NaT at the same time, also any value that do pass this
         check should probably be taken care of anyway.
@@ -214,7 +214,7 @@ class NullValuesReplacerTransformer(BaseTransformer):
 class DateFormatterTransformer(BaseTransformer):
     """Allows changing the date format of specific datetime columns"""
 
-    def transform(self, df: DataFrame, date_columns: List[str], date_format="%Y-%m-%d"):
+    def transform(self, df: DataFrame, date_columns: List[str], date_format="%Y-%m-%d") -> DataFrame:
         """
         :param df: the dataframe to modify
         :param date_columns: the columns containing the datetime values to modify
@@ -234,7 +234,7 @@ class DateFormatterTransformer(BaseTransformer):
 class DateParserTransformer(BaseTransformer):
     """Converts passed columns' values to datetime objects. Date parsing is prefered at extraction."""
 
-    def transform(self, df: DataFrame, date_columns: List[str], date_format: str = "%Y-%m-%d"):
+    def transform(self, df: DataFrame, date_columns: List[str], date_format: str = "%Y-%m-%d") -> DataFrame:
         """
 
         :param df: the dataframe containing the columns to parse

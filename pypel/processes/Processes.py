@@ -182,7 +182,7 @@ class Process:
         except AssertionError:
             err = ""
             if not self.__transformer_is_instanced:
-                err = f"Transformer"
+                err = "Transformer"
             if not self.__loader_is_instanced:
                 if err:
                     err = f"{err}, Loader"

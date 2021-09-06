@@ -12,9 +12,8 @@ def transformer():
 
 
 class RefExtractor(Extractor):
-    def extract(self, *args, **kwargs):
-        return DataFrame({
-                             "0": [0, 1, 2]})
+    def extract(self, *args, **kwargs) -> DataFrame:
+        return DataFrame({"0": [0, 1, 2]})
 
 
 class TestTransformer:
@@ -51,6 +50,6 @@ class TestTransformer:
 
     def test_merge_ref_with_default_extractor(self, transformer):
         df = Extractor().extract(os.path.join(os.getcwd(), "tests", "fake_data", "test_init_df.csv"))
-        transformer.merge_referential(df,
-                                      os.path.join(os.getcwd(), "tests", "fake_data", "test_init_df.csv"))
-
+        expected = df.copy()
+        actual = transformer.merge_referential(df, os.path.join(os.getcwd(), "tests", "fake_data", "test_init_df.csv"))
+        assert_frame_equal(expected, actual)
