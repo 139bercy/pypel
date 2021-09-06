@@ -3,13 +3,13 @@
     {
       "name": "EXAMPLE",
       "Extractor": {
-        "name": "pypel.Extractor"
+        "name": "pypel.extractors.Extractor"
       },
-      "Transformers": {
-        "name": "pypel.Transformer"
-      },
+      "Transformers": [{
+        "name": "pypel.transformers.Transformer"
+      }],
       "Loader": {
-        "name": "pypel.Loader",
+        "name": "pypel.loaders.Loader",
         "backup": false,
         "name_export": null,
         "dont_append_date": false,
@@ -20,18 +20,18 @@
     {
       "name": "ANOTHER_EXAMPLE",
       "Extractor": {
-        "name": "pypel.Extractor"
+        "name": "pypel.extractors.Extractor"
       },
       "Transformers": [
         {
-          "name": "pypel.Transformer"
+          "name": "pypel.transformers.Transformer"
         },
         {
-          "name":"pypel.ColumnStripperTransformer"
+          "name":"pypel.transformers.ColumnStripperTransformer"
         }
       ],
       "Loader": {
-        "name": "pypel.Loader"
+        "name": "pypel.loaders.Loader"
       },
       "indice": "pypel_bulk_2"
     }
