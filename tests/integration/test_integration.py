@@ -15,7 +15,7 @@ class TransformerForTesting(pypel.transformers.Transformer):
 
 @pytest.fixture
 def ep():
-    return pypel.processes.Process()
+    return pypel.processes.Process(extractor=pypel.extractors.Extractor())
 
 
 def mockreturn_extract(self, dummy):
