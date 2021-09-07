@@ -2,13 +2,13 @@
   "Processes": [
     {
       "name": "EXAMPLE",
-      "Extractors": {
+      "Extractor": {
         "name": "pypel.Extractor"
       },
       "Transformers": {
         "name": "pypel.Transformer"
       },
-      "Loaders": {
+      "Loader": {
         "name": "pypel.Loader",
         "backup": false,
         "name_export": null,
@@ -19,16 +19,21 @@
     },
     {
       "name": "ANOTHER_EXAMPLE",
-      "Extractors": {
+      "Extractor": {
         "name": "pypel.Extractor"
       },
-      "Transformers": {
-        "name": "pypel.Transformer"
-      },
-      "Loaders": {
+      "Transformers": [
+        {
+          "name": "pypel.Transformer"
+        },
+        {
+          "name":"pypel.ColumnStripperTransformer"
+        }
+      ],
+      "Loader": {
         "name": "pypel.Loader"
       },
-      "indice":"pypel_bulk_2"
+      "indice": "pypel_bulk_2"
     }
   ]
 }
