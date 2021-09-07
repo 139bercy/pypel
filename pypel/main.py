@@ -15,9 +15,9 @@ logger = logging.getLogger(__name__)
 
 
 class ProcessConfigMandatory(TypedDict):
-    Extractors: Dict[str, str]
+    Extractor: Dict[str, str]
     Transformers: Union[Dict[str, str], List[Dict[str, str]]]
-    Loaders: Dict[str, str]
+    Loader: Dict[str, str]
     indice: str
 
 
