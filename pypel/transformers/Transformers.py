@@ -2,7 +2,7 @@ import os
 from pypel.extractors.Extractors import Extractor
 import warnings
 from typing import List, Dict, Optional, Any, Union
-from pandas import DataFrame, to_datetime
+from pandas import DataFrame, to_datetime, NA
 import abc
 
 
@@ -161,21 +161,21 @@ class ColumnStripperTransformer(BaseTransformer):
     """Strips column names, removing trailing and leading whitespaces."""
 
     def transform(self, df: DataFrame) -> DataFrame:
-        return df.columns.astype(str).str.strip()
+        return df.rename(columns=str.strip)
 
 
 class ColumnReplacerTransformer(BaseTransformer):
     """Allows replacing column names."""
 
     def transform(self, df: DataFrame, column_replace_dict: Dict[str, str]) -> DataFrame:
-        return df.columns.to_series().replace(column_replace_dict, regex=True)
+        return df.rename(columns=column_replace_dict)
 
 
 class ColumnCapitaliserTransformer(BaseTransformer):
     """Capitalizes column names."""
 
     def transform(self, df: DataFrame) -> DataFrame:
-        return df.columns.to_series().astype(str).str.capitalize()
+        return df.rename(columns=str.capitalize)
 
 
 class ColumnContenStripperTransformer(BaseTransformer):
@@ -208,7 +208,7 @@ class NullValuesReplacerTransformer(BaseTransformer):
         We use x != x because we want to check for both NaN & NaT at the same time, also any value that do pass this
         check should probably be taken care of anyway.
         """
-        return df.applymap(lambda x: None if x != x else x)
+        return df.applymap(lambda x: None if x is NA or x != x else x)
 
 
 class DateFormatterTransformer(BaseTransformer):
@@ -226,7 +226,7 @@ class DateFormatterTransformer(BaseTransformer):
             try:
                 df_[col] = df_[col].dt.strftime(date_format)
             except AttributeError as e:
-                raise ValueError(f"Column {col} has non-datetime values, the columns to format must be datetimes."
+                raise ValueError(f"Column {col} has non-datetime values, the columns to format must be datetimes. "
                                  f"Please parse beforehands.") from e
         return df_
 
