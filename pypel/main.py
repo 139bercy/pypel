@@ -49,13 +49,17 @@ def select_process_from_config(es_: elasticsearch.Elasticsearch,
     if processes is None:
         raise ValueError("key 'Processes' not found in the passed config, no idea what to do.")
     else:
-        assert isinstance(processes, list)
+        try:
+            assert isinstance(processes, list)
+        except AssertionError as e_:
+            raise ValueError("Processes is not a list, please encapsulate Processes inside a list even if you only "
+                             "have a single Process") from e_
     if process == "all":
         for proc in processes:
             process_from_config(es_, proc, files, indice)
     else:
-        if process in [conf["name"] for conf in processes]:
-            process_from_config(es_, [conf for conf in processes if conf["name"] == process][0], files, indice)
+        if process in [conf.get("name") for conf in processes]:
+            process_from_config(es_, [conf for conf in processes if conf.get("name") == process][0], files, indice)
         else:
             raise ValueError(f"process {process} not found in the configuration file !")
 
@@ -148,5 +152,5 @@ if __name__ == "__main__":  # pragma: no cover
         clean_index.clean_index(mappings, es_index_client)
         init_index.init_index(mappings, es_index_client)
     """
-    logger.debug(config["Processes"])
-    select_process_from_config(es, config["Processes"], args.process, args.source_path, args.indice)
+    logger.debug(config.get("Processes"))
+    select_process_from_config(es, config.get("Processes"), args.process, args.source_path, args.indice)
