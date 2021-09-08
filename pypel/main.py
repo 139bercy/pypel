@@ -1,6 +1,7 @@
 import json
 import os
 import pathlib
+import sys
 import elasticsearch
 import argparse
 import ssl
@@ -70,31 +71,34 @@ def process_from_config(es_, process, files, indice):
     :return: None
     """
     if indice:
-        _indice = indice
+        indice_ = indice
     else:
-        _indice = process["indice"]
+        indice_ = process["indice"]
     processor = ProcessFactory().create_process(process, es_)
     if os.path.isdir(files):
         file_paths = [os.path.join(files, f_).__str__() for f_ in os.listdir(files)]
-        bulk_op = {indice: file_paths}
+        bulk_op = {indice_: file_paths}
         processor.bulk(bulk_op)
+    elif os.path.isfile(files):
+        processor.process(files, indice_, es_)
     else:
-        processor.process(files, _indice, es_)
+        raise FileNotFoundError(f"Could not find file {files}")
 
 
-def get_args():
+def get_args(args_):
     """Return the process concerned - in case it's specified at the command line."""
     parser = argparse.ArgumentParser(description='Process the type of Process')
+    parser.add_argument("-f", "--source-path", type=str, help="path to the file or directory to load from",
+                        required=True)
     parser.add_argument("-c", "--config-file", default="./conf/config.json", type=str,
                         help="get the path to the config file to load from")
-    parser.add_argument("-f", "--source-path", type=str, help="path to the file or directory to load from")
     # TODO: should that be a pypel functionnality ?
     #  parser.add_argument("-c", "--clean", default=False, type=str, help="should elasticsearch indices be cleared")
     #  parser.add_argument("-m", "--mapping", default="./conf/index_mappings.json", type=pathlib.Path,
     #                    help="path to the elasticsearch indices's mappings")
     parser.add_argument("-p", "--process", default="all", help="specify the process(es) to execute")
     parser.add_argument("-i", "--indice", default=None, help="specify the indice to load into")
-    return parser.parse_args()
+    return parser.parse_args(args_)
 
 
 def get_es_instance(conf):
@@ -121,7 +125,7 @@ def get_es_instance(conf):
 
 
 if __name__ == "__main__":  # pragma: no cover
-    args = get_args()
+    args = get_args(sys.argv[1:])
     for arg in args.__dict__:
         logger.debug(arg, args.__getattribute__(arg))
     path_to_conf = os.path.join(os.getcwd(), args.config_file)
