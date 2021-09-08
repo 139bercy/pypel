@@ -9,7 +9,7 @@ from pypel.ProcessFactory import ProcessFactory
 # import pypel.utils.elk.clean_index as clean_index
 # import pypel.utils.elk.init_index as init_index
 import logging.handlers
-from typing import List, Dict, TypedDict, Union
+from typing import List, Dict, TypedDict, Union, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -32,8 +32,8 @@ class Config(TypedDict):
 def select_process_from_config(es_: elasticsearch.Elasticsearch,
                                processes: Config,
                                process: str,
-                               files: pathlib.Path,
-                               indice: Union[None, str]):
+                               files: Union[pathlib.Path, str],
+                               indice: Optional[str]):
     """
     Given a pair of configurations (global & process configuration `conf`and mapping configuration
     `mappings`), load all processes related to `process`, or all of them if `process` is omitted in to the Elasticsearch
@@ -60,7 +60,8 @@ def select_process_from_config(es_: elasticsearch.Elasticsearch,
             raise ValueError(f"process {process} not found in the configuration file !")
 
 
-def process_from_config(es_, process, files, indice):
+def process_from_config(es_: elasticsearch.Elasticsearch, process: ProcessConfig, files: Union[pathlib.Path, str],
+                        indice: Optional[str]):
     """
     Instantiate the process from its passed configuration, and execute it on passed file or directory
 
