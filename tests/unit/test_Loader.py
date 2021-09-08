@@ -1,3 +1,4 @@
+import os
 import tempfile
 import pytest
 import pypel.loaders.Loaders as loader
@@ -79,3 +80,17 @@ class TestLoader:
                             mock_streaming_bulk_some_errors)
         with pytest.warns(UserWarning):
             loader.Loader(Elasticsearch())._bulk_into_elastic([], "indice")
+
+
+class TestCSVWriter:
+    def test_asserts_writes_csv(self):
+        df = DataFrame(data=[[6, 6, 6, 6, 6],
+                             [7, 7, 7, 7, 7],
+                             [8, 8, 8, 8, 8],
+                             [9, 9, 9, 9, 9]],
+                       columns=["0", "1", "2", "3", "4"])
+        with tempfile.TemporaryDirectory() as path:
+            loader_ = loader.CSVWriter()
+            file_name = "tmpcsv.csv"
+            loader_.load(df, path + f"/{file_name}")
+            assert file_name in os.listdir(path)
