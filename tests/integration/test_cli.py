@@ -2,6 +2,7 @@ import elasticsearch
 import pytest
 import pypel.processes
 import ssl
+import os
 from pypel.main import get_args, select_process_from_config, process_from_config, get_es_instance
 
 
@@ -167,10 +168,7 @@ class TestProcessFromConfig:
     def test_directory(self, monkeypatch, process_config, es_instance):
         def bulk_assert_called_with(_, dic):
             assert dic == {
-                "my_indice": ['./tests/fake_data/test_bad_filename$.csv',
-                              './tests/fake_data/test_bad_filename$.xlsx',
-                              './tests/fake_data/test_init_df.csv', './tests/fake_data/test_init_df.xls',
-                              './tests/fake_data/test_init_df.xlsx']}
+                "my_indice": [os.path.join("./tests/fake_data/", file) for file in os.listdir("./tests/fake_data/")]}
 
         monkeypatch.setattr(pypel.processes.Process, "bulk", bulk_assert_called_with)
         process_from_config(es_instance, process_config, "./tests/fake_data/", None)
