@@ -1,7 +1,7 @@
 .PHONY: report test_cli
 
 report:
-	pytest --cov=. --html=tests/reports/report.html --cov-report html -W error tests/
+	pytest --cov=. --html=tests/reports/report.html --cov-report html -W error tests/ -vv
 
 ci:
 	pytest --cov=. -W error tests/
