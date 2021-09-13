@@ -12,6 +12,7 @@ import logging.handlers
 from typing import List, Dict, TypedDict, Union, Optional
 
 logger = logging.getLogger(__name__)
+logger.setLevel(os.environ.get("PYPEL_LOGS", "INFO"))
 
 
 class ProcessConfigMandatory(TypedDict):
