@@ -45,6 +45,7 @@ All custom extractors, transformers and loaders MUST be derived from their respe
 The `Process` class exists for conveniance only. Complex use-cases can (and probably should) ignore it completely, but
 the cli currently only instanciates & executes `Process`es.
 
+Log-level is read from the environment variable `PYPEL_LOGS`, and it defaults to `INFO`.
 
 ### Loading from the command line
 Pypel allows generating & loading from the command line by executing `pypel/main.py`.
@@ -55,6 +56,8 @@ pypel.main takes several arguments :
 
 For a `--config-file` example, see `pypel/conf_template.json`.
 Only json config files are currently supported.
+
+For options, detailed usage and/or functionalities please refer to the documentation
 
 ## Tests
 Move to the project's root directory `pypel` then run `make`. This generates html reports for easier reading, located
