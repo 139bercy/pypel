@@ -1,4 +1,7 @@
 import os
+
+import pandas
+
 from pypel.extractors.Extractors import Extractor
 import warnings
 from typing import List, Dict, Optional, Any, Union
@@ -262,3 +265,47 @@ class MergerTransformer(BaseTransformer):
         :return: pd.Dataframe: the enriched dataframe
         """
         return df.merge(ref, how=how, on=mergekey)
+
+
+class CodeDepartementParserTransformer(BaseTransformer):
+    def __init__(self, coerce=True):
+        self.coerce = coerce
+        super().__init__()
+
+    def _coerce(self, value):
+        if self.coerce:
+            return None
+        else:
+            raise ValueError(f"La valeur {value} n'est pas un code département valide")
+
+    def _code_departement(self, value: str):
+        if value is None or pandas.isna(value):
+            self._coerce(value)
+        else:
+            try:
+                if "2A" in value.upper():
+                    return "2A"
+                elif "2B" in value.upper():
+                    return "2B"
+                elif len(value) == 3 or len(value) == 2:
+                    if 0 < int(value) <= 95:
+                        return str(int(value))
+                    elif 977 > int(value) > 970:
+                        return value
+                    else:
+                        self._coerce(value)
+                elif len(value) == 1 and int(value) > 0:
+                    return "0" + value
+                else:
+                    self._coerce(value)
+            except ValueError:
+                self._coerce(value)
+
+    def transform(self, dataframe: DataFrame, columns: str or List[str]) -> DataFrame:
+        df = dataframe.copy()
+        if isinstance(columns, list):
+            for column in columns:
+                df[column] = df[column].astype(str).apply(self._code_departement)
+        else:
+            df[columns] = df[columns].astype(str).apply(self._code_departement)
+        return df
