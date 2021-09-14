@@ -1,7 +1,8 @@
+import pandas as pd
 import pytest
 from pypel.transformers import (Transformer, ColumnStripperTransformer, ColumnReplacerTransformer,
                                 ContentReplacerTransformer, ColumnCapitaliserTransformer,
-                                ColumnContenStripperTransformer, MergerTransformer,
+                                ColumnContenStripperTransformer, MergerTransformer, CodeDepartementParserTransformer,
                                 NullValuesReplacerTransformer, DateParserTransformer, DateFormatterTransformer)
 from pypel.extractors import Extractor
 import os
@@ -18,6 +19,11 @@ def transformer():
 @pytest.fixture
 def merger():
     return MergerTransformer()
+
+
+@pytest.fixture
+def code_dep_parser():
+    return CodeDepartementParserTransformer()
 
 
 class RefExtractor(Extractor):
@@ -140,3 +146,40 @@ class TestMerger:
         expected = df.copy()
         actual = merger.transform(df, mergekey="0", ref=df)
         assert_frame_equal(expected, actual)
+
+
+class TestCodeDepartementParserTransformer:
+    def test_valid_values_parsed_single_column(self, code_dep_parser):
+        expected = DataFrame(data=[["01"], ["15"], ["974"], ["2A"], ["2B"], ["95"]], columns=["col1"])
+        actual = code_dep_parser.transform(DataFrame(data=[["1"], ["015"], [974], ["2A"], ["2B"], [95]],
+                                                     columns=["col1"]),
+                                           columns="col1")
+        assert_frame_equal(expected, actual)
+
+    def test_invalid_values_set_to_none(self, code_dep_parser):
+        expected = DataFrame(data=[[None], [None], [None], [None], [None], [None], [None], [None], [None], [None],
+                                   [None], [None], [None], [None]], columns=["col1"])
+        actual = code_dep_parser.transform(DataFrame(data=[[None], ["0"], ["99"], ["999"], ["1000"], ["-15"], ["A"],
+                                                           ["4A"], [pd.NA], ["00"], ["000"], ["100"], [14.4], [None]],
+                                                     columns=["col1"]), columns=["col1"])
+        assert_frame_equal(expected, actual)
+
+    def test_multiple_columns(self, code_dep_parser):
+        expected = DataFrame(data=[[""]], columns=["col1", "col2"])
+        actual = code_dep_parser.transform(DataFrame(data=[[]], columns=[]), columns=["col1", "col2"])
+        assert_frame_equal(expected, actual)
+
+    def test_raises_if_coerce_set_to_false(self):
+        tr = CodeDepartementParserTransformer(coerce=False)
+        with pytest.raises(ValueError, match="La valeur 0 n'est pas un code département valide"):
+            tr.transform(DataFrame(data=[["0"]], columns=["1"]), columns=["1"])
+        with pytest.raises(ValueError, match="La valeur 99 n'est pas un code département valide"):
+            tr.transform(DataFrame(data=[["99"]], columns=["1"]), columns=["1"])
+        with pytest.raises(ValueError, match="La valeur 100 n'est pas un code département valide"):
+            tr.transform(DataFrame(data=[["100"]], columns=["1"]), columns=["1"])
+        with pytest.raises(ValueError, match="La valeur bonjour n'est pas un code département valide"):
+            tr.transform(DataFrame(data=[["bonjour"]], columns=["1"]), columns=["1"])
+        with pytest.raises(ValueError, match="La valeur 10A n'est pas un code département valide"):
+            tr.transform(DataFrame(data=[["10A"]], columns=["1"]), columns=["1"])
+        with pytest.raises(ValueError, match="La valeur A4 n'est pas un code département valide"):
+            tr.transform(DataFrame(data=[["A4"]], columns=["1"]), columns=["1"])
