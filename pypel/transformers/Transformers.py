@@ -14,6 +14,24 @@ class BaseTransformer:
         """This method must be implemented"""
 
 
+class BaseParser(BaseTransformer):
+    @abc.abstractmethod
+    def __init__(self, coerce=True):
+        """Must be overridden and declare a `self.parsed` attribute"""
+        self.coerce = coerce
+        self.parsed = ""
+
+    def _coerce(self, value):
+        if self.coerce:
+            return None
+        else:
+            raise ValueError(f"La valeur {value} n'est pas {self.parsed}valide")
+
+    @abc.abstractmethod
+    def transform(self, dataframe, columns_to_parse) -> DataFrame:
+        """This method must be impemented"""
+
+
 class Transformer(BaseTransformer):
     """
     Encapsulates all the data-transformation related logic. Massively relies on pandas.
@@ -264,16 +282,10 @@ class MergerTransformer(BaseTransformer):
         return df.merge(ref, how=how, on=mergekey)
 
 
-class CodeDepartementParserTransformer(BaseTransformer):
+class CodeDepartementParserTransformer(BaseParser):
     def __init__(self, coerce=True):
-        self.coerce = coerce
-        super().__init__()
-
-    def _coerce(self, value):
-        if self.coerce:
-            return None
-        else:
-            raise ValueError(f"La valeur {value} n'est pas un code département valide")
+        super().__init__(coerce)
+        self.parsed = "un code département"
 
     def _code_departement(self, value: str):
         if value == str(None) or value == str(NA):
