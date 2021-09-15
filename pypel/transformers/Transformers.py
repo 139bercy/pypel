@@ -21,11 +21,13 @@ class BaseParser(BaseTransformer):
         self.coerce = coerce
         self.parsed = ""
 
-    def _coerce(self, value):
+    def _coerce(self, value, e=None, warn=False):
         if self.coerce:
+            if warn:
+                warnings.warn(f"La valeur {value} n'est pas {self.parsed}valide, elle sera remplacée par None.")
             return None
         else:
-            raise ValueError(f"La valeur {value} n'est pas {self.parsed}valide")
+            raise ValueError(f"La valeur {value} n'est pas {self.parsed}valide") from e
 
     @abc.abstractmethod
     def transform(self, dataframe, columns_to_parse) -> DataFrame:
@@ -249,8 +251,11 @@ class DateFormatterTransformer(BaseTransformer):
         return df_
 
 
-class DateParserTransformer(BaseTransformer):
+class DateParserTransformer(BaseParser):
     """Converts passed columns' values to datetime objects. Date parsing is prefered at extraction."""
+    def __init__(self, coerce=False):
+        super().__init__(coerce)
+        self.parsed = "une Series de date "
 
     def transform(self, df: DataFrame, date_columns: List[str], date_format: str = "%Y-%m-%d") -> DataFrame:
         """
@@ -262,7 +267,10 @@ class DateParserTransformer(BaseTransformer):
         """
         df_ = df.copy()
         for col in date_columns:
-            df_[col] = to_datetime(df_[col], format=date_format)
+            try:
+                df_[col] = to_datetime(df_[col], format=date_format, errors='coerce' if self.coerce else 'raise')
+            except ValueError as e:
+                self._coerce(df_[col], e)
         return df_
 
 
@@ -285,7 +293,7 @@ class MergerTransformer(BaseTransformer):
 class CodeDepartementParserTransformer(BaseParser):
     def __init__(self, coerce=True):
         super().__init__(coerce)
-        self.parsed = "un code département"
+        self.parsed = "un code département "
 
     def _code_departement(self, value: str):
         if value == str(None) or value == str(NA):
@@ -317,4 +325,92 @@ class CodeDepartementParserTransformer(BaseParser):
                 df[column] = df[column].astype(str).apply(self._code_departement)
         else:
             df[columns] = df[columns].astype(str).apply(self._code_departement)
+        return df
+
+
+class CodeRegionParser(BaseParser):
+    def __init__(self, coerce=True):
+        super().__init__(coerce)
+        self.parsed = "un code région "
+        self.codes_region_post_2016 = [11, 24, 27, 28, 32, 44, 52, 53, 75, 76, 84, 93, 94, 1, 2, 3, 4, 6]
+        self.codes_region_pre_2015 = [11, 21, 22, 23, 24, 25, 26, 31, 41, 42, 43, 52, 53, 54, 72, 73, 74, 82, 83, 91,
+                                      93, 94, 1, 2, 3, 4, 6]
+
+    def _get_other_nomenclature(self, nomenclature):
+        if nomenclature == 2016:
+            return 2015
+        else:
+            return 2016
+
+    def _code_region_repr(self, value: int):
+        if value < 10:
+            return "0" + str(value)
+        else:
+            return str(value)
+
+    def _loose_code_region(self, value):
+        acceptable = set(self.codes_region_pre_2015 + self.codes_region_post_2016)
+        if isinstance(value, int):
+            if value in acceptable:
+                return self._code_region_repr(value)
+        else:
+            if value in [self._code_region_repr(acceptable_value) for acceptable_value in acceptable]:
+                return value
+        return self._coerce(value)
+
+    def _loose_code_region_with_warning(self, value, nomenclature):
+        if nomenclature == 2016:
+            warn = [value_ for value_ in self.codes_region_pre_2015 if value_ not in self.codes_region_post_2016]
+        else:
+            warn = [value_ for value_ in self.codes_region_post_2016 if value_ not in self.codes_region_pre_2015]
+        acceptable = set(self.codes_region_pre_2015 + self.codes_region_post_2016)
+        if isinstance(value, int):
+            if value in acceptable:
+                if value in warn:
+                    warnings.warn(f"Valeur {value} devrait être de l'année {nomenclature}, "
+                                  f"mais elle est de l'année {self._get_other_nomenclature(nomenclature)}.")
+                return self._code_region_repr(value)
+        else:
+            if value in [self._code_region_repr(acceptable_value) for acceptable_value in acceptable]:
+                if value in [self._code_region_repr(v) for v in warn]:
+                    warnings.warn(f"Valeur {value} devrait être de l'année {nomenclature}, "
+                                  f"mais elle est de l'année {self._get_other_nomenclature(nomenclature)}.")
+                return value
+        return self._coerce(value, warn=True)
+
+    def _strict_code_region(self, value, nomenclature):
+        if nomenclature == 2016:
+            acceptable = self.codes_region_post_2016
+        else:  # implicity means nomenclature == 2015
+            acceptable = self.codes_region_pre_2015
+        if isinstance(value, int):
+            if value in acceptable:
+                return self._code_region_repr(value)
+        else:
+            if value in [self._code_region_repr(acceptable_value) for acceptable_value in acceptable]:
+                return value
+        return self._coerce(value)
+
+    def _code_region(self, value, nomenclature, nomenc_matching):
+        if nomenclature != 2016 and nomenclature != 2015:
+            raise NotImplementedError(f"Cette nomenclature pour {self.parsed}n'est pas reconnue.")
+        if nomenc_matching == 'loose':
+            return self._loose_code_region(value)
+        elif nomenc_matching == 'strict':
+            return self._strict_code_region(value, nomenclature)
+        elif nomenc_matching == 'warn':
+            return self._loose_code_region_with_warning(value, nomenclature)
+        else:
+            raise ValueError(f"Nomenclature_matching n'accepte que 'loose', 'strict' et 'warn':\n{self.__doc__}.")
+
+    def transform(self, dataframe: DataFrame, columns: str or List[str], nomenclature: int = 2016,
+                  nomenclature_matching: str = 'loose') -> DataFrame:
+        df = dataframe.copy()
+        if isinstance(columns, list):
+            for column in columns:
+                df[column] = df[column].transform(self._code_region, nomenclature=nomenclature,
+                                                  nomenc_matching=nomenclature_matching)
+        else:
+            df[columns] = df[columns].apply(self._code_region, nomenclature=nomenclature,
+                                            nomenc_matching=nomenclature_matching)
         return df
