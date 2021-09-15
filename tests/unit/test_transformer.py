@@ -165,8 +165,10 @@ class TestCodeDepartementParserTransformer:
         assert_frame_equal(expected, actual)
 
     def test_multiple_columns(self, code_dep_parser):
-        expected = DataFrame(data=[[""]], columns=["col1", "col2"])
-        actual = code_dep_parser.transform(DataFrame(data=[[]], columns=[]), columns=["col1", "col2"])
+        expected = DataFrame(data=[[None, "05"], ["75", "07"], ["2A", None], ["974", None]],
+                             columns=["col1", "col2"])
+        actual = code_dep_parser.transform(DataFrame(data=[["a", "5"], ["75", 7], ["2a", "a2"], ["974", "97A"]],
+                                                     columns=["col1", "col2"]), columns=["col1", "col2"])
         assert_frame_equal(expected, actual)
 
     def test_raises_if_coerce_set_to_false(self):

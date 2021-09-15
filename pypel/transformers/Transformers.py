@@ -1,7 +1,4 @@
 import os
-
-import pandas
-
 from pypel.extractors.Extractors import Extractor
 import warnings
 from typing import List, Dict, Optional, Any, Union
@@ -279,7 +276,7 @@ class CodeDepartementParserTransformer(BaseTransformer):
             raise ValueError(f"La valeur {value} n'est pas un code département valide")
 
     def _code_departement(self, value: str):
-        if value is None or pandas.isna(value):
+        if value == str(None) or value == str(NA):
             self._coerce(value)
         else:
             try:
