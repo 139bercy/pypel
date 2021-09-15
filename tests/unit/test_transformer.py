@@ -114,6 +114,11 @@ class TestAtomicTransformers:
         actual = tr.transform(DataFrame(data=[["13 01 1970"]], columns=["to_parse"]), ["to_parse"], "%d %m %Y")
         assert_frame_equal(expected, actual)
 
+    def test_date_parser_raises_if_coerce_false(self):
+        tr = DateParserTransformer(coerce=False)
+        with pytest.raises(ValueError):
+            tr.transform(DataFrame(data=[["13 01 1970"]], columns=["to_parse"]), ["to_parse"], "%d%m%Y")
+
     def test_date_formatter(self):
         tr = DateFormatterTransformer()
         expected = DataFrame(data=[["1970-01-22"]], columns=["to_format"])
