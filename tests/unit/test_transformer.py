@@ -1,7 +1,7 @@
 import pandas as pd
 import pytest
 from pypel.transformers import (Transformer, ColumnStripperTransformer, ColumnReplacerTransformer,
-                                ContentReplacerTransformer, ColumnCapitaliserTransformer,
+                                ContentReplacerTransformer, ColumnCapitaliserTransformer, CodeRegionParser,
                                 ColumnContenStripperTransformer, MergerTransformer, CodeDepartementParserTransformer,
                                 NullValuesReplacerTransformer, DateParserTransformer, DateFormatterTransformer)
 from pypel.extractors import Extractor
@@ -24,6 +24,10 @@ def merger():
 @pytest.fixture
 def code_dep_parser():
     return CodeDepartementParserTransformer()
+
+@pytest.fixture
+def code_reg_parser():
+    return CodeRegionParser()
 
 
 class RefExtractor(Extractor):
@@ -185,3 +189,89 @@ class TestCodeDepartementParserTransformer:
             tr.transform(DataFrame(data=[["10A"]], columns=["1"]), columns=["1"])
         with pytest.raises(ValueError, match="La valeur A4 n'est pas un code département valide"):
             tr.transform(DataFrame(data=[["A4"]], columns=["1"]), columns=["1"])
+
+
+class TestCodeRegionParser:
+    def test_loose_int(self, code_reg_parser):
+        expected = DataFrame(data=[["01"], ["02"], ["03"], ["04"], ["06"], ["22"], ["21"], ["11"], ["91"], ["93"]],
+                             columns=["1"])
+        df = DataFrame(data=[[1], [2], [3], [4], [6], [22], [21], [11], [91], [93]], columns=["1"])
+        actual = code_reg_parser.transform(df, "1")
+        assert_frame_equal(expected, actual)
+
+    def test_loose_int_coercition(self, code_reg_parser):
+        expected = DataFrame(data=[[None], [None], [None]], columns=["1"])
+        actual = code_reg_parser.transform(DataFrame(data=[[0], [99], [666]], columns=["1"]), "1")
+        assert_frame_equal(expected, actual)
+
+    def test_loose_multitype_multicol(self, code_reg_parser):
+        expected = DataFrame(data=[["01", None], ["02", "42"], [None, "11"]], columns=["1", "2"])
+        actual = code_reg_parser.transform(DataFrame(data=[["01", "abc"], ["02", "42"], ["1", 11]],
+                                                     columns=["1", "2"]), ["1", "2"])
+        assert_frame_equal(expected, actual)
+
+    def test_strict_int(self, code_reg_parser):
+        expected = DataFrame(data=[["01"], ["93"]], columns=["1"])
+        actual = code_reg_parser.transform(DataFrame(data=[[1], [93]], columns=["1"]), "1",
+                                           nomenclature_matching="strict")
+        assert_frame_equal(expected, actual)
+
+    def test_strict_int_coercition(self, code_reg_parser):
+        expected = DataFrame(data=[[None], [None], ["01"], ["93"]], columns=["1"])
+        actual = code_reg_parser.transform(DataFrame(data=[[91], [22], [1], [93]], columns=["1"]), "1",
+                                           nomenclature_matching="strict")
+        assert_frame_equal(expected, actual)
+
+    def test_strict_str(self, code_reg_parser):
+        expected = DataFrame(data=[["01"], [None], ["93"]], columns=["1"])
+        actual = code_reg_parser.transform(DataFrame(data=[["01"], ["1"], ["93"]], columns=["1"]), "1",
+                                           nomenclature_matching="strict")
+        assert_frame_equal(expected, actual)
+
+    def test_strict_2015_multitype(self, code_reg_parser):
+        expected = DataFrame(data=[["91"], ["22"], ["01"], ["93"], [None]], columns=["1"])
+        actual = code_reg_parser.transform(DataFrame(data=[["91"], [22], [1], [93], [27]], columns=["1"]), "1",
+                                           nomenclature_matching="strict", nomenclature=2015)
+        assert_frame_equal(expected, actual)
+
+    def test_warn_int_warns_if_wrong_nomenclature(self, code_reg_parser):
+        expected = DataFrame(data=[["91"], ["01"]], columns=["1"])
+        with pytest.warns(UserWarning, match="Valeur 91 devrait être de l'année 2016, mais elle est de l'année 2015."):
+            actual = code_reg_parser.transform(DataFrame(data=[[91], [1]], columns=["1"]), "1",
+                                               nomenclature_matching="warn")
+        assert_frame_equal(expected, actual)
+
+    def test_warn_coercition(self, code_reg_parser):
+        expected = DataFrame(data=[[None]], columns=["1"])
+        with pytest.warns(UserWarning, match="La valeur 0 n'est pas un code région valide, "
+                                             "elle sera remplacée par None."):
+            actual = code_reg_parser.transform(DataFrame(data=[[0]], columns=["1"]), "1",
+                                               nomenclature_matching="warn")
+        assert_frame_equal(expected, actual)
+        with pytest.warns(UserWarning, match="La valeur bonjour n'est pas un code région valide, "
+                                             "elle sera remplacée par None."):
+            actual_ = code_reg_parser.transform(DataFrame(data=[["bonjour"]], columns=["1"]), "1",
+                                                nomenclature_matching="warn")
+        assert_frame_equal(expected, actual_)
+
+    def test_warn_str_warns_if_wrong_nomenclature(self, code_reg_parser):
+        expected = DataFrame(data=[["91"], ["01"]], columns=["1"])
+        with pytest.warns(UserWarning, match="Valeur 91 devrait être de l'année 2016, mais elle est de l'année 2015."):
+            actual = code_reg_parser.transform(DataFrame(data=[["91"], ["01"]], columns=["1"]), "1",
+                                               nomenclature_matching="warn")
+        assert_frame_equal(expected, actual)
+
+    def test_warn_2015_multitype_warns_if_wrong_nomenclature(self, code_reg_parser):
+        expected = DataFrame(data=[["91"], ["76"]], columns=["1"])
+        with pytest.warns(UserWarning, match="Valeur 76 devrait être de l'année 2015, mais elle est de l'année 2016."):
+            actual = code_reg_parser.transform(DataFrame(data=[["91"], [76]], columns=["1"]), "1",
+                                               nomenclature_matching="warn", nomenclature=2015)
+        assert_frame_equal(expected, actual)
+
+    def test_unknown_nomenclature_raises(self, code_reg_parser):
+        with pytest.raises(NotImplementedError, match="Cette nomenclature pour un code région n'est pas reconnue."):
+            code_reg_parser.transform(DataFrame(data=[[1]], columns=["1"]), "1", 2074)
+
+    def test_bad_nomenclature_matching_raises(self, code_reg_parser):
+        with pytest.raises(ValueError, match="Nomenclature_matching n'accepte que 'loose', 'strict' et 'warn':\n."):
+            code_reg_parser.transform(DataFrame(data=[[""]], columns=[""]), "", nomenclature_matching="yolo")
