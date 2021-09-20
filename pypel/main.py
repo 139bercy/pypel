@@ -29,16 +29,17 @@ class Config(TypedDict):
     Process: List[ProcessConfig]
 
 
-def select_process_from_config(_es: elasticsearch.Elasticsearch,
+def select_process_from_config(es_: elasticsearch.Elasticsearch,
                                processes: Config,
                                process: str,
                                files: pathlib.Path,
                                indice: Union[None, str]):
     """
-    Given a set of configurations (global configuration `conf`, process configuration `params` and mapping configuration
-    `mappings`, load all processes related to `process`, or all of them if `process` is omitted in to the Elasticsearch
+    Given a pair of configurations (global & process configuration `conf`and mapping configuration
+    `mappings`), load all processes related to `process`, or all of them if `process` is omitted in to the Elasticsearch
     specified in `conf.elastic_ip`
-    :param _es: the elasticsearch instance
+
+    :param es_: the elasticsearch instance
     :param processes: the configuration file
     :param process: the process to execute
     :param files: file or list of files to load
@@ -51,26 +52,35 @@ def select_process_from_config(_es: elasticsearch.Elasticsearch,
         assert isinstance(processes, list)
     if process == "all":
         for proc in processes:
-            process_from_config(_es, proc, files, indice)
+            process_from_config(es_, proc, files, indice)
     else:
         if process in [conf["name"] for conf in processes]:
-            process_from_config(_es, [conf for conf in processes if conf["name"] == process][0], files, indice)
+            process_from_config(es_, [conf for conf in processes if conf["name"] == process][0], files, indice)
         else:
             raise ValueError(f"process {process} not found in the configuration file !")
 
 
-def process_from_config(_es, process, files, indice):
+def process_from_config(es_, process, files, indice):
+    """
+    Instantiate the process from its passed configuration, and execute it on passed file or directory
+
+    :param es_: the elasticsearch instance
+    :param process: the configuration of the process to instantiate
+    :param files: the file or directory to process (on)
+    :param indice: the elasticsearch index in which to load data
+    :return: None
+    """
     if indice:
         _indice = indice
     else:
         _indice = process["indice"]
-    processor = ProcessFactory().create_process(process, _es)
+    processor = ProcessFactory().create_process(process, es_)
     if os.path.isdir(files):
         file_paths = [os.path.join(files, f_).__str__() for f_ in os.listdir(files)]
         bulk_op = {indice: file_paths}
         processor.bulk(bulk_op)
     else:
-        processor.process(files, _indice, _es)
+        processor.process(files, _indice, es_)
 
 
 def get_args():
@@ -89,6 +99,7 @@ def get_args():
 
 
 def get_es_instance(conf):
+    """Instanciates an Elasticsearch connection instance based on connection parameters from the configuration"""
     _host = (conf.get("user"), conf.get("pwd"))
     if _host == (None, None):
         _host = None
