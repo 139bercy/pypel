@@ -307,8 +307,10 @@ class CodeDepartementParserTransformer(BaseParser):
                 elif len(value) == 3 or len(value) == 2:
                     if 0 < int(value) <= 95:
                         return str(int(value))
-                    elif 977 > int(value) > 970:
+                    elif 979 > int(value) > 970:
                         return value
+                    elif int(value) == 984 or 985 < int(value) < 990:
+                        pass
                     else:
                         self._coerce(value)
                 elif len(value) == 1 and int(value) > 0:
