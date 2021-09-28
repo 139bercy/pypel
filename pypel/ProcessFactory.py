@@ -1,13 +1,8 @@
 import importlib
 from pypel.processes import Process
+from pypel.loaders.Loaders import ElasticsearchConfig
 from typing import Optional, Dict, TypedDict, Union, List
-from elasticsearch import Elasticsearch
-
-
-class ProcessConfig(TypedDict):
-    Extractors: Dict[str, str]
-    Transformers: Union[Dict[str, str], List[Dict[str, str]]]
-    Loaders: Dict[str, str]
+from pypel.main import ProcessConfig
 
 
 class ProcessFactory:

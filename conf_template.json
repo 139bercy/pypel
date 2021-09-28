@@ -2,14 +2,14 @@
   "Processes": [
     {
       "name": "EXAMPLE",
-      "Extractors": {
+      "Extractor": {
         "name": "pypel.extractors.Extractor"
       },
       "Transformers": [
       {
         "name": "pypel.transformers.Transformer"
       }],
-      "Loaders": {
+      "Loader": {
         "name": "pypel.loaders.Loader",
         "backup": false,
         "name_export": null,
@@ -20,7 +20,7 @@
     },
     {
       "name": "ANOTHER_EXAMPLE",
-      "Extractors": {
+      "Extractor": {
         "name": "pypel.extractors.Extractor"
       },
       "Transformers": [
