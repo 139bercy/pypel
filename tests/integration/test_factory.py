@@ -8,27 +8,26 @@ def factory():
 
 
 class TestFactory:
-    def test_factory_defaults_when_empty_config(self, factory, es_instance):
+    def test_factory_defaults_when_empty_config(self, factory):
         expected = pypel.processes.Process()
-        obtained = factory.create_process({}, es_instance=es_instance)
+        obtained = factory.create_process({})
         assert isinstance(obtained, type(expected))
 
-    def test_factory_instantiates_non_default_transformers(self, factory, es_instance):
+    def test_factory_instantiates_non_default_transformers(self, factory):
         expected = pypel.processes.Process(transformer=pypel.transformers.Transformer)
-        obtained = factory.create_process({"Extractors": {"name": "pypel.extractors.Extractor"},
-                                           "Transformers": {"name": "pypel.transformers.Transformer"},
-                                           "Loaders": {"name": "pypel.loaders.Loader"}}, es_instance=es_instance)
+        obtained = factory.create_process({"Transformers": [{"name": "pypel.transformers.Transformer"}]})
         assert isinstance(obtained, type(expected))
 
-    def test_factory_instanciates_list_of_transformers(self, factory, es_instance):
+    def test_factory_instanciates_list_of_transformers(self, factory):
         expected = pypel.processes.Process(transformer=[pypel.transformers.ColumnStripperTransformer(),
                                                         pypel.transformers.ColumnCapitaliserTransformer()])
-        obtained = factory.create_process({"Extractors": {"name": "pypel.extractors.Extractor"},
-                                           "Transformers": [{"name": "pypel.transformers.ColumnStripperTransformer"},
-                                                            {"name": "pypel.transformers.Transformer"}],
-                                           "Loaders": {"name": "pypel.loaders.Loader"}}, es_instance=es_instance)
+        obtained = factory.create_process({"Transformers": [{"name": "pypel.transformers.ColumnStripperTransformer"},
+                                                            {"name": "pypel.transformers.Transformer"}]})
         assert isinstance(obtained, type(expected))
 
-    def test_raises_if_class_not_found(self, factory, es_instance):
+    def test_raises_if_class_not_found(self, factory):
         with pytest.raises(ValueError):
-            factory.create_process({"Extractors": {"name": "pypel.Jesus"}}, es_instance)
+            factory.create_process({"Extractor": {"name": "pypel.Jesus"},
+                                    "Transformers": [{"name": ""}],
+                                    "Loader": {"name": "",
+                                               "indice": ""}})

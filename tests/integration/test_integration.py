@@ -5,7 +5,7 @@ import pypel
 import os
 import datetime as dt
 import numpy
-from tests.unit.test_Loader import LoaderTest, Elasticsearch
+from tests.unit.test_Loader import LoaderTest
 
 
 class TransformerForTesting(pypel.transformers.Transformer):
@@ -218,8 +218,8 @@ def test_multiple_transformers(ep):
     assert_frame_equal(expected_df, obtained_df, check_names=True)
 
 
-def test_process_method():
+def test_process_method(es_conf, es_indice):
     path_csv = os.path.join(os.getcwd(), "tests", "fake_data", "test_init_df.csv")
-    process = pypel.processes.Process(loader=LoaderTest(Elasticsearch()))
+    process = pypel.processes.Process(loader=LoaderTest(es_conf, es_indice))
     with pytest.warns(UserWarning):
-        process.process(path_csv, "indice")
+        process.process(path_csv)

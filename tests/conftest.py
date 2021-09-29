@@ -30,10 +30,11 @@ def df():
     return DataFrame({"0": [0, 1, 2]})
 
 
-class Elasticsearch:
-    pass
+@pytest.fixture
+def es_conf():
+    return {}
 
 
 @pytest.fixture
-def es_instance():
-    return Elasticsearch()
+def es_indice():
+    return "test_indice"
