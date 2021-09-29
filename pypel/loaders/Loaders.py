@@ -6,7 +6,8 @@ import datetime as dt
 import os
 import abc
 from pypel._config.config import get_config
-from typing import Union, Optional, List, Any, TypedDict
+from typing import Union, Optional, List, Any, TypedDict, Literal
+import ssl
 
 
 logger = logging.getLogger(__name__)
@@ -16,6 +17,25 @@ logger.setLevel(getattr(logging, get_config()["LOGS_LEVEL"]))
 class Action(TypedDict):
     _index: str
     _source: Any
+
+
+class ElasticsearchHost(TypedDict, total=False):
+    host: str
+
+
+class ElasticsearchMinimal(ElasticsearchHost):
+    user: str
+    pwd: str
+
+
+class ElasticsearchSSL(TypedDict):
+    cafile: Union[str, bytes, os.PathLike]
+    scheme: Literal["https", "ssh"]
+    port: str
+
+
+class ElasticsearchConfig(ElasticsearchMinimal, ElasticsearchSSL):
+    """Typed-Dict for type-hinting purposes"""
 
 
 class BaseLoader:
@@ -29,15 +49,16 @@ class Loader(BaseLoader):
     """
     Encapsulates all the loading logic.
 
-    :param elasticsearch_instance: elasticsearch.Elasticsearch
-        the elasticsearch connection to load into. MUST be an instance of elasticsearch.Elasticsearch
+    :param es_conf: the configuration to instantiate elasticsearch from
+    :param indice: the indice in which to load
     :param path_to_export_folder: str
     :param backup:
     :param name_export:
     :param dont_append_date:
     """
     def __init__(self,
-                 elasticsearch_instance: elasticsearch.Elasticsearch,
+                 es_conf: ElasticsearchConfig,
+                 indice: str,
                  path_to_export_folder: Union[None, str, bytes, os.PathLike] = None,
                  backup: bool = False,
                  name_export: Optional[str] = None,
@@ -50,32 +71,30 @@ class Loader(BaseLoader):
         self.backup_uploaded_data = backup
         self.path_to_folder = path_to_export_folder
         self.name_export_file = name_export
-        self.es = elasticsearch_instance
+        self.es = self._instantiate_es(es_conf)
         self.append_date = not dont_append_date
+        self.indice = indice
 
-    def load(self, dataframe: pd.DataFrame, indice: str) -> None:
+    def load(self, dataframe: pd.DataFrame) -> None:
         """
         Load passed dataframe using current Loader's parameters
 
         :param dataframe:
             the dataframe to load
-        :param indice:
-            the elasticsearch index in which to upload
         :return: None
         """
         df = dataframe.copy()
         if self.backup_uploaded_data:
-            self._export_csv(df, indice)
-        actions = self._wrap_df_in_actions(df, indice)
-        self._bulk_into_elastic(actions, indice)
+            self._export_csv(df)
+        actions = self._wrap_df_in_actions(df)
+        self._bulk_into_elastic(actions)
 
-    def _bulk_into_elastic(self, actions: List[Action], indice: str):
+    def _bulk_into_elastic(self, actions: List[Action]):
         """
         Attempts to load actions into elasticsearch using the bulk API.
         Successful loads are logged, errors are sent as warnings
 
         :param actions: a list of elasticsearch actions
-        :param indice: str
             the elasticserach indice in which data is to be loaded
         :return: None
         """
@@ -86,18 +105,17 @@ class Loader(BaseLoader):
                 failed += 1
             else:
                 success += 1
-        logging.info(f"{success} successfully inserted into {indice}")
+        logging.info(f"{success} successfully inserted into {self.indice}")
         if errors:
             warnings.warn(f"{failed} errors detected\nError details : {errors}")
 
-    def _wrap_df_in_actions(self, df: pd.DataFrame, indice: str) -> List[Action]:
+    def _wrap_df_in_actions(self, df: pd.DataFrame) -> List[Action]:
         """
         Reformats the dataframe object as a list of Elasticsearch actions, fit for elasticsearch's bulk API.
         If self.backup is True, save a copy of the dataframe as csv for debugging.
 
         :param df: pd.DataFrame
             the DataFrame to upload
-        :param indice: str
             the indice in which to upload
         :return: returns a list of actions (cf Elasticsearch python API documentation)
         """
@@ -105,14 +123,14 @@ class Loader(BaseLoader):
         data_dict = df.to_dict(orient="index")
         actions = [
             {
-                "_index": indice + self._get_date() if self.append_date else indice,
+                "_index": self.indice + self._get_date() if self.append_date else self.indice,
                 "_source": value
             }
             for value in data_dict.values()
         ]
         return actions
 
-    def _export_csv(self, df: pd.DataFrame, indice: str, sep: str = '|') -> None:
+    def _export_csv(self, df: pd.DataFrame, sep: str = '|') -> None:
         """
         Appends the dataframe to the csv located in the loader's backup folder `self.path_to_folder`, creating said csv
             if missing. Filename is `exported_data_` OR Loader's name_export_file parameter, followed by target indice
@@ -121,29 +139,55 @@ class Loader(BaseLoader):
 
         Example :
         >>> import pandas, elasticsearch
-        >>> loader = Loader(elasticsearch.Elasticsearch(), path_to_export_folder="/", backup=True)
+        >>> loader = Loader({}, path_to_export_folder="/", backup=True)
         >>> loader.load(pandas.DataFrame(), "my_indice")
         Will create a file `exported_data_my_indice_01_01.csv` in the root directory if you execute it on January 1st.
 
-        >>> loader2 = Loader(elasticsearch.Elasticsearch(), path_to_export_folder="/", backup=True, name_export="EX")
+        >>> loader2 = Loader({}, path_to_export_folder="/", backup=True, name_export="EX")
         >>> loader2.load(pandas.DataFrame(), "another_indice")
         Will create a file `EX_another_indice_01_01.csv` in the root directory if executed on the same day.
 
         :param df: the dataframe to save
-        :param indice: str
             the elasticserach indice in which data is to be loaded
         :param sep: a single character to use as separator in the resulting csv file
         :return: None
         """
         if not self.name_export_file:
-            name_file = f"exported_data_{indice}{self._get_date()}.csv"
+            name_file = f"exported_data_{self.indice}{self._get_date()}.csv"
         else:
-            name_file = f"{self.name_export_file}{indice}{self._get_date()}.csv"
+            name_file = f"{self.name_export_file}{self.indice}{self._get_date()}.csv"
         path_to_csv = os.path.join(self.path_to_folder, name_file)
         df.to_csv(path_to_csv, sep=sep, index=False, mode='a')
 
     def _get_date(self) -> str:
         return dt.datetime.today().strftime("_%m_%d")
+
+    def _instantiate_es(self, es_config):
+        """
+        Instanciates an Elasticsearch connection instance based on connection parameters from the configuration
+
+        :param es_config: the configuration from which to instantiate the es connection
+        :return: an elasticsearch.Elasticsearch instance
+        """
+        _host = (es_config.get("user"), es_config.get("pwd"))
+        if _host == (None, None):
+            _host = None
+        if "cafile" in es_config:
+            _context = ssl.create_default_context(cafile=es_config["cafile"])
+            es_instance = elasticsearch.Elasticsearch(
+                es_config.get("host", "localhost"),
+                http_auth=_host,
+                use_ssl=True,
+                scheme=es_config["scheme"],
+                port=es_config["port"],
+                ssl_context=_context,
+            )
+        else:
+            es_instance = elasticsearch.Elasticsearch(
+                es_config.get("host", "localhost"),
+                http_auth=_host,
+            )
+        return es_instance
 
 
 class CSVWriter(BaseLoader):
