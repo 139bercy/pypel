@@ -6,7 +6,7 @@ import datetime as dt
 import os
 import abc
 from pypel._config.config import get_config
-from typing import Union, Optional, List, Any, TypedDict, Literal
+from typing import Union, Optional, List, Any, TypedDict, Literal, overload
 import ssl
 
 
@@ -28,14 +28,10 @@ class ElasticsearchMinimal(ElasticsearchHost):
     pwd: str
 
 
-class ElasticsearchSSL(TypedDict):
+class ElasticsearchSSL(ElasticsearchMinimal):
     cafile: Union[str, bytes, os.PathLike]
     scheme: Literal["https", "ssh"]
     port: str
-
-
-class ElasticsearchConfig(ElasticsearchMinimal, ElasticsearchSSL):
-    """Typed-Dict for type-hinting purposes"""
 
 
 class BaseLoader:
@@ -56,8 +52,17 @@ class Loader(BaseLoader):
     :param name_export:
     :param dont_append_date:
     """
+    @overload
     def __init__(self,
-                 es_conf: ElasticsearchConfig,
+                 es_conf: ElasticsearchMinimal,
+                 indice: str,
+                 path_to_export_folder: Union[None, str, bytes, os.PathLike] = None,
+                 backup: bool = False,
+                 name_export: Optional[str] = None,
+                 dont_append_date: bool = False) -> None: ...
+
+    def __init__(self,
+                 es_conf: ElasticsearchSSL,
                  indice: str,
                  path_to_export_folder: Union[None, str, bytes, os.PathLike] = None,
                  backup: bool = False,
