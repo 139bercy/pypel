@@ -6,6 +6,9 @@ omit =
 branch = true
 [report]
 fail_under = 90.0
+exclude_lines =
+    pragma: no cover
+    @overload
 show_missing = true
 [html]
 directory = tests/reports/coverage/
