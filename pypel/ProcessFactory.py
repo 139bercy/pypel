@@ -28,10 +28,15 @@ class ProcessFactory:
         ...              "Loaders": {"name": "pypel.Loader", "backup": True, "path_to_export_folder": "/",
         ...                          "indice": "my_es_indice"
         ...                          "es_config": {"user": "elastic",
-        ...                                        "pwd": "changeme"}}}
-        Will generate a process with the default Extractor, the transformers BaseTransformer AND MinimalTransformer and
-            a loader `Loader` with instance parameters `backup` and `path_to_export_folder` set to `True` and `/`
-            respectively
+        ...                                        "pwd": "changeme",
+        ...                                        "cafile": "path_to_cafile",
+        ...                                        "scheme": "https",
+        ...                                        "port": "9200",
+        ...                                        "host": "localhost"}}}
+        This config would generate a process with the default Extractor, the transformers BaseTransformer
+            AND MinimalTransformer and a loader `Loader` with instance parameters `backup` and `path_to_export_folder`
+            set to `True` and `/` respectively. Loader will try to connect to elasticsearch using parameters from
+            "es_config".
 
         :param process_config: Configuration of the process' E/T/L classes as a dictionnary
         :return: A Process instance with the E/T/L classes specified in the configuration
