@@ -15,19 +15,22 @@ xlrd (only for .xls)
 
 ## PYPEL in a nutshell
  - What does it do ?
-PYPEL (PYthon Pipeline into ELasticsearch) is a customizable ETL (Extract / Transform / Load) in python. It natively extracts csv, xls & xlsx files and uploads them into elasticsearch.
+PYPEL (PYthon Pipeline into ELasticsearch) is a customizable ETL (Extract / Transform / Load) in python. It natively
+extracts csv, xls & xlsx files and uploads them into elasticsearch.
  - What if my usecase slightly differs from that ?
 The Extract/Transform/Load parts are separated, and you can modify each one independantly to fit your usecase.
 
 ## API summary
 All functionalities are available through the pypel.processes.Process class:
 
- - instantiate your Process : `process = pypel.processes.Process()`
- - extract data : `df = process.extract(file_path)`
- - transform data : `df = process.transform(df)`
- - load data : `process.load(df, es_indice, es_instance)`
-     es_indice is the elasticsearch indice you wanna load into, es_instance is an elasticsearch connection : `es = elasticserach.Elasticsearch(ip, ...)`
- - for conveniance, a wrap-up function exists that bundles all 3 operations in one : `process.process(file_path, es_indice, es_instance)`
+- instantiate your extractor : `loader = pypel.loaders.Loader(es_conf, es_indice)`
+where `es_conf` is elasticsearch's connection configuration (cf `conf_template.json`) and `es_indice` is the
+elasticsearch indice in which to load
+- instantiate your Process : `process = pypel.processes.Process(loader=loader)`
+- extract data : `df = process.extract(file_path)`
+- transform data : `df = process.transform(df)`
+- load data : `process.load(df)`
+- for convenience, a wrap-up function exists that bundles all 3 operations in one : `process.process(file_path)`
 
 The Process constructor takes optional Extractor, Transformer & Loader arguments. These must derive from their BaseClass.
 
