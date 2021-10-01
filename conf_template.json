@@ -6,17 +6,22 @@
         "name": "pypel.extractors.Extractor"
       },
       "Transformers": [
-      {
-        "name": "pypel.transformers.Transformer"
-      }],
+        {
+          "name": "pypel.transformers.Transformer"
+        }
+      ],
       "Loader": {
         "name": "pypel.loaders.Loader",
         "backup": false,
         "name_export": null,
         "dont_append_date": false,
-        "path_to_export_folder": null
-      },
-      "indice": "pypel_bulk"
+        "path_to_export_folder": null,
+        "indice": "pypel_bulk",
+        "es_config": {
+          "user": "elastic",
+          "pwd": "changeme"
+        }
+      }
     },
     {
       "name": "ANOTHER_EXAMPLE",
@@ -28,13 +33,21 @@
           "name": "pypel.transformers.Transformer"
         },
         {
-          "name":"pypel.transformers.ColumnStripperTransformer"
+          "name": "pypel.transformers.ColumnStripperTransformer"
         }
       ],
       "Loader": {
-        "name": "pypel.transformers.Loader"
-      },
-      "indice": "pypel_bulk_2"
+        "name": "pypel.transformers.Loader",
+        "indice": "pypel_bulk_2",
+        "es_config": {
+          "user": "elastic",
+          "pwd": "changeme",
+          "cafile": "path_to_cafile",
+          "scheme": "https",
+          "port": "9200",
+          "host": "localhost"
+        }
+      }
     }
   ]
 }
