@@ -91,6 +91,7 @@ if __name__ == "__main__":  # pragma: no cover
             config = json.load(f)
     except FileNotFoundError as e:
         raise ValueError("Cannot find file passed through the -c / --config-file argument") from e
+    logger.info(config)
     """
     if args.clean:
         path_to_mapping = os.path.join(os.getcwd(), args.mapping)
