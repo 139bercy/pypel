@@ -100,7 +100,6 @@ class Loader(BaseLoader):
         Successful loads are logged, errors are sent as warnings
 
         :param actions: a list of elasticsearch actions
-            the elasticserach indice in which data is to be loaded
         :return: None
         """
         success, failed, errors = 0, 0, []
@@ -121,7 +120,6 @@ class Loader(BaseLoader):
 
         :param df: pd.DataFrame
             the DataFrame to upload
-            the indice in which to upload
         :return: returns a list of actions (cf Elasticsearch python API documentation)
         """
         logger.info(f"{len(df.index)} rows in the dataframe")
