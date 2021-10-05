@@ -17,6 +17,7 @@
         "dont_append_date": false,
         "path_to_export_folder": null,
         "indice": "pypel_bulk",
+        "time_freq": "_%m_%Y",
         "es_config": {
           "user": "elastic",
           "pwd": "changeme"
@@ -39,6 +40,7 @@
       "Loader": {
         "name": "pypel.transformers.Loader",
         "indice": "pypel_bulk_2",
+        "time_freq": "_%Y",
         "es_config": {
           "user": "elastic",
           "pwd": "changeme",

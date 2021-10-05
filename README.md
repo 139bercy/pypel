@@ -25,7 +25,8 @@ All functionalities are available through the pypel.processes.Process class:
 
 - instantiate your extractor : `loader = pypel.loaders.Loader(es_conf, es_indice)`
 where `es_conf` is elasticsearch's connection configuration (cf `conf_template.json`) and `es_indice` is the
-elasticsearch indice in which to load
+elasticsearch indice in which to load. Loader takes a parameter specifying a time frequency matching the `strftime`
+standard, defaulting to `_%m_%Y`. The current date in the passed format gets appended to the indice name.
 - instantiate your Process : `process = pypel.processes.Process(loader=loader)`
 - extract data : `df = process.extract(file_path)`
 - transform data : `df = process.transform(df)`
