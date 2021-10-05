@@ -47,6 +47,7 @@ class Loader(BaseLoader):
 
     :param es_conf: the configuration to instantiate elasticsearch from
     :param indice: the indice in which to load
+    :param time_freq: the strftime format to append to the indice
     :param path_to_export_folder: str
     :param backup:
     :param name_export:
@@ -56,6 +57,7 @@ class Loader(BaseLoader):
     def __init__(self,
                  es_conf: ElasticsearchMinimal,
                  indice: str,
+                 time_freq: str = "_%m_%Y",
                  path_to_export_folder: Union[None, str, bytes, os.PathLike] = None,
                  backup: bool = False,
                  name_export: Optional[str] = None,
@@ -64,6 +66,7 @@ class Loader(BaseLoader):
     def __init__(self,
                  es_conf: ElasticsearchSSL,
                  indice: str,
+                 time_freq: str = "_%m_%Y",
                  path_to_export_folder: Union[None, str, bytes, os.PathLike] = None,
                  backup: bool = False,
                  name_export: Optional[str] = None,
@@ -79,6 +82,7 @@ class Loader(BaseLoader):
         self.es = self._instantiate_es(es_conf)
         self.append_date = not dont_append_date
         self.indice = indice
+        self.time_frequency = time_freq
 
     def load(self, dataframe: pd.DataFrame) -> None:
         """
@@ -163,7 +167,7 @@ class Loader(BaseLoader):
         df.to_csv(path_to_csv, sep=sep, index=False, mode='a')
 
     def _get_date(self) -> str:
-        return dt.datetime.today().strftime("_%m_%d")
+        return dt.datetime.today().strftime(self.time_frequency)
 
     def _instantiate_es(self, es_config):
         """
