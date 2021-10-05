@@ -41,12 +41,12 @@ class ProcessFactory:
         :param process_config: Configuration of the process' E/T/L classes as a dictionnary
         :return: A Process instance with the E/T/L classes specified in the configuration
         """
-        extractors = self.create_subclasses(process_config.get("Extractor"))
+        extractor = self.create_subclasses(process_config.get("Extractor"))
         transformers = self.create_subclasses(process_config.get("Transformers"))
-        loaders = self.create_subclasses(process_config.get("Loader"))
-        return Process(extractor=extractors,
+        loader = self.create_subclasses(process_config.get("Loader"))
+        return Process(extractor=extractor,
                        transformer=transformers,
-                       loader=loaders)
+                       loader=loader)
 
     def create_subclasses(self, class_config: Union[Dict[str, str], List[Dict[str, str]]]):
         if class_config is None:
