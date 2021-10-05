@@ -1,3 +1,4 @@
+import datetime
 import os
 import tempfile
 import pytest
@@ -87,6 +88,20 @@ class TestLoader:
                             mock_streaming_bulk_some_errors)
         with pytest.warns(UserWarning):
             loader.Loader(es_conf, es_indice)._bulk_into_elastic([])
+
+    def test_change_time_freq(self, es_conf, es_indice, df, monkeypatch):
+        def assert_bulk_called_with(_, action):  # _ is placeholder for self
+            y = datetime.datetime.now().strftime("%Y")
+            assert action == [{"_index": "test_indice_" + y,
+                               "_source": {"0": 0}},
+                              {"_index": "test_indice_" + y,
+                               "_source": {"0": 1}},
+                              {"_index": "test_indice_" + y,
+                               "_source": {"0": 2}}]
+
+        loader_ = loader.Loader(es_conf, es_indice, time_freq="_%Y")
+        monkeypatch.setattr(loader.Loader, "_bulk_into_elastic", assert_bulk_called_with)
+        loader_.load(df)
 
 
 class TestCSVWriter:
