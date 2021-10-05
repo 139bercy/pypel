@@ -70,5 +70,4 @@ class TestBulk:
         process.bulk(arg)
         assert Process.process.call_count == 3
         calls = [mocker.call(file) for file in arg]
-        print("mock_calls", Process.process.mock_calls)
         Process.process.assert_has_calls(calls)
