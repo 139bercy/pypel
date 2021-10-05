@@ -26,7 +26,8 @@ class ProcessFactory:
         >>> my_config = {"Extractors": {"name": "pypel.Extractor"},
         ...              "Transformers": [{"name": "pypel.BaseTransformer"}, {"name": "pypel.MinimalTransformer"}],
         ...              "Loaders": {"name": "pypel.Loader", "backup": True, "path_to_export_folder": "/",
-        ...                          "indice": "my_es_indice"
+        ...                          "indice": "my_es_indice",
+        ...                          "time_freq": "_%Y",
         ...                          "es_config": {"user": "elastic",
         ...                                        "pwd": "changeme",
         ...                                        "cafile": "path_to_cafile",
