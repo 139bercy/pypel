@@ -91,15 +91,29 @@ class TestLoader:
 
     def test_change_time_freq(self, es_conf, es_indice, df, monkeypatch):
         def assert_bulk_called_with(_, action):  # _ is placeholder for self
-            y = datetime.datetime.now().strftime("%Y")
-            assert action == [{"_index": "test_indice_" + y,
+            y = datetime.datetime.now().strftime("_%Y")
+            assert action == [{"_index": "test_indice" + y,
                                "_source": {"0": 0}},
-                              {"_index": "test_indice_" + y,
+                              {"_index": "test_indice" + y,
                                "_source": {"0": 1}},
-                              {"_index": "test_indice_" + y,
+                              {"_index": "test_indice" + y,
                                "_source": {"0": 2}}]
 
         loader_ = loader.Loader(es_conf, es_indice, time_freq="_%Y")
+        monkeypatch.setattr(loader.Loader, "_bulk_into_elastic", assert_bulk_called_with)
+        loader_.load(df)
+
+    def test_default_time_freq(self, es_conf, es_indice, df, monkeypatch):
+        def assert_bulk_called_with(_, action):  # _ is placeholder for self
+            y = datetime.datetime.now().strftime("_%m_%Y")
+            assert action == [{"_index": "test_indice" + y,
+                               "_source": {"0": 0}},
+                              {"_index": "test_indice" + y,
+                               "_source": {"0": 1}},
+                              {"_index": "test_indice" + y,
+                               "_source": {"0": 2}}]
+
+        loader_ = loader.Loader(es_conf, es_indice)
         monkeypatch.setattr(loader.Loader, "_bulk_into_elastic", assert_bulk_called_with)
         loader_.load(df)
 
