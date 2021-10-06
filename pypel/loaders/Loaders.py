@@ -1,7 +1,6 @@
 import elasticsearch.helpers
 import pandas as pd
 import logging
-import warnings
 import datetime as dt
 import os
 import abc
@@ -116,7 +115,7 @@ class Loader(BaseLoader):
                 success += 1
         logging.info(f"{success} successfully inserted into {self.indice}")
         if errors:
-            warnings.warning(f"{failed} errors detected\nError details : {errors}")
+            logger.warning(f"{failed} errors detected\nError details : {errors}")
 
     def _wrap_df_in_actions(self, df: pd.DataFrame) -> List[Action]:
         """
