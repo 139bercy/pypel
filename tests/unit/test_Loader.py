@@ -159,14 +159,14 @@ class TestLoader:
 
         def mock_indices_get(indice):
             assert indice == es_indice + datetime.datetime.now().strftime("_%m_%Y")
-            return {indice: {}}
+            return {indice: {"mappings": {"key1": "val1"}, "key2": "val2"}}
 
         def mock_indices_delete(indice):
             assert indice == es_indice + datetime.datetime.now().strftime("_%m_%Y")
 
         def mock_indice_create(indice, body):
             assert indice == es_indice + datetime.datetime.now().strftime("_%m_%Y")
-            assert body == {}
+            assert body == {"mappings": {"key1": "val1"}}
 
         loader_ = LoaderTest(es_conf, es_indice, overwrite=True)
         monkeypatch.setattr(loader_.es.indices, "exists", mock_indices_exists)
