@@ -5,7 +5,7 @@ import openpyxl
 from pypel.utils.utils import arrayer
 import warnings
 import logging
-from pypel._config.config import get_config
+from pypel.config.config import get_config
 from typing import Dict, Optional, List, Union, Any
 
 logger = logging.getLogger(__name__)
