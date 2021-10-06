@@ -1,4 +1,5 @@
 import datetime
+import logging
 import os
 import tempfile
 import pytest
@@ -83,11 +84,16 @@ class TestLoader:
         monkeypatch.setattr(loader.elasticsearch.helpers, "streaming_bulk", mock_streaming_bulk_no_error)
         loader.Loader(es_conf, es_indice)._bulk_into_elastic([])
 
-    def test_bulk_into_elastic_warns_on_error(self, monkeypatch, es_conf, es_indice):
+    def test_bulk_into_elastic_warns_on_error(self, monkeypatch, es_conf, es_indice, caplog):
         monkeypatch.setattr(loader.elasticsearch.helpers, "streaming_bulk",
                             mock_streaming_bulk_some_errors)
-        with pytest.warns(UserWarning):
+        with caplog.at_level(logging.DEBUG, logger="pypel.loaders.Loaders"):
             loader.Loader(es_conf, es_indice)._bulk_into_elastic([])
+            assert ("pypel.loaders.Loaders", logging.WARNING, "3 errors detected") in caplog.record_tuples
+            assert ("pypel.loaders.Loaders", logging.DEBUG,
+                    "Error details : [{'error': {'fake_reason': 'fake_error'}}, "
+                    "{'error': {'fake_reason': 'fake_error'}}, {'error': {'fake_reason': 'fake_error'}}]")\
+                   in caplog.record_tuples
 
     def test_change_time_freq(self, es_conf, es_indice, df, monkeypatch):
         def assert_bulk_called_with(_, action):  # _ is placeholder for self
@@ -115,6 +121,59 @@ class TestLoader:
 
         loader_ = loader.Loader(es_conf, es_indice)
         monkeypatch.setattr(loader.Loader, "_bulk_into_elastic", assert_bulk_called_with)
+        loader_.load(df)
+
+    def test_es_indices_exists(self, es_conf, es_indice, df, monkeypatch):
+        def mock_indices_exists(indice):
+            assert indice == es_indice + datetime.datetime.now().strftime("_%m_%Y")
+            return False
+
+        loader_ = LoaderTest(es_conf, es_indice, overwrite=True)
+        monkeypatch.setattr(loader_.es.indices, "exists", mock_indices_exists)
+        loader_.load(df)
+
+    def test_es_cat_count(self, es_conf, es_indice, df, monkeypatch):
+        def mock_indices_exists(indice):
+            assert indice == es_indice + datetime.datetime.now().strftime("_%m_%Y")
+            return True
+
+        def mock_cat_count(index, h):
+            assert index == es_indice + datetime.datetime.now().strftime("_%m_%Y")
+            assert h == "count"
+            return "00"
+
+        loader_ = LoaderTest(es_conf, es_indice, overwrite=True)
+        monkeypatch.setattr(loader_.es.indices, "exists", mock_indices_exists)
+        monkeypatch.setattr(loader_.es.cat, "count", mock_cat_count)
+        loader_.load(df)
+
+    def test_recreate_indice(self, es_conf, es_indice, monkeypatch, df):
+        def mock_indices_exists(indice):
+            assert indice == es_indice + datetime.datetime.now().strftime("_%m_%Y")
+            return True
+
+        def mock_cat_count(index, h):
+            assert index == es_indice + datetime.datetime.now().strftime("_%m_%Y")
+            assert h == "count"
+            return "11"
+
+        def mock_indices_get(indice):
+            assert indice == es_indice + datetime.datetime.now().strftime("_%m_%Y")
+            return {indice: {}}
+
+        def mock_indices_delete(indice):
+            assert indice == es_indice + datetime.datetime.now().strftime("_%m_%Y")
+
+        def mock_indice_create(indice, body):
+            assert indice == es_indice + datetime.datetime.now().strftime("_%m_%Y")
+            assert body == {}
+
+        loader_ = LoaderTest(es_conf, es_indice, overwrite=True)
+        monkeypatch.setattr(loader_.es.indices, "exists", mock_indices_exists)
+        monkeypatch.setattr(loader_.es.cat, "count", mock_cat_count)
+        monkeypatch.setattr(loader_.es.indices, "get", mock_indices_get)
+        monkeypatch.setattr(loader_.es.indices, "delete", mock_indices_delete)
+        monkeypatch.setattr(loader_.es.indices, "create", mock_indice_create)
         loader_.load(df)
 
 
