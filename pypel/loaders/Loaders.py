@@ -59,7 +59,8 @@ class Loader(BaseLoader):
                  time_freq: str = "_%m_%Y",
                  path_to_export_folder: Union[None, str, bytes, os.PathLike] = None,
                  backup: bool = False,
-                 name_export: Optional[str] = None) -> None: ...
+                 name_export: Optional[str] = None,
+                 overwrite: bool = False) -> None: ...
 
     def __init__(self,
                  es_conf: ElasticsearchSSL,
@@ -67,7 +68,8 @@ class Loader(BaseLoader):
                  time_freq: str = "_%m_%Y",
                  path_to_export_folder: Union[None, str, bytes, os.PathLike] = None,
                  backup: bool = False,
-                 name_export: Optional[str] = None) -> None:
+                 name_export: Optional[str] = None,
+                 overwrite: bool = False) -> None:
         if backup:
             if path_to_export_folder is None:
                 raise ValueError("No export folder passed but backup set to true !")
@@ -77,8 +79,9 @@ class Loader(BaseLoader):
         self.path_to_folder = path_to_export_folder
         self.name_export_file = name_export
         self.es = self._instantiate_es(es_conf)
-        self.indice = indice
+        self.indice = indice + self._get_date()
         self.time_frequency = time_freq
+        self.overwrite = overwrite
 
     def load(self, dataframe: pd.DataFrame) -> None:
         """
@@ -89,6 +92,8 @@ class Loader(BaseLoader):
         :return: None
         """
         df = dataframe.copy()
+        if self.overwrite:
+            self._recreate_indice()
         if self.backup_uploaded_data:
             self._export_csv(df)
         actions = self._wrap_df_in_actions(df)
@@ -111,7 +116,7 @@ class Loader(BaseLoader):
                 success += 1
         logging.info(f"{success} successfully inserted into {self.indice}")
         if errors:
-            warnings.warn(f"{failed} errors detected\nError details : {errors}")
+            warnings.warning(f"{failed} errors detected\nError details : {errors}")
 
     def _wrap_df_in_actions(self, df: pd.DataFrame) -> List[Action]:
         """
@@ -126,7 +131,7 @@ class Loader(BaseLoader):
         data_dict = df.to_dict(orient="index")
         actions = [
             {
-                "_index": self.indice + self._get_date(),
+                "_index": self.indice,
                 "_source": value
             }
             for value in data_dict.values()
@@ -165,7 +170,7 @@ class Loader(BaseLoader):
     def _get_date(self) -> str:
         return dt.datetime.today().strftime(self.time_frequency)
 
-    def _instantiate_es(self, es_config):
+    def _instantiate_es(self, es_config) -> elasticsearch.Elasticsearch:
         """
         Instanciates an Elasticsearch connection instance based on connection parameters from the configuration
 
@@ -191,6 +196,20 @@ class Loader(BaseLoader):
                 http_auth=_host,
             )
         return es_instance
+
+    def _recreate_indice(self) -> None:
+        """
+        Checks if self.indice exists in the cluster.
+        If it does, queries elasticsearch for count of documents in the indice.
+        If that count is > 0, queries elasticsearch to to retrieve the indice's mapping, then deletes and recreates it.
+
+        :return: None
+        """
+        if self.es.indices.exists(self.indice):
+            if int(self.es.cat.count(index="tracts2", h="count")[:-1]) > 0:
+                props = self.es.indices.get(self.indice).get(self.indice)
+                self.es.indices.delete(self.indice)
+                self.es.indices.create(self.indice, body={k: props[k] for k in props.keys() & {"mappings"}})
 
 
 class CSVWriter(BaseLoader):
