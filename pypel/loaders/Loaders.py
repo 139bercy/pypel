@@ -5,7 +5,7 @@ import warnings
 import datetime as dt
 import os
 import abc
-from pypel._config.config import get_config
+from pypel.config.config import get_config
 from typing import Union, Optional, List, Any, TypedDict, Literal, overload
 import ssl
 
