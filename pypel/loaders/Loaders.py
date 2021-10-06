@@ -78,8 +78,8 @@ class Loader(BaseLoader):
         self.path_to_folder = path_to_export_folder
         self.name_export_file = name_export
         self.es = self._instantiate_es(es_conf)
-        self.indice = indice + self._get_date()
         self.time_frequency = time_freq
+        self.indice = indice + self._get_date()
         self.overwrite = overwrite
 
     def load(self, dataframe: pd.DataFrame) -> None:
@@ -206,7 +206,7 @@ class Loader(BaseLoader):
         :return: None
         """
         if self.es.indices.exists(self.indice):
-            if int(self.es.cat.count(index="tracts2", h="count")[:-1]) > 0:
+            if int(self.es.cat.count(index=self.indice, h="count")[:-1]) > 0:
                 props = self.es.indices.get(self.indice).get(self.indice)
                 self.es.indices.delete(self.indice)
                 self.es.indices.create(self.indice, body={k: props[k] for k in props.keys() & {"mappings"}})
