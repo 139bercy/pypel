@@ -73,10 +73,6 @@ def get_args(args_):
                         required=True)
     parser.add_argument("-c", "--config-file", default="./conf/config.json", type=str,
                         help="get the path to the config file to load from")
-    # TODO: should that be a pypel functionnality ?
-    #  parser.add_argument("-c", "--clean", default=False, type=str, help="should elasticsearch indices be cleared")
-    #  parser.add_argument("-m", "--mapping", default="./conf/index_mappings.json", type=pathlib.Path,
-    #                    help="path to the elasticsearch indices's mappings")
     parser.add_argument("-p", "--process", default="all", help="specify the process(es) to execute")
     return parser.parse_args(args_)
 
