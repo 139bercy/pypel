@@ -28,6 +28,7 @@ class ProcessFactory:
         ...              "Loaders": {"name": "pypel.Loader", "backup": True, "path_to_export_folder": "/",
         ...                          "indice": "my_es_indice",
         ...                          "time_freq": "_%Y",
+        ...                          "overwrite": False,
         ...                          "es_config": {"user": "elastic",
         ...                                        "pwd": "changeme",
         ...                                        "cafile": "path_to_cafile",

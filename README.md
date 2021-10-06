@@ -51,6 +51,17 @@ the cli currently only instanciates & executes `Process`es.
 
 Log-level is read from the environment variable `PYPEL_LOGS`, and it defaults to `INFO`.
 
+#### Loader
+
+
+The `Loader` constructor takes the following parameters :
+
+- `es_conf`: Mandatory. The elasticsearch connection configuration.
+- `indice`: the indice in which to load. Will be appended the current date.
+- `time_freq`: `_%m_%Y` by default. A `strftime` format applied to the current date and appended to the indice name.
+- `overwrite`: `False` by default, if True, when loading into elasticsearch,
+the loader will trash and re-create the indice.
+
 ### Loading from the command line
 Pypel allows generating & loading from the command line by executing `pypel/main.py`.
 pypel.main takes several arguments :
