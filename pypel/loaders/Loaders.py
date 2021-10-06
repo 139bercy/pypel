@@ -50,6 +50,7 @@ class Loader(BaseLoader):
     :param path_to_export_folder: str
     :param backup:
     :param name_export:
+    :param overwrite:  if True, indice with the same name will be trashed and re-created
     """
     @overload
     def __init__(self,
