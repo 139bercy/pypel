@@ -51,7 +51,6 @@ class Loader(BaseLoader):
     :param path_to_export_folder: str
     :param backup:
     :param name_export:
-    :param dont_append_date:
     """
     @overload
     def __init__(self,
@@ -60,8 +59,7 @@ class Loader(BaseLoader):
                  time_freq: str = "_%m_%Y",
                  path_to_export_folder: Union[None, str, bytes, os.PathLike] = None,
                  backup: bool = False,
-                 name_export: Optional[str] = None,
-                 dont_append_date: bool = False) -> None: ...
+                 name_export: Optional[str] = None) -> None: ...
 
     def __init__(self,
                  es_conf: ElasticsearchSSL,
@@ -69,8 +67,7 @@ class Loader(BaseLoader):
                  time_freq: str = "_%m_%Y",
                  path_to_export_folder: Union[None, str, bytes, os.PathLike] = None,
                  backup: bool = False,
-                 name_export: Optional[str] = None,
-                 dont_append_date: bool = False) -> None:
+                 name_export: Optional[str] = None) -> None:
         if backup:
             if path_to_export_folder is None:
                 raise ValueError("No export folder passed but backup set to true !")
@@ -80,7 +77,6 @@ class Loader(BaseLoader):
         self.path_to_folder = path_to_export_folder
         self.name_export_file = name_export
         self.es = self._instantiate_es(es_conf)
-        self.append_date = not dont_append_date
         self.indice = indice
         self.time_frequency = time_freq
 
@@ -130,7 +126,7 @@ class Loader(BaseLoader):
         data_dict = df.to_dict(orient="index")
         actions = [
             {
-                "_index": self.indice + self._get_date() if self.append_date else self.indice,
+                "_index": self.indice + self._get_date(),
                 "_source": value
             }
             for value in data_dict.values()
