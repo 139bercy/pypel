@@ -19,7 +19,7 @@
         "indice": "pypel_bulk",
         "time_freq": "_%m_%Y",
         "overwrite": false,
-        "es_config": {
+        "es_conf": {
           "user": "elastic",
           "pwd": "changeme"
         }
@@ -43,7 +43,7 @@
         "indice": "pypel_bulk_2",
         "time_freq": "_%Y",
         "overwrite": true,
-        "es_config": {
+        "es_conf": {
           "user": "elastic",
           "pwd": "changeme",
           "cafile": "path_to_cafile",
