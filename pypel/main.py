@@ -4,9 +4,7 @@ import pathlib
 import sys
 import argparse
 from pypel.ProcessFactory import ProcessFactory, ProcessConfig
-# import pypel.utils.elk.clean_index as clean_index
-# import pypel.utils.elk.init_index as init_index
-import logging.handlers
+import logging
 from typing import List, TypedDict, Union
 
 logger = logging.getLogger(__name__)
