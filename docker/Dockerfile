@@ -7,3 +7,5 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the module in /app
 COPY pypel /app/pypel
+
+ENV PYTHONPATH="/app"
