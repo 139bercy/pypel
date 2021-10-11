@@ -181,7 +181,7 @@ class Loader(BaseLoader):
         _host = (es_config.get("user"), es_config.get("pwd"))
         if _host == (None, None):
             _host = None
-        if "cafile" in es_config:
+        if es_config.get("cafile"):
             _context = ssl.create_default_context(cafile=es_config["cafile"])
             es_instance = elasticsearch.Elasticsearch(
                 es_config.get("host", "localhost"),
