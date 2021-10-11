@@ -86,17 +86,5 @@ if __name__ == "__main__":  # pragma: no cover
     except FileNotFoundError as e:
         raise ValueError("Cannot find file passed through the -c / --config-file argument") from e
     logger.info(config)
-    """
-    if args.clean:
-        path_to_mapping = os.path.join(os.getcwd(), args.mapping)
-        try:
-            with open(path_to_mapping) as f:
-                mappings = json.load(f)
-        except FileNotFoundError as e:
-            raise ValueError("Cannot find file passed through the -m / --mapping argument") from e
-        es_index_client = es.indices
-        clean_index.clean_index(mappings, es_index_client)
-        init_index.init_index(mappings, es_index_client)
-    """
     logger.debug(config.get("Processes"))
     select_process_from_config(config.get("Processes"), args.process, args.source_path)
